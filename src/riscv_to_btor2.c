@@ -25,7 +25,9 @@ int btor_constants(FILE *f) {
   fprintf(f, "12 constd 4 12 shift_funct3\n");
   fprintf(f, "13 constd 4 25 shift_funct7\n");
   fprintf(f, "14 one 4 little_helper\n");
-  return 15; // Next line number
+  fprintf(f, "15 one 1 true\n");
+  fprintf(f, "16 zero 1 false\n");
+  return 17; // Next line number
 }
 int btor_register_consts(FILE *f, int next_line, state *s) {
   fprintf(f, ";\n; Define Register Constants\n");
@@ -283,23 +285,117 @@ int btor_get_immediate(FILE *f, int next_line, int command_loc, int *codes) {
   // u types: AUIPC, LUI
   fprintf(f, "%d or 1 %d %d\n", next_line + 60, next_line + 48, next_line + 52);
   // j types: JAL (jump) -> 56
-  fprintf(f, "%d ite 4 %d %d 14 i_or_not_needed\n", next_line + 61,
-          next_line + 59,
-          next_line +
-              12); // if not i-type, no immediate is needed. 14 is just filler
-  fprintf(f, "%d ite 4 %d %d %d u\n", next_line + 62, next_line + 60,
-          next_line + 31, next_line + 61);
-  fprintf(f, "%d ite 4 %d %d %d s\n", next_line + 63, next_line + 50,
-          next_line + 15, next_line + 62);
-  fprintf(f, "%d ite 4 %d %d %d b\n", next_line + 64, next_line + 54,
-          next_line + 30, next_line + 63);
-  fprintf(f, "%d ite 4 %d %d %d j\n", next_line + 65, next_line + 56,
-          next_line + 45, next_line + 64);
-  return next_line + 66;
+ // i type as default, can be used for shift amount shamt in S[L|R][L|A]I commands
+  fprintf(f, "%d ite 4 %d %d %d s/i\n", next_line + 61, next_line + 50,
+          next_line + 15, next_line + 12);
+  fprintf(f, "%d ite 4 %d %d %d b\n", next_line + 62, next_line + 54,
+          next_line + 30, next_line + 61);
+  fprintf(f, "%d ite 4 %d %d %d u\n", next_line + 63, next_line + 60,
+          next_line + 31, next_line + 62);
+  fprintf(f, "%d ite 4 %d %d %d j\n", next_line + 64, next_line + 56,
+          next_line + 45, next_line + 63);
+  return next_line + 65;
 }
 
 void btor_check_4_all_commands(FILE *f, int next_line, int immediate, int *codes) {
-        int opcode_checks = immediate - 20; //Attention! Hacky!
+        int comp_opcode = immediate - 19; //Attention! Hacky!
+        int constants_funct3 = next_line;
+        fprintf(f, ";\n; constants for funct3\n");
+        for (size_t i = 0; i < 8; i++)
+        {
+                fprintf(f, "%d constd 4 %d\n", next_line, i);
+                next_line++;
+        }
+        int constant_funct7 = next_line;
+        fprintf(f, ";\n; Constant for funct7\n");
+        fprintf(f, "%d constd 4 32\n", next_line);
+        next_line++;
+
+        int comp_funct3 = next_line;
+        fprintf(f, ";\n; Compare current funct3\n");
+        for (size_t i = 0; i < 8; i++)
+        {
+                fprintf(f, "%d eq 1 %d %d\n", next_line, codes[4], constants_funct3 + i);
+                next_line++;
+        }
+
+        fprintf(f, ";\n; Compare current funct7\n");
+        fprintf(f, "%d and 4 %d %d\n", next_line, codes[5], constant_funct7);
+        fprintf(f, "%d eq 1 %d %d funct7bit_not_set\n", next_line + 1, constants_funct3, next_line);
+        next_line+=2;
+        int comp_funct7 = next_line - 1;
+
+        int pre_comp = next_line;
+        fprintf(f, ";\n; Some commands check against funct7, funct3 & opcode. They are pre-checked so we get an orderly list in the next step\n");
+        fprintf(f, "%d and 1 -%d %d SRL(I)(W)_pre\n", next_line, comp_funct7, comp_funct3 + 5);
+        fprintf(f, "%d and 1 %d %d SRA(I)(W)_pre\n", next_line + 1, comp_funct7, comp_funct3 + 5);
+        fprintf(f, "%d and 1 -%d %d ADD(W)_pre\n", next_line + 2, comp_funct7, comp_funct3 + 0);
+        fprintf(f, "%d and 1 %d %d SUB(W)_pre\n", next_line + 3, comp_funct7, comp_funct3 + 0);
+        next_line += 4;
+
+        fprintf(f, ";\n; Check all commands\n");
+        // RV32I
+        fprintf(f, "%d and 1 14 %d\n", next_line +  0, comp_opcode + 6); //LUI
+        fprintf(f, "%d and 1 14 %d\n", next_line +  1, comp_opcode + 2); //AUIPC
+        fprintf(f, "%d and 1 14 %d\n", next_line +  2, comp_opcode + 10); //JAL
+        fprintf(f, "%d and 1 %d %d\n", next_line +  3, comp_funct3 + 0, comp_opcode + 9); //JALR
+
+        fprintf(f, "%d and 1 %d %d\n", next_line +  4, comp_funct3 + 0, comp_opcode + 8); //BEQ
+        fprintf(f, "%d and 1 %d %d\n", next_line +  5, comp_funct3 + 1, comp_opcode + 8); //BNE
+        fprintf(f, "%d and 1 %d %d\n", next_line +  6, comp_funct3 + 4, comp_opcode + 8); //BLT
+        fprintf(f, "%d and 1 %d %d\n", next_line +  7, comp_funct3 + 5, comp_opcode + 8); //BGE
+        fprintf(f, "%d and 1 %d %d\n", next_line +  8, comp_funct3 + 6, comp_opcode + 8); //BLTU
+        fprintf(f, "%d and 1 %d %d\n", next_line +  9, comp_funct3 + 7, comp_opcode + 8); //BGEU
+
+        fprintf(f, "%d and 1 %d %d\n", next_line + 10, comp_funct3 + 0, comp_opcode + 0); //LB
+        fprintf(f, "%d and 1 %d %d\n", next_line + 11, comp_funct3 + 1, comp_opcode + 0); //LH
+        fprintf(f, "%d and 1 %d %d\n", next_line + 12, comp_funct3 + 2, comp_opcode + 0); //LW
+        fprintf(f, "%d and 1 %d %d\n", next_line + 13, comp_funct3 + 4, comp_opcode + 0); //LBU
+        fprintf(f, "%d and 1 %d %d\n", next_line + 14, comp_funct3 + 5, comp_opcode + 0); //LHU
+
+        fprintf(f, "%d and 1 %d %d\n", next_line + 15, comp_funct3 + 0, comp_opcode + 4); //SB
+        fprintf(f, "%d and 1 %d %d\n", next_line + 16, comp_funct3 + 1, comp_opcode + 4); //SH
+        fprintf(f, "%d and 1 %d %d\n", next_line + 17, comp_funct3 + 2, comp_opcode + 4); //SW
+
+        fprintf(f, "%d and 1 %d %d\n", next_line + 18, comp_funct3 + 0, comp_opcode + 1); //ADDI
+        fprintf(f, "%d and 1 %d %d\n", next_line + 19, comp_funct3 + 2, comp_opcode + 1); //SLTI
+        fprintf(f, "%d and 1 %d %d\n", next_line + 20, comp_funct3 + 3, comp_opcode + 1); //SLTIU
+        fprintf(f, "%d and 1 %d %d\n", next_line + 21, comp_funct3 + 4, comp_opcode + 1); //XORI
+        fprintf(f, "%d and 1 %d %d\n", next_line + 22, comp_funct3 + 6, comp_opcode + 1); //ORI
+        fprintf(f, "%d and 1 %d %d\n", next_line + 23, comp_funct3 + 7, comp_opcode + 1); //ANDI
+
+        fprintf(f, "%d and 1 %d %d\n", next_line + 24, pre_comp + 2, comp_opcode + 5); //ADD; S(L|R)(L|A)I is overwritten by RV64I
+        fprintf(f, "%d and 1 %d %d\n", next_line + 25, pre_comp + 3, comp_opcode + 5); //SUB
+        fprintf(f, "%d and 1 %d %d\n", next_line + 26, comp_funct3 + 1, comp_opcode + 5); //SLL
+        fprintf(f, "%d and 1 %d %d\n", next_line + 27, comp_funct3 + 2, comp_opcode + 5); //SLT
+        fprintf(f, "%d and 1 %d %d\n", next_line + 28, comp_funct3 + 3, comp_opcode + 5); //SLTU
+        fprintf(f, "%d and 1 %d %d\n", next_line + 29, comp_funct3 + 4, comp_opcode + 5); //XOR
+        fprintf(f, "%d and 1 %d %d\n", next_line + 30, pre_comp + 0, comp_opcode + 5); //SRL
+        fprintf(f, "%d and 1 %d %d\n", next_line + 31, pre_comp + 1, comp_opcode + 5); //SRA
+        fprintf(f, "%d and 1 %d %d\n", next_line + 32, comp_funct3 + 6, comp_opcode + 5); //OR
+        fprintf(f, "%d and 1 %d %d\n", next_line + 33, comp_funct3 + 7, comp_opcode + 5); //AND
+
+        //RV64I
+        fprintf(f, "%d and 1 %d %d\n", next_line + 34, comp_funct3 + 6, comp_opcode + 0); //LWU
+        fprintf(f, "%d and 1 %d %d\n", next_line + 35, comp_funct3 + 3, comp_opcode + 0); //LD
+
+        fprintf(f, "%d and 1 %d %d\n", next_line + 36, comp_funct3 + 3, comp_opcode + 4); //SD
+
+        fprintf(f, "%d and 1 %d %d\n", next_line + 37, comp_funct3 + 1, comp_opcode + 1); //SLLI
+        fprintf(f, "%d and 1 %d %d\n", next_line + 38, pre_comp + 0, comp_opcode + 1); //SRLI
+        fprintf(f, "%d and 1 %d %d\n", next_line + 39, pre_comp + 1, comp_opcode + 1); //SRAI
+
+        fprintf(f, "%d and 1 %d %d\n", next_line + 40, comp_funct3 + 0, comp_opcode + 3); //ADDIW
+        fprintf(f, "%d and 1 %d %d\n", next_line + 41, comp_funct3 + 1, comp_opcode + 3); //SLLIW
+        fprintf(f, "%d and 1 %d %d\n", next_line + 42, pre_comp + 2, comp_opcode + 3); //SRLIW
+        fprintf(f, "%d and 1 %d %d\n", next_line + 43, pre_comp + 3, comp_opcode + 3); //SRAIW
+
+        fprintf(f, "%d and 1 %d %d\n", next_line + 44, pre_comp + 2, comp_opcode + 7); //ADDW
+        fprintf(f, "%d and 1 %d %d\n", next_line + 45, pre_comp + 3, comp_opcode + 7); //SUBW
+        fprintf(f, "%d and 1 %d %d\n", next_line + 46, comp_funct3 + 0, comp_opcode + 7); //SLLW
+        fprintf(f, "%d and 1 %d %d\n", next_line + 47, pre_comp + 0, comp_opcode + 7); //SRLW
+        fprintf(f, "%d and 1 %d %d\n", next_line + 48, pre_comp + 1, comp_opcode + 7); //SRAW
+        return next_line + 49;
 }
 
 void relational_btor(FILE *f, state *s) {
@@ -317,7 +413,7 @@ void relational_btor(FILE *f, state *s) {
   next_line = btor_get_current_command(f, next_line, registers, memory);
   int command = next_line - 1;
 
-  int codes[6]; //={opcode, rd, rs1, rs2, funct3, funct7};
+  int codes[7]; //={opcode, rd, rs1, rs2, funct3, funct7};
   next_line = btor_get_opcode(f, next_line, command);
   codes[0] = next_line - 1; // opcode
   next_line = btor_get_destination(f, next_line, command);
