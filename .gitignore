@@ -1,0 +1,17 @@
+# Exclude .o files
+*.o
+
+# Exclude binaries
+bin/*
+
+# Exclude VSCode files
+.vscode/
+
+# Exclude state files
+*.state
+
+# Exclude BTOR2 files
+*.btor2
+
+# Exclude BTOR files
+*.btor
