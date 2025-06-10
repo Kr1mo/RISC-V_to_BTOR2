@@ -7,7 +7,7 @@
 
 #define BTOR_MEMORY_SIZE 8 // Should be raised to 16 or 32 in future
 
-int btor_constants(FILE *f) {
+int btor_constants(FILE *f) { // This sadly grew as-needed
   fprintf(f, "; Basics\n");
   fprintf(f, "1 sort bitvec 1 Boolean\n"); // booleans
   fprintf(f, "2 sort bitvec %d Address_space\n",
@@ -80,7 +80,7 @@ int btor_memory(
   next_line++;
   uint64_t *addresses = get_initialised_adresses(s->memory);
 
-  for (size_t i = 1; i <= addresses[0]; i++) {
+  for (size_t i = 1; i <= addresses[0]; i++) { //TODO also initialise 0s??
     if (addresses[i] >= (int)pow(2, BTOR_MEMORY_SIZE)) {
       break; // Only take the first pow(2, BTOR_MEMORY_SIZE) addresses into
              // account
@@ -297,25 +297,25 @@ int btor_get_immediate(FILE *f, int next_line, int command_loc, int *codes) {
   return next_line + 65;
 }
 
-void btor_check_4_all_commands(FILE *f, int next_line, int immediate, int *codes) {
-        int comp_opcode = immediate - 19; //Attention! Hacky!
+int btor_check_4_all_commands(FILE *f, int next_line, int immediate, int *codes) {
+        int comp_opcode = immediate - 18; //Attention! Hacky!
         int constants_funct3 = next_line;
         fprintf(f, ";\n; constants for funct3\n");
         for (size_t i = 0; i < 8; i++)
         {
-                fprintf(f, "%d constd 4 %d\n", next_line, i);
+                fprintf(f, "%d constd 4 %ld\n", next_line, i);
                 next_line++;
         }
         int constant_funct7 = next_line;
         fprintf(f, ";\n; Constant for funct7\n");
-        fprintf(f, "%d constd 4 32\n", next_line);
+        fprintf(f, "%d constd 4 32\n", next_line); //second highest bit of funct7 set
         next_line++;
 
         int comp_funct3 = next_line;
         fprintf(f, ";\n; Compare current funct3\n");
         for (size_t i = 0; i < 8; i++)
         {
-                fprintf(f, "%d eq 1 %d %d\n", next_line, codes[4], constants_funct3 + i);
+                fprintf(f, "%d eq 1 %d %ld\n", next_line, codes[4], constants_funct3 + i);
                 next_line++;
         }
 
@@ -335,9 +335,9 @@ void btor_check_4_all_commands(FILE *f, int next_line, int immediate, int *codes
 
         fprintf(f, ";\n; Check all commands\n");
         // RV32I
-        fprintf(f, "%d and 1 14 %d\n", next_line +  0, comp_opcode + 6); //LUI
-        fprintf(f, "%d and 1 14 %d\n", next_line +  1, comp_opcode + 2); //AUIPC
-        fprintf(f, "%d and 1 14 %d\n", next_line +  2, comp_opcode + 10); //JAL
+        fprintf(f, "%d and 1 15 %d\n", next_line +  0, comp_opcode + 6); //LUI
+        fprintf(f, "%d and 1 15 %d\n", next_line +  1, comp_opcode + 2); //AUIPC
+        fprintf(f, "%d and 1 15 %d\n", next_line +  2, comp_opcode + 10); //JAL
         fprintf(f, "%d and 1 %d %d\n", next_line +  3, comp_funct3 + 0, comp_opcode + 9); //JALR
 
         fprintf(f, "%d and 1 %d %d\n", next_line +  4, comp_funct3 + 0, comp_opcode + 8); //BEQ
@@ -350,17 +350,24 @@ void btor_check_4_all_commands(FILE *f, int next_line, int immediate, int *codes
         fprintf(f, "%d and 1 %d %d\n", next_line + 10, comp_funct3 + 0, comp_opcode + 0); //LB
         fprintf(f, "%d and 1 %d %d\n", next_line + 11, comp_funct3 + 1, comp_opcode + 0); //LH
         fprintf(f, "%d and 1 %d %d\n", next_line + 12, comp_funct3 + 2, comp_opcode + 0); //LW
+        // LD comes in RV64I
         fprintf(f, "%d and 1 %d %d\n", next_line + 13, comp_funct3 + 4, comp_opcode + 0); //LBU
         fprintf(f, "%d and 1 %d %d\n", next_line + 14, comp_funct3 + 5, comp_opcode + 0); //LHU
+        // LWU comes in RV64I
 
         fprintf(f, "%d and 1 %d %d\n", next_line + 15, comp_funct3 + 0, comp_opcode + 4); //SB
         fprintf(f, "%d and 1 %d %d\n", next_line + 16, comp_funct3 + 1, comp_opcode + 4); //SH
         fprintf(f, "%d and 1 %d %d\n", next_line + 17, comp_funct3 + 2, comp_opcode + 4); //SW
+        // SD comes in RV64I
 
         fprintf(f, "%d and 1 %d %d\n", next_line + 18, comp_funct3 + 0, comp_opcode + 1); //ADDI
+        // SUBI doesnt exist
+        // SLLI is overwritten by RV64I
         fprintf(f, "%d and 1 %d %d\n", next_line + 19, comp_funct3 + 2, comp_opcode + 1); //SLTI
         fprintf(f, "%d and 1 %d %d\n", next_line + 20, comp_funct3 + 3, comp_opcode + 1); //SLTIU
         fprintf(f, "%d and 1 %d %d\n", next_line + 21, comp_funct3 + 4, comp_opcode + 1); //XORI
+        // SRLI is overwritten by RV64I
+        // SRAI is overwritten by RV64I
         fprintf(f, "%d and 1 %d %d\n", next_line + 22, comp_funct3 + 6, comp_opcode + 1); //ORI
         fprintf(f, "%d and 1 %d %d\n", next_line + 23, comp_funct3 + 7, comp_opcode + 1); //ANDI
 
@@ -398,6 +405,418 @@ void btor_check_4_all_commands(FILE *f, int next_line, int immediate, int *codes
         return next_line + 49;
 }
 
+int btor_updates(FILE* f, int next_line, int register_loc, int memory_loc, int command_check_loc, int immediate_loc, int* codes){
+        fprintf(f, ";\n; Next Functions for Registers and Memory\n");
+        int comparison_constants_loc = next_line;
+        fprintf(f, "; Get rs1, rs2 values\n");
+        for (size_t i = 0; i < 33; i++)
+        {
+                fprintf(f, "%d constd 5 %ld\n", next_line, i);
+                next_line++;
+        }
+        fprintf(f, "%d uext 5 %d 32 rs1_code_ext\n", next_line, codes[2]);
+        fprintf(f, "%d uext 5 %d 32 rs2_code_ext\n", next_line + 1, codes[3]);
+        fprintf(f, "%d uext 5 %d 32 rd_code_ext\n", next_line + 2, codes[1]);
+        int rs1_code_ext = next_line;
+        int rs2_code_ext = next_line + 1;
+        int rd_code_ext = next_line + 2;
+        next_line += 3;
+
+        int rs1_comp_loc = next_line;
+        for (size_t i = 1; i < 32; i++)
+        {
+                fprintf(f, "%d eq 1 %ld %d\n", next_line, comparison_constants_loc + i, rs1_code_ext);
+                next_line++;
+        }
+        int rs2_comp_loc = next_line;
+        for (size_t i = 1; i < 32; i++)
+        {
+                fprintf(f, "%d eq 1 %ld %d\n", next_line, comparison_constants_loc + i, rs2_code_ext);
+                next_line++;
+        }
+
+        fprintf(f, "%d ite 5 %d %d %d rs1_x1_x0\n", next_line, rs1_comp_loc, register_loc +1, register_loc + 0);
+        next_line++;
+        for (size_t i = 2; i < 32; i++)
+        {
+                fprintf(f, "%d ite 5 %ld %ld %d rs1_x%ld\n", next_line, rs1_comp_loc + i - 1, register_loc + i, next_line - 1, i);
+                next_line++;
+        }
+        int rs1_val_loc = next_line - 1;
+
+        fprintf(f, "%d ite 5 %d %d %d rs2_x1_x0\n", next_line, rs2_comp_loc, register_loc +1, register_loc + 0);
+        next_line++;
+        for (size_t i = 2; i < 32; i++)
+        {
+                fprintf(f, "%d ite 5 %ld %ld %d rs2_x%ld\n", next_line, rs2_comp_loc + i - 1, register_loc + i, next_line - 1, i);
+                next_line++;
+        }
+        int rs2_val_loc = next_line - 1;
+
+
+        fprintf(f, ";\n; Calculating values for commands\n");
+        fprintf(f, ";\n; Flow Control\n");
+        fprintf(f, "%d uext 5 %d %d pc_val_64bit\n", next_line, register_loc + 32, 64 - BTOR_MEMORY_SIZE); // LUI
+        fprintf(f, "%d sext 5 %d 32 immediate_64bit\n", next_line + 1, immediate_loc);
+        fprintf(f, "%d add 5 %d %d auipc_rd\n", next_line + 2, next_line, next_line +1);
+        int lui_rd = next_line + 1; //is also sign extended immediate!
+        int auipc_rd = next_line + 2;
+        next_line += 3;
+
+        fprintf(f, "%d slice 2 %d %d 0 jal_pc\n", next_line, auipc_rd, BTOR_MEMORY_SIZE - 1);
+        int jal_pc = next_line;
+        next_line++;
+
+        fprintf(f, "%d constd 5 4\n", next_line);
+        fprintf(f, "%d uext 5 %d %d\n", next_line + 1, register_loc + 32, 64 - BTOR_MEMORY_SIZE); // Sign extend PC
+        fprintf(f, "%d add 5 %d %d\n", next_line + 2, next_line + 1, next_line);
+        int jal_rd = next_line + 1;
+        next_line += 3;
+
+        fprintf(f, "%d add 5 %d %d\n", next_line, rs1_val_loc, lui_rd);
+        fprintf(f, "%d and 5 %d -%d\n", next_line + 1, next_line, comparison_constants_loc + 1);
+        fprintf(f, "%d slice 2 %d %d 0\n", next_line + 2, next_line + 1, BTOR_MEMORY_SIZE - 1);
+        next_line += 3;
+        int jalr_pc = next_line - 1;
+        int jalr_rd = jal_rd; // JALR rd is the same as JAL rd
+
+        int branch_pc_true = jal_pc; // Branches use the same PC as JAL
+        fprintf(f, "%d slice 2 %d %d 0\n", next_line, jal_rd, BTOR_MEMORY_SIZE - 1);
+        int branch_pc_false = next_line;
+        next_line++;
+
+        fprintf(f, ";\n; Branch Comparisons\n");
+        fprintf(f, "%d eq 1 %d %d\n", next_line, rs1_val_loc, rs2_val_loc); // BEQ
+        fprintf(f, "%d neq 1 %d %d\n", next_line + 1, rs1_val_loc, rs2_val_loc); // BNE
+        fprintf(f, "%d slt 1 %d %d\n", next_line + 2, rs1_val_loc, rs2_val_loc); // BLT
+        fprintf(f, "%d sgte 1 %d %d\n", next_line + 3, rs1_val_loc, rs2_val_loc); // BGE
+        fprintf(f, "%d ult 1 %d %d\n", next_line + 4, rs1_val_loc, rs2_val_loc); // BLTU
+        fprintf(f, "%d ugte 1 %d %d\n", next_line + 5, rs1_val_loc, rs2_val_loc); // BGEU
+        int beq_check = next_line;
+        int bne_check = next_line + 1;
+        int blt_check = next_line + 2;
+        int bge_check = next_line + 3;
+        int bltu_check = next_line + 4;
+        int bgeu_check = next_line + 5;
+        next_line += 6;
+
+
+        //LOAD
+        fprintf(f, ";\n; LOAD\n");
+
+        fprintf(f, "%d sort bitvec 16\n", next_line);
+        int size16_loc = next_line;
+        next_line++;
+        int rs1_added = next_line;
+        for (size_t i = 0; i < 8; i++)
+        {
+                fprintf(f, "%d add 5 %d %ld\n", next_line, rs1_val_loc, comparison_constants_loc + i);
+                next_line++;
+        }
+        int rs1_added_shortened = next_line;
+        for (size_t i = 0; i < 8; i++)
+        {
+                fprintf(f, "%d slice 2 %ld %d 0\n", next_line, rs1_added + i, BTOR_MEMORY_SIZE - 1);
+                next_line++;
+        }
+        
+        int read_cells = next_line;
+        for (size_t i = 0; i < 8; i++)
+        {
+                fprintf(f, "%d read 3 %d %ld\n", next_line, memory_loc, rs1_added_shortened + i);
+                next_line++;
+        }
+        int lb_rd = next_line;
+        fprintf(f, "%d sext 5 %d 56 lb_rd\n", next_line, read_cells + 0);
+        next_line++;
+
+        fprintf(f, "%d concat %d %d %d \n", next_line, size16_loc, read_cells + 1, read_cells);
+        fprintf(f, "%d sext 5 %d 48 lh_rd\n", next_line + 1, next_line);
+        int lh_rd = next_line + 1;
+        next_line += 2;
+
+        fprintf(f, "%d concat %d %d %d \n", next_line, size16_loc, read_cells + 3, read_cells + 2);
+        fprintf(f, "%d concat 4 %d %d\n", next_line + 1, lh_rd - 1, next_line);
+        fprintf(f, "%d sext 5 %d 32 lw_rd\n", next_line + 2, next_line + 1);
+        int lw_rd = next_line + 2;
+        next_line += 3;
+
+        fprintf(f, "%d concat %d %d %d\n", next_line, size16_loc, read_cells + 5, read_cells + 4);
+        fprintf(f, "%d concat %d %d %d\n", next_line + 1, size16_loc, read_cells + 7, read_cells + 6);
+        fprintf(f, "%d concat 4 %d %d\n", next_line + 2, next_line + 1, next_line);
+        fprintf(f, "%d concat 5 %d %d ld_rd\n", next_line + 3, next_line + 2, lw_rd - 1);
+        int ld_rd = next_line + 3;
+        next_line += 4;
+
+        fprintf(f, "%d uext 5 %d 48 lbu\n", next_line, lb_rd - 1);
+        int lbu_rd = next_line;
+        next_line++;
+
+        fprintf(f, "%d uext 5 %d 32 lhu\n", next_line, lh_rd - 1);
+        int lhu_rd = next_line;
+        next_line++;
+
+        fprintf(f, "%d uext 5 %d 32 lwu_rd\n", next_line, lw_rd - 1);
+        int lwu_rd = next_line;
+        next_line++;
+
+        //STORE
+        fprintf(f, ";\n; STORE\n");
+        int store_memory_bytes = next_line;
+        fprintf(f, "%d slice 3 %d 7 0\n", next_line, rs2_val_loc); // Store byte 1
+        fprintf(f, "%d slice 3 %d 15 8\n", next_line + 1, rs2_val_loc); // Store byte 2
+        fprintf(f, "%d slice 3 %d 23 16\n", next_line + 2, rs2_val_loc); // Store byte 3
+        fprintf(f, "%d slice 3 %d 31 24\n", next_line + 3, rs2_val_loc); // Store byte 4
+        fprintf(f, "%d slice 3 %d 39 32\n", next_line + 4, rs2_val_loc); // Store byte 5
+        fprintf(f, "%d slice 3 %d 47 40\n", next_line + 5, rs2_val_loc); // Store byte 6
+        fprintf(f, "%d slice 3 %d 55 48\n", next_line + 6, rs2_val_loc); // Store byte 7
+        fprintf(f, "%d slice 3 %d 63 56\n", next_line + 7, rs2_val_loc); // Store byte 8
+        next_line += 8;
+
+        int pc_consts_loc = next_line;
+        for (size_t i = 0; i < 8; i++)
+        {
+                fprintf(f, "%d constd 2 %ld\n", next_line, i);
+                next_line++;
+        }
+        int pc_countup_loc = next_line;
+        for (size_t i = 0; i < 8; i++)
+        {
+                fprintf(f, "%d add 2 %ld %d pc+%ld\n", next_line, pc_consts_loc + i, register_loc + 32, i);
+                next_line++;
+        }
+
+        fprintf(f, "%d write 6 %d %d %d sb\n", next_line, memory_loc, pc_countup_loc, store_memory_bytes); // Store byte 1
+        fprintf(f, "%d write 6 %d %d %d sh\n", next_line + 1, next_line, pc_countup_loc + 1, store_memory_bytes + 1); // Store byte 2
+        fprintf(f, "%d write 6 %d %d %d\n", next_line + 2, next_line + 1, pc_countup_loc + 2, store_memory_bytes + 2); // Store byte 3
+        fprintf(f, "%d write 6 %d %d %d sw\n", next_line + 3, next_line + 2, pc_countup_loc + 3, store_memory_bytes + 3); // Store byte 4
+        fprintf(f, "%d write 6 %d %d %d\n", next_line + 4, next_line + 3, pc_countup_loc + 4, store_memory_bytes + 4); // Store byte 5
+        fprintf(f, "%d write 6 %d %d %d\n", next_line + 5, next_line + 4, pc_countup_loc + 5, store_memory_bytes + 5); // Store byte 6
+        fprintf(f, "%d write 6 %d %d %d\n", next_line + 6, next_line + 5, pc_countup_loc + 6, store_memory_bytes + 6); // Store byte 7
+        fprintf(f, "%d write 6 %d %d %d sd\n", next_line + 7, next_line + 6, pc_countup_loc + 7, store_memory_bytes + 7); // Store byte 8
+        int sb_mem = next_line;
+        int sh_mem = next_line + 1;
+        int sw_mem = next_line + 3;
+        int sd_mem = next_line + 7;
+        next_line += 8;
+
+        //MATH i
+        fprintf(f, ";\n; MATH immediate\n");
+        int math_i_rd_addi = next_line;
+        fprintf(f, "%d add 5 %d %d addi_rd\n", next_line, rs1_val_loc, lui_rd); // ADDI
+        next_line++;
+
+        int math_i_rd_slli = next_line;
+        fprintf(f, "%d sll 5 %d %d slli_rd\n", next_line, rs1_val_loc, lui_rd); // SLLI
+        next_line++;
+        
+        int math_i_rd_slti = next_line;
+        fprintf(f, "%d slt 5 %d %d slti_rd\n", next_line, rs1_val_loc, lui_rd); // SLTI
+        next_line++;
+
+        int math_i_rd_sltiu = next_line;
+        fprintf(f, "%d ult 5 %d %d sltiu_rd\n", next_line, rs1_val_loc, lui_rd); // SLTIU
+        next_line++;
+
+        int math_i_rd_xori = next_line;
+        fprintf(f, "%d xor 5 %d %d xori_rd\n", next_line, rs1_val_loc, lui_rd); // XORI
+        next_line++;
+
+        int math_i_rd_srli = next_line;
+        fprintf(f, "%d srl 5 %d %d srli_rd\n", next_line, rs1_val_loc, lui_rd); // SRLI
+        next_line++;
+
+        int math_i_rd_srai = next_line + 1;
+        fprintf(f, "%d sub 5 %d %d srai_rd\n", next_line, lui_rd, comparison_constants_loc + 32); // -32 removes the bit in funct7 wich differentiates SRAI from SRLI
+        fprintf(f, "%d sra 5 %d %d srai_rd\n", next_line + 1, rs1_val_loc, lui_rd); // SRAI
+        next_line += 2;
+
+        int math_i_rd_ori = next_line;
+        fprintf(f, "%d or 5 %d %d ori_rd\n", next_line, rs1_val_loc, lui_rd); // ORI
+        next_line++;
+
+        int math_i_rd_andi = next_line;
+        fprintf(f, "%d and 5 %d %d andi_rd\n", next_line, rs1_val_loc, lui_rd); // ANDI
+        next_line++;
+
+        //MATH reg
+        fprintf(f, ";\n; MATH Register based\n");
+        int math_reg_rd_add = next_line;
+        fprintf(f, "%d add 5 %d %d add_rd\n", next_line, rs1_val_loc, rs2_val_loc); // ADD
+        next_line++;
+
+        int math_reg_rd_sub = next_line;
+        fprintf(f, "%d sub 5 %d %d sub_rd\n", next_line, rs1_val_loc, rs2_val_loc); // SUB
+        next_line++;
+
+        int math_reg_rd_sll = next_line;
+        fprintf(f, "%d sll 5 %d %d sll_rd\n", next_line, rs1_val_loc, rs2_val_loc); // SLL
+        next_line++;
+
+        int math_reg_rd_slt = next_line;
+        fprintf(f, "%d slt 5 %d %d slt_rd\n", next_line, rs1_val_loc, rs2_val_loc); // SLT
+        next_line++;
+
+        int math_reg_rd_sltu = next_line;
+        fprintf(f, "%d ult 5 %d %d sltu_rd\n", next_line, rs1_val_loc, rs2_val_loc); // SLTU
+        next_line++;
+
+        int math_reg_rd_xor = next_line;
+        fprintf(f, "%d xor 5 %d %d xor_rd\n", next_line, rs1_val_loc, rs2_val_loc); // XOR
+        next_line++;
+
+        int math_reg_rd_srl = next_line;
+        fprintf(f, "%d srl 5 %d %d srl_rd\n", next_line, rs1_val_loc, rs2_val_loc); // SRL
+        next_line++;
+
+        int math_reg_rd_sra = next_line;
+        fprintf(f, "%d sra 5 %d %d sra_rd\n", next_line, rs1_val_loc, rs2_val_loc); // SRA
+        next_line++;
+
+        int math_reg_rd_or = next_line;
+        fprintf(f, "%d or 5 %d %d or_rd\n", next_line, rs1_val_loc, rs2_val_loc); // OR
+        next_line++;
+
+        int math_reg_rd_and = next_line;
+        fprintf(f, "%d and 5 %d %d and_rd\n", next_line, rs1_val_loc, rs2_val_loc); // AND
+        next_line++;
+
+        //MATH W
+        fprintf(f, ";\n; MATH Word\n");
+        
+        fprintf(f, "%d slice 4 %d 31 0\n", next_line, rs1_val_loc); // ADDIW
+        fprintf(f, "%d add 4 %d %d\n", next_line + 1, next_line, immediate_loc);
+        fprintf(f, "%d sext 5 %d 32 addiw_rd\n", next_line + 2, next_line + 1);
+        int math_iw_rd_addiw = next_line + 2;
+        next_line += 3;
+
+        fprintf(f, "%d slice 4 %d 31 0\n", next_line, math_i_rd_slli); // SLLIW
+        fprintf(f, "%d sext 5 %d 32 slliw_rd\n", next_line + 1, next_line);
+        int math_iw_rd_slliw = next_line + 1;
+        next_line += 2;
+
+        fprintf(f, "%d slice 4 %d 31 0\n", next_line, math_i_rd_srli); // SRLIW
+        fprintf(f, "%d sext 5 %d 32 srliw_rd\n", next_line + 1, next_line);
+        int math_iw_rd_srliw = next_line + 1;
+        next_line += 2;
+
+        fprintf(f, "%d slice 4 %d 31 0\n", next_line, math_i_rd_srai); // SRAIW
+        fprintf(f, "%d sext 5 %d 32 sraiw_rd\n", next_line + 1, next_line);
+        int math_iw_rd_sraiw = next_line + 1;
+        next_line += 2;
+
+        fprintf(f, "%d slice 4 %d 31 0\n", next_line, math_reg_rd_add); // ADDW
+        fprintf(f, "%d sext 5 %d 32 addw_rd\n", next_line + 1, next_line);
+        int math_w_rd_addw = next_line + 1;
+        next_line += 2;
+
+        fprintf(f, "%d slice 4 %d 31 0\n", next_line, math_reg_rd_sub); // SUBW
+        fprintf(f, "%d sext 5 %d 32 subw_rd\n", next_line + 1, next_line);
+        int math_w_rd_subw = next_line + 1;
+        next_line += 2;
+
+        fprintf(f, "%d slice 4 %d 31 0\n", next_line, math_reg_rd_sll); // SLLW
+        fprintf(f, "%d sext 5 %d 32 sllw_rd\n", next_line + 1, next_line);
+        int math_w_rd_sllw = next_line + 1;
+        next_line += 2;
+
+        fprintf(f, "%d slice 4 %d 31 0\n", next_line, math_reg_rd_srl); // SRLW
+        fprintf(f, "%d sext 5 %d 32 srlw_rd\n", next_line + 1, next_line);
+        int math_w_rd_srlw = next_line + 1;
+        next_line += 2;
+
+        fprintf(f, "%d slice 4 %d 31 0\n", next_line, math_reg_rd_sra); // SRAW
+        fprintf(f, "%d sext 5 %d 32 sraw_rd\n", next_line + 1, next_line);
+        int math_w_rd_sraw = next_line + 1;
+        next_line += 2;
+
+        fprintf(f, ";\n; Update register x0\n");
+        fprintf(f, "%d next %d %d x0_new\n", next_line, register_loc + 0, register_loc + 0);
+        next_line++;
+        for (size_t i = 1; i < 32; i++)
+        {
+                fprintf(f, ";\n; Update register x%ld\n", i);
+                fprintf(f, "%d eq 1 %ld %d x%ld_is_rd\n", next_line, comparison_constants_loc + i, rd_code_ext, i);
+
+                fprintf(f, "%d ite 5 %d %d %ld x%ld_lui\n", next_line + 1, command_check_loc, lui_rd, register_loc + i, i); // command without rd
+                fprintf(f, "%d ite 5 %d %d %d x%ld_auipc\n", next_line + 2, command_check_loc + 1, auipc_rd, next_line + 1, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_jal\n", next_line + 3, command_check_loc + 2, jal_rd, next_line + 2, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_jalr\n", next_line + 4, command_check_loc + 3, jalr_rd, next_line + 3, i);
+
+                fprintf(f, "%d ite 5 %d %d %d x%ld_lb\n", next_line + 5, command_check_loc + 10, lb_rd, next_line + 4, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_lh\n", next_line + 6, command_check_loc + 11, lh_rd, next_line + 5, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_lw\n", next_line + 7, command_check_loc + 12, lw_rd, next_line + 6, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_ld\n", next_line + 8, command_check_loc + 35, ld_rd, next_line + 7, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_lbu\n", next_line + 9, command_check_loc + 13, lbu_rd, next_line + 8, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_lhu\n", next_line + 10, command_check_loc + 14, lhu_rd, next_line + 9, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_lwu\n", next_line + 11, command_check_loc + 34, lwu_rd, next_line + 10, i);
+
+                fprintf(f, "%d ite 5 %d %d %d x%ld_addi\n", next_line + 12, command_check_loc + 18, math_i_rd_addi, next_line + 11, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_slli\n", next_line + 13, command_check_loc + 37, math_i_rd_slli, next_line + 12, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_slti\n", next_line + 14, command_check_loc + 19, math_i_rd_slti, next_line + 13, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_sltiu\n", next_line + 15, command_check_loc + 20, math_i_rd_sltiu, next_line + 14, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_xori\n", next_line + 16, command_check_loc + 21, math_i_rd_xori, next_line + 15, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_srli\n", next_line + 17, command_check_loc + 38, math_i_rd_srli, next_line + 16, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_srai\n", next_line + 18, command_check_loc + 39, math_i_rd_srai, next_line + 17, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_ori\n", next_line + 19, command_check_loc + 22, math_i_rd_ori, next_line + 18, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_andi\n", next_line + 20, command_check_loc + 23, math_i_rd_andi, next_line + 19, i);
+
+                fprintf(f, "%d ite 5 %d %d %d x%ld_add\n", next_line + 21, command_check_loc + 24, math_reg_rd_add, next_line + 20, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_sub\n", next_line + 22, command_check_loc + 25, math_reg_rd_sub, next_line + 21, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_sll\n", next_line + 23, command_check_loc + 26, math_reg_rd_sll, next_line + 22, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_slt\n", next_line + 24, command_check_loc + 27, math_reg_rd_slt, next_line + 23, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_sltu\n", next_line + 25, command_check_loc + 28, math_reg_rd_sltu, next_line + 24, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_xor\n", next_line + 26, command_check_loc + 29, math_reg_rd_xor, next_line + 25, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_srl\n", next_line + 27, command_check_loc + 30, math_reg_rd_srl, next_line + 26, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_sra\n", next_line + 28, command_check_loc + 31, math_reg_rd_sra, next_line + 27, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_or\n", next_line + 29, command_check_loc + 32, math_reg_rd_or, next_line + 28, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_and\n", next_line + 30, command_check_loc + 33, math_reg_rd_and, next_line + 29, i);
+
+                fprintf(f, "%d ite 5 %d %d %d x%ld_addiw\n", next_line + 31, command_check_loc + 40, math_iw_rd_addiw, next_line + 30, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_slliw\n", next_line + 32, command_check_loc + 41, math_iw_rd_slliw, next_line + 31, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_srliw\n", next_line + 33, command_check_loc + 42, math_iw_rd_srliw, next_line + 32, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_sraiw\n", next_line + 34, command_check_loc + 43, math_iw_rd_sraiw, next_line + 33, i);
+
+                fprintf(f, "%d ite 5 %d %d %d x%ld_addw\n", next_line + 35, command_check_loc + 44, math_w_rd_addw, next_line + 34, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_subw\n", next_line + 36, command_check_loc + 45, math_w_rd_subw, next_line + 35, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_sllw\n", next_line + 37, command_check_loc + 46, math_w_rd_sllw, next_line + 36, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_srlw\n", next_line + 38, command_check_loc + 47, math_w_rd_srlw, next_line + 37, i);
+                fprintf(f, "%d ite 5 %d %d %d x%ld_sraw\n", next_line + 39, command_check_loc + 48, math_w_rd_sraw, next_line + 38, i);
+
+                fprintf(f, "%d ite 5 %d %d %ld x%ld_new\n", next_line + 40, next_line, next_line + 39, register_loc + i, i); // check if xi is rd
+                fprintf(f, "%d next %ld %d x%ld_new\n", next_line + 41, register_loc + i, next_line + 40, i);
+                next_line += 42;
+        }
+        fprintf(f, ";\n; Update PC\n");
+        fprintf(f, "%d ite 2 %d %d %d pc_beq_decider\n", next_line, beq_check, branch_pc_true, branch_pc_false);
+        fprintf(f, "%d ite 2 %d %d %d pc_bne_decider\n", next_line + 1, bne_check, branch_pc_true, branch_pc_false);
+        fprintf(f, "%d ite 2 %d %d %d pc_blt_decider\n", next_line + 2, blt_check, branch_pc_true, branch_pc_false);
+        fprintf(f, "%d ite 2 %d %d %d pc_bge_decider\n", next_line + 3, bge_check, branch_pc_true, branch_pc_false);
+        fprintf(f, "%d ite 2 %d %d %d pc_bltu_decider\n", next_line + 4, bltu_check, branch_pc_true, branch_pc_false);
+        fprintf(f, "%d ite 2 %d %d %d pc_bgeu_decider\n", next_line + 5, bgeu_check, branch_pc_true, branch_pc_false);
+        fprintf(f, "%d ite 2 %d %d %d pc_jal\n", next_line + 6, command_check_loc + 2, jal_pc, branch_pc_false);
+        fprintf(f, "%d ite 2 %d %d %d pc_jalr\n", next_line + 7, command_check_loc + 3, jalr_pc, next_line + 6);
+        fprintf(f, "%d ite 2 %d %d %d pc_beq\n", next_line + 8, command_check_loc + 4, next_line, next_line + 7);
+        fprintf(f, "%d ite 2 %d %d %d pc_bne\n", next_line + 9, command_check_loc + 5, next_line + 1, next_line + 8);
+        fprintf(f, "%d ite 2 %d %d %d pc_blt\n", next_line + 10, command_check_loc + 6, next_line + 2, next_line + 9);
+        fprintf(f, "%d ite 2 %d %d %d pc_bge\n", next_line + 11, command_check_loc + 7, next_line + 3, next_line + 10);
+        fprintf(f, "%d ite 2 %d %d %d pc_bltu\n", next_line + 12, command_check_loc + 8, next_line + 4, next_line + 11);
+        fprintf(f, "%d ite 2 %d %d %d pc_bgeu\n", next_line + 13, command_check_loc + 9, next_line + 5, next_line + 12);
+        fprintf(f, "%d next %d %d pc_new\n", next_line + 14, register_loc + 32, next_line + 13);
+        next_line += 15;
+
+        fprintf(f, ";\n; Update memory\n");
+        fprintf(f, "%d ite 6 %d %d %d mem_sb\n", next_line, command_check_loc + 15, sb_mem, memory_loc);
+        fprintf(f, "%d ite 6 %d %d %d mem_sh\n", next_line + 1, command_check_loc + 16, sh_mem, next_line);
+        fprintf(f, "%d ite 6 %d %d %d mem_sw\n", next_line + 2, command_check_loc + 17, sw_mem, next_line + 1);
+        fprintf(f, "%d ite 6 %d %d %d mem_sd\n", next_line + 3, command_check_loc + 36, sd_mem, next_line + 2);
+        fprintf(f, "%d next %d %d memory_new\n", next_line + 4, memory_loc, next_line + 3);
+        next_line += 5;
+
+        return next_line;
+                
+}
+
 void relational_btor(FILE *f, state *s) {
   int next_line = btor_constants(f);
 
@@ -429,6 +848,11 @@ void relational_btor(FILE *f, state *s) {
 
   next_line = btor_get_immediate(f, next_line, command, codes);
   int immediate = next_line - 1; // immediate
+
+  next_line = btor_check_4_all_commands(f, next_line, immediate, codes);
+  int command_check_loc = next_line - 49;
+
+  next_line = btor_updates(f, next_line, registers, memory, command_check_loc, immediate, codes);
 }
 
 int main(int argc, char const *argv[]) {
