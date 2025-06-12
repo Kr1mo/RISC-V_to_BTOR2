@@ -530,12 +530,12 @@ int btor_updates(FILE* f, int next_line, int register_loc, int memory_loc, int c
         fprintf(f, "%d sext 5 %d 56 lb_rd\n", next_line, read_cells + 0);
         next_line++;
 
-        fprintf(f, "%d concat %d %d %d \n", next_line, size16_loc, read_cells + 1, read_cells);
+        fprintf(f, "%d concat %d %d %d\n", next_line, size16_loc, read_cells + 1, read_cells);
         fprintf(f, "%d sext 5 %d 48 lh_rd\n", next_line + 1, next_line);
         int lh_rd = next_line + 1;
         next_line += 2;
 
-        fprintf(f, "%d concat %d %d %d \n", next_line, size16_loc, read_cells + 3, read_cells + 2);
+        fprintf(f, "%d concat %d %d %d\n", next_line, size16_loc, read_cells + 3, read_cells + 2);
         fprintf(f, "%d concat 4 %d %d\n", next_line + 1, lh_rd - 1, next_line);
         fprintf(f, "%d sext 5 %d 32 lw_rd\n", next_line + 2, next_line + 1);
         int lw_rd = next_line + 2;
@@ -548,11 +548,11 @@ int btor_updates(FILE* f, int next_line, int register_loc, int memory_loc, int c
         int ld_rd = next_line + 3;
         next_line += 4;
 
-        fprintf(f, "%d uext 5 %d 48 lbu\n", next_line, lb_rd - 1);
+        fprintf(f, "%d uext 5 %d 56 lbu\n", next_line, lb_rd - 1);
         int lbu_rd = next_line;
         next_line++;
 
-        fprintf(f, "%d uext 5 %d 32 lhu\n", next_line, lh_rd - 1);
+        fprintf(f, "%d uext 5 %d 48 lhu\n", next_line, lh_rd - 1);
         int lhu_rd = next_line;
         next_line++;
 
@@ -610,13 +610,15 @@ int btor_updates(FILE* f, int next_line, int register_loc, int memory_loc, int c
         fprintf(f, "%d sll 5 %d %d slli_rd\n", next_line, rs1_val_loc, lui_rd); // SLLI
         next_line++;
         
-        int math_i_rd_slti = next_line;
-        fprintf(f, "%d slt 5 %d %d slti_rd\n", next_line, rs1_val_loc, lui_rd); // SLTI
-        next_line++;
+        int math_i_rd_slti = next_line + 1;
+        fprintf(f, "%d slt 1 %d %d slti_rd\n", next_line, rs1_val_loc, lui_rd);
+        fprintf(f,"%d uext 5 %d 63 slti_rd\n", next_line + 1, next_line); // SLTI
+        next_line+=2;
 
-        int math_i_rd_sltiu = next_line;
-        fprintf(f, "%d ult 5 %d %d sltiu_rd\n", next_line, rs1_val_loc, lui_rd); // SLTIU
-        next_line++;
+        int math_i_rd_sltiu = next_line + 1;
+        fprintf(f, "%d ult 1 %d %d sltiu_rd\n", next_line, rs1_val_loc, lui_rd);
+        fprintf(f, "%d uext 5 %d 63 sltiu_rd\n", next_line + 1, next_line); // SLTIU
+        next_line += 2;
 
         int math_i_rd_xori = next_line;
         fprintf(f, "%d xor 5 %d %d xori_rd\n", next_line, rs1_val_loc, lui_rd); // XORI
@@ -653,13 +655,15 @@ int btor_updates(FILE* f, int next_line, int register_loc, int memory_loc, int c
         fprintf(f, "%d sll 5 %d %d sll_rd\n", next_line, rs1_val_loc, rs2_val_loc); // SLL
         next_line++;
 
-        int math_reg_rd_slt = next_line;
-        fprintf(f, "%d slt 5 %d %d slt_rd\n", next_line, rs1_val_loc, rs2_val_loc); // SLT
-        next_line++;
+        int math_reg_rd_slt = next_line + 1;
+        fprintf(f, "%d slt 1 %d %d slt_rd\n", next_line, rs1_val_loc, rs2_val_loc);
+        fprintf(f, "%d uext 5 %d 63 slt_rd\n", next_line + 1, next_line); // SLT
+        next_line += 2;
 
-        int math_reg_rd_sltu = next_line;
-        fprintf(f, "%d ult 5 %d %d sltu_rd\n", next_line, rs1_val_loc, rs2_val_loc); // SLTU
-        next_line++;
+        int math_reg_rd_sltu = next_line + 1;
+        fprintf(f, "%d ult 1 %d %d sltu_rd\n", next_line, rs1_val_loc, rs2_val_loc);
+        fprintf(f, "%d uext 5 %d 63 sltu_rd\n", next_line + 1, next_line); // SLTU
+        next_line += 2;
 
         int math_reg_rd_xor = next_line;
         fprintf(f, "%d xor 5 %d %d xor_rd\n", next_line, rs1_val_loc, rs2_val_loc); // XOR
@@ -731,7 +735,7 @@ int btor_updates(FILE* f, int next_line, int register_loc, int memory_loc, int c
         next_line += 2;
 
         fprintf(f, ";\n; Update register x0\n");
-        fprintf(f, "%d next %d %d x0_new\n", next_line, register_loc + 0, register_loc + 0);
+        fprintf(f, "%d next 5 %d %d x0_new\n", next_line, register_loc + 0, register_loc + 0);
         next_line++;
         for (size_t i = 1; i < 32; i++)
         {
@@ -784,7 +788,7 @@ int btor_updates(FILE* f, int next_line, int register_loc, int memory_loc, int c
                 fprintf(f, "%d ite 5 %d %d %d x%ld_sraw\n", next_line + 39, command_check_loc + 48, math_w_rd_sraw, next_line + 38, i);
 
                 fprintf(f, "%d ite 5 %d %d %ld x%ld_new\n", next_line + 40, next_line, next_line + 39, register_loc + i, i); // check if xi is rd
-                fprintf(f, "%d next %ld %d x%ld_new\n", next_line + 41, register_loc + i, next_line + 40, i);
+                fprintf(f, "%d next 5 %ld %d x%ld_new\n", next_line + 41, register_loc + i, next_line + 40, i);
                 next_line += 42;
         }
         fprintf(f, ";\n; Update PC\n");
@@ -802,7 +806,7 @@ int btor_updates(FILE* f, int next_line, int register_loc, int memory_loc, int c
         fprintf(f, "%d ite 2 %d %d %d pc_bge\n", next_line + 11, command_check_loc + 7, next_line + 3, next_line + 10);
         fprintf(f, "%d ite 2 %d %d %d pc_bltu\n", next_line + 12, command_check_loc + 8, next_line + 4, next_line + 11);
         fprintf(f, "%d ite 2 %d %d %d pc_bgeu\n", next_line + 13, command_check_loc + 9, next_line + 5, next_line + 12);
-        fprintf(f, "%d next %d %d pc_new\n", next_line + 14, register_loc + 32, next_line + 13);
+        fprintf(f, "%d next 2 %d %d pc_new\n", next_line + 14, register_loc + 32, next_line + 13);
         next_line += 15;
 
         fprintf(f, ";\n; Update memory\n");
@@ -810,7 +814,7 @@ int btor_updates(FILE* f, int next_line, int register_loc, int memory_loc, int c
         fprintf(f, "%d ite 6 %d %d %d mem_sh\n", next_line + 1, command_check_loc + 16, sh_mem, next_line);
         fprintf(f, "%d ite 6 %d %d %d mem_sw\n", next_line + 2, command_check_loc + 17, sw_mem, next_line + 1);
         fprintf(f, "%d ite 6 %d %d %d mem_sd\n", next_line + 3, command_check_loc + 36, sd_mem, next_line + 2);
-        fprintf(f, "%d next %d %d memory_new\n", next_line + 4, memory_loc, next_line + 3);
+        fprintf(f, "%d next 6 %d %d memory_new\n", next_line + 4, memory_loc, next_line + 3);
         next_line += 5;
 
         return next_line;
