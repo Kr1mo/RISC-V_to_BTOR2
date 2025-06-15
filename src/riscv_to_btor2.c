@@ -6,6 +6,7 @@
 #include <string.h>
 
 #define BTOR_MEMORY_SIZE 8 // Should be raised to 16 or 32 in future
+#define COUNTERLIMIT 10
 
 int btor_constants(FILE *f) { // This sadly grew as-needed
   fprintf(f, "; Basics\n");
@@ -39,7 +40,7 @@ int btor_counter(FILE *f, int next_line) {
   fprintf(f, "%d init 4 %d %d\n", next_line + 3, next_line, next_line + 1);
   fprintf(f, "%d add 4 %d %d\n", next_line + 4, next_line, next_line + 2);
   fprintf(f, "%d next 4 %d %d /n", next_line + 5, next_line, next_line + 4);
-  return next_line + 2; // Next line number
+  return next_line + 6; // Next line number
 }
 
 int btor_register_consts(FILE *f, int next_line, state *s) {
@@ -124,6 +125,7 @@ int btor_memory(
   free(addresses);
   return next_line;
 }
+
 int btor_get_current_command(FILE *f, int next_line, int registers,
                              int memory) {
   fprintf(f, ";\n; Get the current command\n");
@@ -312,8 +314,7 @@ int btor_get_immediate(FILE *f, int next_line, int command_loc, int *codes) {
 }
 
 int btor_check_4_all_commands(FILE *f, int next_line, int immediate,
-                              int *codes) {
-  int comp_opcode = immediate - 18; // Attention! Hacky!
+                              int opcode_comp, int *codes) {
   int constants_funct3 = next_line;
   fprintf(f, ";\n; constants for funct3\n");
   for (size_t i = 0; i < 8; i++) {
@@ -354,124 +355,125 @@ int btor_check_4_all_commands(FILE *f, int next_line, int immediate,
 
   fprintf(f, ";\n; Check all commands\n");
   // RV32I
-  fprintf(f, "%d and 1 15 %d\n", next_line + 0, comp_opcode + 6);  // LUI
-  fprintf(f, "%d and 1 15 %d\n", next_line + 1, comp_opcode + 2);  // AUIPC
-  fprintf(f, "%d and 1 15 %d\n", next_line + 2, comp_opcode + 10); // JAL
+  fprintf(f, "%d and 1 15 %d\n", next_line + 0, opcode_comp + 6);  // LUI
+  fprintf(f, "%d and 1 15 %d\n", next_line + 1, opcode_comp + 2);  // AUIPC
+  fprintf(f, "%d and 1 15 %d\n", next_line + 2, opcode_comp + 10); // JAL
   fprintf(f, "%d and 1 %d %d\n", next_line + 3, comp_funct3 + 0,
-          comp_opcode + 9); // JALR
+          opcode_comp + 9); // JALR
 
   fprintf(f, "%d and 1 %d %d\n", next_line + 4, comp_funct3 + 0,
-          comp_opcode + 8); // BEQ
+          opcode_comp + 8); // BEQ
   fprintf(f, "%d and 1 %d %d\n", next_line + 5, comp_funct3 + 1,
-          comp_opcode + 8); // BNE
+          opcode_comp + 8); // BNE
   fprintf(f, "%d and 1 %d %d\n", next_line + 6, comp_funct3 + 4,
-          comp_opcode + 8); // BLT
+          opcode_comp + 8); // BLT
   fprintf(f, "%d and 1 %d %d\n", next_line + 7, comp_funct3 + 5,
-          comp_opcode + 8); // BGE
+          opcode_comp + 8); // BGE
   fprintf(f, "%d and 1 %d %d\n", next_line + 8, comp_funct3 + 6,
-          comp_opcode + 8); // BLTU
+          opcode_comp + 8); // BLTU
   fprintf(f, "%d and 1 %d %d\n", next_line + 9, comp_funct3 + 7,
-          comp_opcode + 8); // BGEU
+          opcode_comp + 8); // BGEU
 
   fprintf(f, "%d and 1 %d %d\n", next_line + 10, comp_funct3 + 0,
-          comp_opcode + 0); // LB
+          opcode_comp + 0); // LB
   fprintf(f, "%d and 1 %d %d\n", next_line + 11, comp_funct3 + 1,
-          comp_opcode + 0); // LH
+          opcode_comp + 0); // LH
   fprintf(f, "%d and 1 %d %d\n", next_line + 12, comp_funct3 + 2,
-          comp_opcode + 0); // LW
+          opcode_comp + 0); // LW
   // LD comes in RV64I
   fprintf(f, "%d and 1 %d %d\n", next_line + 13, comp_funct3 + 4,
-          comp_opcode + 0); // LBU
+          opcode_comp + 0); // LBU
   fprintf(f, "%d and 1 %d %d\n", next_line + 14, comp_funct3 + 5,
-          comp_opcode + 0); // LHU
+          opcode_comp + 0); // LHU
   // LWU comes in RV64I
 
   fprintf(f, "%d and 1 %d %d\n", next_line + 15, comp_funct3 + 0,
-          comp_opcode + 4); // SB
+          opcode_comp + 4); // SB
   fprintf(f, "%d and 1 %d %d\n", next_line + 16, comp_funct3 + 1,
-          comp_opcode + 4); // SH
+          opcode_comp + 4); // SH
   fprintf(f, "%d and 1 %d %d\n", next_line + 17, comp_funct3 + 2,
-          comp_opcode + 4); // SW
+          opcode_comp + 4); // SW
   // SD comes in RV64I
 
   fprintf(f, "%d and 1 %d %d\n", next_line + 18, comp_funct3 + 0,
-          comp_opcode + 1); // ADDI
+          opcode_comp + 1); // ADDI
   // SUBI doesnt exist
   // SLLI is overwritten by RV64I
   fprintf(f, "%d and 1 %d %d\n", next_line + 19, comp_funct3 + 2,
-          comp_opcode + 1); // SLTI
+          opcode_comp + 1); // SLTI
   fprintf(f, "%d and 1 %d %d\n", next_line + 20, comp_funct3 + 3,
-          comp_opcode + 1); // SLTIU
+          opcode_comp + 1); // SLTIU
   fprintf(f, "%d and 1 %d %d\n", next_line + 21, comp_funct3 + 4,
-          comp_opcode + 1); // XORI
+          opcode_comp + 1); // XORI
   // SRLI is overwritten by RV64I
   // SRAI is overwritten by RV64I
   fprintf(f, "%d and 1 %d %d\n", next_line + 22, comp_funct3 + 6,
-          comp_opcode + 1); // ORI
+          opcode_comp + 1); // ORI
   fprintf(f, "%d and 1 %d %d\n", next_line + 23, comp_funct3 + 7,
-          comp_opcode + 1); // ANDI
+          opcode_comp + 1); // ANDI
 
   fprintf(f, "%d and 1 %d %d\n", next_line + 24, pre_comp + 2,
-          comp_opcode + 5); // ADD; S(L|R)(L|A)I is overwritten by RV64I
+          opcode_comp + 5); // ADD; S(L|R)(L|A)I is overwritten by RV64I
   fprintf(f, "%d and 1 %d %d\n", next_line + 25, pre_comp + 3,
-          comp_opcode + 5); // SUB
+          opcode_comp + 5); // SUB
   fprintf(f, "%d and 1 %d %d\n", next_line + 26, comp_funct3 + 1,
-          comp_opcode + 5); // SLL
+          opcode_comp + 5); // SLL
   fprintf(f, "%d and 1 %d %d\n", next_line + 27, comp_funct3 + 2,
-          comp_opcode + 5); // SLT
+          opcode_comp + 5); // SLT
   fprintf(f, "%d and 1 %d %d\n", next_line + 28, comp_funct3 + 3,
-          comp_opcode + 5); // SLTU
+          opcode_comp + 5); // SLTU
   fprintf(f, "%d and 1 %d %d\n", next_line + 29, comp_funct3 + 4,
-          comp_opcode + 5); // XOR
+          opcode_comp + 5); // XOR
   fprintf(f, "%d and 1 %d %d\n", next_line + 30, pre_comp + 0,
-          comp_opcode + 5); // SRL
+          opcode_comp + 5); // SRL
   fprintf(f, "%d and 1 %d %d\n", next_line + 31, pre_comp + 1,
-          comp_opcode + 5); // SRA
+          opcode_comp + 5); // SRA
   fprintf(f, "%d and 1 %d %d\n", next_line + 32, comp_funct3 + 6,
-          comp_opcode + 5); // OR
+          opcode_comp + 5); // OR
   fprintf(f, "%d and 1 %d %d\n", next_line + 33, comp_funct3 + 7,
-          comp_opcode + 5); // AND
+          opcode_comp + 5); // AND
 
   // RV64I
   fprintf(f, "%d and 1 %d %d\n", next_line + 34, comp_funct3 + 6,
-          comp_opcode + 0); // LWU
+          opcode_comp + 0); // LWU
   fprintf(f, "%d and 1 %d %d\n", next_line + 35, comp_funct3 + 3,
-          comp_opcode + 0); // LD
+          opcode_comp + 0); // LD
 
   fprintf(f, "%d and 1 %d %d\n", next_line + 36, comp_funct3 + 3,
-          comp_opcode + 4); // SD
+          opcode_comp + 4); // SD
 
   fprintf(f, "%d and 1 %d %d\n", next_line + 37, comp_funct3 + 1,
-          comp_opcode + 1); // SLLI
+          opcode_comp + 1); // SLLI
   fprintf(f, "%d and 1 %d %d\n", next_line + 38, pre_comp + 0,
-          comp_opcode + 1); // SRLI
+          opcode_comp + 1); // SRLI
   fprintf(f, "%d and 1 %d %d\n", next_line + 39, pre_comp + 1,
-          comp_opcode + 1); // SRAI
+          opcode_comp + 1); // SRAI
 
   fprintf(f, "%d and 1 %d %d\n", next_line + 40, comp_funct3 + 0,
-          comp_opcode + 3); // ADDIW
+          opcode_comp + 3); // ADDIW
   fprintf(f, "%d and 1 %d %d\n", next_line + 41, comp_funct3 + 1,
-          comp_opcode + 3); // SLLIW
+          opcode_comp + 3); // SLLIW
   fprintf(f, "%d and 1 %d %d\n", next_line + 42, pre_comp + 2,
-          comp_opcode + 3); // SRLIW
+          opcode_comp + 3); // SRLIW
   fprintf(f, "%d and 1 %d %d\n", next_line + 43, pre_comp + 3,
-          comp_opcode + 3); // SRAIW
+          opcode_comp + 3); // SRAIW
 
   fprintf(f, "%d and 1 %d %d\n", next_line + 44, pre_comp + 2,
-          comp_opcode + 7); // ADDW
+          opcode_comp + 7); // ADDW
   fprintf(f, "%d and 1 %d %d\n", next_line + 45, pre_comp + 3,
-          comp_opcode + 7); // SUBW
+          opcode_comp + 7); // SUBW
   fprintf(f, "%d and 1 %d %d\n", next_line + 46, comp_funct3 + 0,
-          comp_opcode + 7); // SLLW
+          opcode_comp + 7); // SLLW
   fprintf(f, "%d and 1 %d %d\n", next_line + 47, pre_comp + 0,
-          comp_opcode + 7); // SRLW
+          opcode_comp + 7); // SRLW
   fprintf(f, "%d and 1 %d %d\n", next_line + 48, pre_comp + 1,
-          comp_opcode + 7); // SRAW
+          opcode_comp + 7); // SRAW
   return next_line + 49;
 }
 
 int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
-                 int command_check_loc, int immediate_loc, int *codes) {
+                 int command_check_loc, int immediate_loc, int opcode_comp,
+                 int *codes) {
   fprintf(f, ";\n; Next Functions for Registers and Memory\n");
   int comparison_constants_loc = next_line;
   fprintf(f, "; Get rs1, rs2 values\n");
@@ -991,11 +993,78 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
           next_line + 3);
   next_line += 5;
 
+  fprintf(f, ";\n; Some little helpers for bad command detection\n");
+  fprintf(f, "; misaligned instruction fetch error\n");
+  fprintf(f, "%d constd 2 2\n", next_line);
+  fprintf(f, "%d and 2 %d %d\n", next_line + 1, next_line, jal_pc);
+  fprintf(f, "%d and 2 %d %d\n", next_line + 2, next_line, jalr_pc);
+  fprintf(f, "%d or 2 %d %d\n", next_line + 3, next_line + 2,
+          next_line + 3); // not 0 if jal or jalr is misaligned
+  int jal_jalr_combination = next_line + 3;
+  next_line += 4;
+
+  fprintf(f, "; load to x0 error\n");
+  fprintf(f, "%d eq 1 %d %d\n", next_line, rd_code_ext,
+          comparison_constants_loc + 0); // x0 is not allowed to be rd
+  int rd_x0_check = next_line;
+  next_line++;
+
+  fprintf(f, "%d eq 1 %d %d no_misaligned_fetch\n", next_line,
+          jal_jalr_combination, pc_consts_loc + 2); // no error
+  fprintf(f, "%d or 1 -%d -%d no_load2x0\n", next_line + 1, rd_x0_check,
+          opcode_comp); // no error if not load or not rd = x0
+  next_line += 2;
+
   return next_line;
+}
+
+int btor_bad_counter(FILE *f, int next_line, int counter_loc,
+                     int counterlimit) {
+  fprintf(f, "%d constd 5 %d\n", next_line, counterlimit);
+  fprintf(f, "%d eq 1 %d %d\n", next_line + 1, counter_loc,
+          next_line); // Check if counter is equal to limit
+  fprintf(f, "%d bad %d counter_maxed\n", next_line + 2, next_line + 1);
+  return next_line + 3;
+}
+int btor_bad_command(FILE *f, int next_line, int command_loc, int opcode_comp,
+                     int badstate_pretest) {
+  fprintf(f, "%d or 1 %d %d\n", next_line, opcode_comp, opcode_comp + 1);
+  next_line++;
+  for (int i = 2; i < 11; i++) {
+    fprintf(f, "%d or 1 %d %d\n", next_line, opcode_comp + i, next_line - 1);
+    next_line++;
+  }
+  int opcode_test_loc = next_line - 1;
+  fprintf(f, "%d bad -%d unknown_opcode\n", next_line,
+          next_line - 1); // bad if no recognised opcode is found
+  next_line++;
+
+  fprintf(f, "%d or 1 %d %d\n", next_line, command_loc, command_loc + 1);
+  next_line++;
+  for (int i = 2; i < 49; i++) {
+    fprintf(f, "%d or 1 %d %d\n", next_line, command_loc + i, next_line - 1);
+    next_line++;
+  }
+  fprintf(f, "%d and 1 %d -%d\n", next_line, next_line - 1,
+          opcode_test_loc); // bad if no recognised command is found
+  fprintf(f, "%d bad %d error_in_command(guess_funct3)\n", next_line + 1,
+          next_line);
+
+  next_line += 2;
+
+  fprintf(f, "%d bad -%d misaligned_instruction_fetch_ERROR\n", next_line,
+          badstate_pretest); // bad if pretest is false
+  next_line++;
+
+  fprintf(f, "%d bad -%d load_to_x0_ERROR\n", next_line,
+          badstate_pretest + 1); // bad if rd is x0
 }
 
 void relational_btor(FILE *f, state *s) {
   int next_line = btor_constants(f);
+
+  next_line = btor_counter(f, next_line);
+  int counter_loc = next_line - 1;
 
   int reg_const_loc = next_line;
   next_line = btor_register_consts(f, next_line, s);
@@ -1025,12 +1094,19 @@ void relational_btor(FILE *f, state *s) {
 
   next_line = btor_get_immediate(f, next_line, command, codes);
   int immediate = next_line - 1; // immediate
+  int opcode_comp = immediate - 18;
 
-  next_line = btor_check_4_all_commands(f, next_line, immediate, codes);
+  next_line =
+      btor_check_4_all_commands(f, next_line, immediate, opcode_comp, codes);
   int command_check_loc = next_line - 49;
 
   next_line = btor_updates(f, next_line, registers, memory, command_check_loc,
-                           immediate, codes);
+                           immediate, opcode_comp, codes);
+  int update_loc = next_line - 2;
+  next_line = btor_bad_counter(f, next_line, counter_loc, COUNTERLIMIT);
+
+  next_line = btor_bad_command(f, next_line, command_check_loc, opcode_comp,
+                               update_loc);
 }
 
 int main(int argc, char const *argv[]) {
