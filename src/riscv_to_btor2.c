@@ -32,14 +32,14 @@ int btor_constants(FILE *f) { // This sadly grew as-needed
 }
 int btor_counter(FILE *f, int next_line) {
   fprintf(f, ";\n; Counter for executed commands\n");
+  fprintf(f, "%d zero 4\n", next_line);    // Initial value of the counter
+  fprintf(f, "%d one 4\n", next_line + 1); // Constant one
   fprintf(f, "%d state 4 command_counter\n",
-          next_line); // with 32bit this falls out of line. This is wanted
-                      // behaviour because this is not part of risc-v
-  fprintf(f, "%d zero 4\n", next_line + 1); // Initial value of the counter
-  fprintf(f, "%d one 4\n", next_line + 2);  // Constant one
-  fprintf(f, "%d init 4 %d %d\n", next_line + 3, next_line, next_line + 1);
-  fprintf(f, "%d add 4 %d %d\n", next_line + 4, next_line, next_line + 2);
-  fprintf(f, "%d next 4 %d %d /n", next_line + 5, next_line, next_line + 4);
+          next_line + 2); // with 32bit this falls out of line. This is wanted
+                          // behaviour because this is not part of risc-v
+  fprintf(f, "%d init 4 %d %d\n", next_line + 3, next_line + 2, next_line);
+  fprintf(f, "%d add 4 %d %d\n", next_line + 4, next_line + 1, next_line + 2);
+  fprintf(f, "%d next 4 %d %d /n", next_line + 5, next_line + 2, next_line + 4);
   return next_line + 6; // Next line number
 }
 
@@ -313,8 +313,8 @@ int btor_get_immediate(FILE *f, int next_line, int command_loc, int *codes) {
   return next_line + 65;
 }
 
-int btor_check_4_all_commands(FILE *f, int next_line, int immediate,
-                              int opcode_comp, int *codes) {
+int btor_check_4_all_commands(FILE *f, int next_line, int opcode_comp,
+                              int *codes) {
   int constants_funct3 = next_line;
   fprintf(f, ";\n; constants for funct3\n");
   for (size_t i = 0; i < 8; i++) {
@@ -334,9 +334,10 @@ int btor_check_4_all_commands(FILE *f, int next_line, int immediate,
   }
 
   fprintf(f, ";\n; Compare current funct7\n");
-  fprintf(f, "%d and 4 %d %d\n", next_line, codes[5], constant_funct7);
-  fprintf(f, "%d eq 1 %d %d funct7bit_not_set\n", next_line + 1,
-          constants_funct3, next_line);
+  fprintf(f, "%d and 4 %d %d\n", next_line, codes[5],
+          constant_funct7); // and bitwise
+  fprintf(f, "%d eq 1 %d %d funct7bit_set\n", next_line + 1, constant_funct7,
+          next_line); // still the same -> funct7 bit set
   next_line += 2;
   int comp_funct7 = next_line - 1;
 
@@ -542,7 +543,7 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   fprintf(f, "%d uext 5 %d %d\n", next_line + 1, register_loc + 32,
           64 - BTOR_MEMORY_SIZE); // Sign extend PC
   fprintf(f, "%d add 5 %d %d\n", next_line + 2, next_line + 1, next_line);
-  int jal_rd = next_line + 1;
+  int jal_rd = next_line + 2;
   next_line += 3;
 
   fprintf(f, "%d add 5 %d %d\n", next_line, rs1_val_loc, lui_rd);
@@ -998,8 +999,8 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   fprintf(f, "%d constd 2 2\n", next_line);
   fprintf(f, "%d and 2 %d %d\n", next_line + 1, next_line, jal_pc);
   fprintf(f, "%d and 2 %d %d\n", next_line + 2, next_line, jalr_pc);
-  fprintf(f, "%d or 2 %d %d\n", next_line + 3, next_line + 2,
-          next_line + 3); // not 0 if jal or jalr is misaligned
+  fprintf(f, "%d or 2 %d %d\n", next_line + 3, next_line + 1,
+          next_line + 2); // not 0 if jal or jalr is misaligned
   int jal_jalr_combination = next_line + 3;
   next_line += 4;
 
@@ -1008,7 +1009,7 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
           comparison_constants_loc + 0); // x0 is not allowed to be rd
   int rd_x0_check = next_line;
   next_line++;
-
+  fprintf(f, ";\n");
   fprintf(f, "%d eq 1 %d %d no_misaligned_fetch\n", next_line,
           jal_jalr_combination, pc_consts_loc + 2); // no error
   fprintf(f, "%d or 1 -%d -%d no_load2x0\n", next_line + 1, rd_x0_check,
@@ -1020,7 +1021,8 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
 
 int btor_bad_counter(FILE *f, int next_line, int counter_loc,
                      int counterlimit) {
-  fprintf(f, "%d constd 5 %d\n", next_line, counterlimit);
+  fprintf(f, ";\n; Bad counter\n");
+  fprintf(f, "%d constd 4 %d\n", next_line, counterlimit);
   fprintf(f, "%d eq 1 %d %d\n", next_line + 1, counter_loc,
           next_line); // Check if counter is equal to limit
   fprintf(f, "%d bad %d counter_maxed\n", next_line + 2, next_line + 1);
@@ -1028,6 +1030,7 @@ int btor_bad_counter(FILE *f, int next_line, int counter_loc,
 }
 int btor_bad_command(FILE *f, int next_line, int command_loc, int opcode_comp,
                      int badstate_pretest) {
+  fprintf(f, ";\n; Bad opcode\n");
   fprintf(f, "%d or 1 %d %d\n", next_line, opcode_comp, opcode_comp + 1);
   next_line++;
   for (int i = 2; i < 11; i++) {
@@ -1039,6 +1042,7 @@ int btor_bad_command(FILE *f, int next_line, int command_loc, int opcode_comp,
           next_line - 1); // bad if no recognised opcode is found
   next_line++;
 
+  fprintf(f, ";\n; Bad command\n");
   fprintf(f, "%d or 1 %d %d\n", next_line, command_loc, command_loc + 1);
   next_line++;
   for (int i = 2; i < 49; i++) {
@@ -1051,20 +1055,25 @@ int btor_bad_command(FILE *f, int next_line, int command_loc, int opcode_comp,
           next_line);
 
   next_line += 2;
+  fprintf(f, ";\n; Bad jump alignment\n");
 
   fprintf(f, "%d bad -%d misaligned_instruction_fetch_ERROR\n", next_line,
           badstate_pretest); // bad if pretest is false
   next_line++;
 
+  fprintf(f, ";\n; Bad load (to x0)\n");
   fprintf(f, "%d bad -%d load_to_x0_ERROR\n", next_line,
           badstate_pretest + 1); // bad if rd is x0
+
+  return next_line + 1;
 }
 
 void relational_btor(FILE *f, state *s) {
   int next_line = btor_constants(f);
 
+  int counter_loc =
+      next_line + 2; // there are two needed constants before the state
   next_line = btor_counter(f, next_line);
-  int counter_loc = next_line - 1;
 
   int reg_const_loc = next_line;
   next_line = btor_register_consts(f, next_line, s);
@@ -1096,17 +1105,17 @@ void relational_btor(FILE *f, state *s) {
   int immediate = next_line - 1; // immediate
   int opcode_comp = immediate - 18;
 
-  next_line =
-      btor_check_4_all_commands(f, next_line, immediate, opcode_comp, codes);
+  next_line = btor_check_4_all_commands(f, next_line, opcode_comp, codes);
   int command_check_loc = next_line - 49;
 
   next_line = btor_updates(f, next_line, registers, memory, command_check_loc,
                            immediate, opcode_comp, codes);
   int update_loc = next_line - 2;
-  next_line = btor_bad_counter(f, next_line, counter_loc, COUNTERLIMIT);
 
   next_line = btor_bad_command(f, next_line, command_check_loc, opcode_comp,
                                update_loc);
+
+  next_line = btor_bad_counter(f, next_line, counter_loc, COUNTERLIMIT);
 }
 
 int main(int argc, char const *argv[]) {
