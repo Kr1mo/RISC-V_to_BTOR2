@@ -10,10 +10,13 @@ OBJ_DIR = obj
 # Files
 SOURCES = $(wildcard $(SRC_DIR)/*.c)
 OBJECTS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SOURCES))
-EXECUTABLE = $(BIN_DIR)/riscv_to_btor2
+RISCV2BTOR2 = $(BIN_DIR)/riscv_to_btor2
+RESTATE = $(BIN_DIR)/restate_witness
+
+EXECUTABLE = $(RISCV2BTOR2) $(RESTATE)
 
 # Targets
-all: $(EXECUTABLE)
+all: format $(RISCV2BTOR2) $(RESTATE)
 
 $(EXECUTABLE): $(OBJECTS)
 	@mkdir -p $(BIN_DIR)
@@ -32,4 +35,4 @@ style-check:
 format:
 	clang-format -i $(SOURCES)
 
-.PHONY: all clean
+.PHONY: all clean format style-check

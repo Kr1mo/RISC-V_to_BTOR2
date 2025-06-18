@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #define BTOR_MEMORY_SIZE 8 // Should be raised to 16 or 32 in future
 #define COUNTERLIMIT 10
@@ -1068,7 +1069,7 @@ int btor_bad_command(FILE *f, int next_line, int command_loc, int opcode_comp,
   return next_line + 1;
 }
 
-void relational_btor(FILE *f, state *s) {
+void relational_btor(FILE *f, state *s, int iterations) {
   int next_line = btor_constants(f);
 
   int counter_loc =
@@ -1115,28 +1116,98 @@ void relational_btor(FILE *f, state *s) {
   next_line = btor_bad_command(f, next_line, command_check_loc, opcode_comp,
                                update_loc);
 
-  next_line = btor_bad_counter(f, next_line, counter_loc, COUNTERLIMIT);
+  next_line = btor_bad_counter(f, next_line, counter_loc, iterations);
 }
 
-int main(int argc, char const *argv[]) {
+int main(int argc, char *argv[]) {
+
+  char *source;
+  char *target = "output.btor2";
+  int iterations = 1;
+  bool to_stdout = false;
+
+  FILE *f;
+
+  int opt;
+
+  while ((opt = getopt(argc, argv, "o:i:t")) != -1) {
+    switch (opt) {
+    case 'o':
+      target = optarg;
+      break;
+    case 'i':
+      iterations = atoi(optarg);
+      break;
+    case 't':
+      to_stdout = true;
+      break;
+    case '?':
+      if (optopt == 'o' || optopt == 'i') {
+        fprintf(stderr, "Option -%c requires an argument.\n", optopt);
+      } else {
+        fprintf(stderr, "Unknown option `-%c`.\n", optopt);
+      }
+      return 1;
+
+    default:
+      fprintf(stderr,
+              "Usage: %s [-s <source>] [-o <target>] [-i <iterations>] "
+              "<sourcefile>.state\n",
+              argv[0]);
+      return 1;
+    }
+  }
+  if (optind >= argc) {
+    printf("Expected path to state file after options\n");
+    return 1;
+  }
+  char *source_file_extension = strrchr(argv[optind], '.');
+  if (!source_file_extension) {
+    printf("No file extension for initial state\n");
+    return 1;
+  }
+  if (strcmp(source_file_extension, ".state")) { // file extension is NOT .state
+    printf("Wrong file extension for initial state, expected .state, got %s\n",
+           source_file_extension);
+    return 1;
+  }
+  source = argv[optind];
+
   state *s = create_new_state();
+
   if (s == NULL) {
     fprintf(stderr, "Failed to create new state.\n");
     return 1;
   }
-  if (argc < 2) {
-    fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
-    kill_state(s);
-    return 1;
-  }
-  if (!load_state((char *)argv[1], s)) {
+
+  if (!load_state(source, s)) {
     fprintf(stderr, "Failed to load state from file: %s\n", argv[1]);
     kill_state(s);
     return 1;
   }
-  FILE *f = fopen("output.btor2", "w");
 
-  relational_btor(f, s);
+  if (!to_stdout) {
+    // Check if target file has .btor2 extension
+    char *target_file_extension = strrchr(target, '.');
+    if (!target_file_extension) {
+      target = strcat(target, ".btor2");
+    } else if (strcmp(target_file_extension, ".btor2") != 0) {
+      fprintf(stderr, "Output file must have .btor2 extension.\n");
+      kill_state(s);
+      return 1;
+    }
+    // Open the target file for writing
+    f = fopen(target, "w");
+    if (!f) {
+      fprintf(stderr, "Failed to open output file: %s\n", target);
+      kill_state(s);
+      return 1;
+    }
+  } else {
+    f = stdout;
+  }
+
+  relational_btor(f, s, iterations);
 
   kill_state(s);
   fclose(f);
