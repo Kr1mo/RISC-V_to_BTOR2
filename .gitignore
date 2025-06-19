@@ -10,6 +10,9 @@ bin/*
 # Exclude state files
 *.state
 
+# Exclude temporary files
+*.tmp
+
 # Exclude BTOR2 files
 *.btor2
 

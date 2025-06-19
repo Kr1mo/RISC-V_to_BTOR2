@@ -1,4 +1,4 @@
-#include "./state.h"
+#include "./utils/state.h"
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -7,7 +7,6 @@
 #include <unistd.h>
 
 #define BTOR_MEMORY_SIZE 8 // Should be raised to 16 or 32 in future
-#define COUNTERLIMIT 10
 
 int btor_constants(FILE *f) { // This sadly grew as-needed
   fprintf(f, "; Basics\n");
@@ -35,7 +34,7 @@ int btor_counter(FILE *f, int next_line) {
   fprintf(f, ";\n; Counter for executed commands\n");
   fprintf(f, "%d zero 4\n", next_line);    // Initial value of the counter
   fprintf(f, "%d one 4\n", next_line + 1); // Constant one
-  fprintf(f, "%d state 4 command_counter\n",
+  fprintf(f, "%d state 4 iterations_counter\n",
           next_line + 2); // with 32bit this falls out of line. This is wanted
                           // behaviour because this is not part of risc-v
   fprintf(f, "%d init 4 %d %d\n", next_line + 3, next_line + 2, next_line);
@@ -1122,7 +1121,8 @@ void relational_btor(FILE *f, state *s, int iterations) {
 int main(int argc, char *argv[]) {
 
   char *source;
-  char *target = "output.btor2";
+  char *target = malloc(13 * sizeof(char)); // size of default target file name
+  strcpy(target, "output.btor2");
   int iterations = 1;
   bool to_stdout = false;
 
@@ -1130,15 +1130,20 @@ int main(int argc, char *argv[]) {
 
   int opt;
 
-  while ((opt = getopt(argc, argv, "o:i:t")) != -1) {
+  while ((opt = getopt(argc, argv, "o:n:p")) != -1) {
     switch (opt) {
-    case 'o':
-      target = optarg;
+    case 'o':                                       // output file
+      target = realloc(target, strlen(optarg) + 1); // +1 for null terminator
+      if (!target) {
+        fprintf(stderr, "Memory allocation failed for target file name.\n");
+        return 1;
+      }
+      strcpy(target, optarg);
       break;
-    case 'i':
+    case 'n': // iterations
       iterations = atoi(optarg);
       break;
-    case 't':
+    case 'p': // print
       to_stdout = true;
       break;
     case '?':
@@ -1151,7 +1156,7 @@ int main(int argc, char *argv[]) {
 
     default:
       fprintf(stderr,
-              "Usage: %s [-s <source>] [-o <target>] [-i <iterations>] "
+              "Usage: %s [-o <target>] [-n <iterations>] [-p]"
               "<sourcefile>.state\n",
               argv[0]);
       return 1;
@@ -1190,9 +1195,17 @@ int main(int argc, char *argv[]) {
     // Check if target file has .btor2 extension
     char *target_file_extension = strrchr(target, '.');
     if (!target_file_extension) {
-      target = strcat(target, ".btor2");
+      // If no extension, append .btor2
+      target = realloc(target, strlen(target) + 7); // 7 for ".btor2"
+      if (!target) {
+        fprintf(stderr, "Memory allocation failed for target file name.\n");
+        kill_state(s);
+        return 1;
+      }
+      strcat(target, ".btor2");
     } else if (strcmp(target_file_extension, ".btor2") != 0) {
       fprintf(stderr, "Output file must have .btor2 extension.\n");
+      free(target);
       kill_state(s);
       return 1;
     }
@@ -1206,10 +1219,10 @@ int main(int argc, char *argv[]) {
   } else {
     f = stdout;
   }
-
   relational_btor(f, s, iterations);
 
   kill_state(s);
   fclose(f);
+  free(target);
   return 0;
 }

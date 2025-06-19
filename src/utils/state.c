@@ -406,3 +406,63 @@ bool kill_state(state *s) {
 
   return true;
 }
+
+bool echo_and_kill_state(state *s, FILE *end_state) {
+  fprintf(end_state, "REGISTERS:\n");
+  fprintf(end_state, "PC:%lx\n", s->pc);
+  for (size_t i = 0; i < 32; i++) {
+    if (s->regs_init[i]) {
+      fprintf(end_state, "x%ld:%lx\n", i, s->regs_values[i]);
+    }
+  }
+  fprintf(end_state, "\nMEMORY:\n");
+  uint64_t *addresses = get_initialised_adresses(s->memory);
+  uint64_t n_printed_values = 0;
+  bool space = false;
+
+  while (n_printed_values < addresses[0]) // As log as not all values to the
+                                          // corresponding addresses are printed
+  {
+    fprintf(end_state, "%lx: ", addresses[n_printed_values + 1]);
+    space = false;
+    uint8_t chain = 0;
+    for (size_t i = 0; i < 8; i++) {
+      if (i == addresses[n_printed_values + i + 1] -
+                   addresses[n_printed_values + 1]) {
+        chain++;
+      } else {
+        break;
+      }
+    }
+
+    if (chain == 3) // If chain is no power of 2, change this.
+    {
+      chain = 2;
+    } else if (4 < chain && chain < 8) {
+      chain = 4;
+    }
+
+    char hex_str[3];
+    hex_str[2] = '\0';
+    for (int j = chain; j > 0;
+         j--) { // j for address calculation seems 1 to big, but with this a +1
+                // in the next line is not needed.
+      byte_to_hex(hex_str, get_byte(s, addresses[n_printed_values + j]));
+      fprintf(end_state, "%s", hex_str);
+      if (space) {
+        fprintf(end_state, " ");
+        space = false;
+      } else {
+        space = true;
+      }
+    }
+
+    fprintf(end_state, "\n");
+    n_printed_values += chain;
+  }
+  free(addresses);
+  kill_memory_table(s->memory);
+  free(s);
+
+  return true;
+}

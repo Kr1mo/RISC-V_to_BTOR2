@@ -1,6 +1,7 @@
 #include "./memory_table.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #ifndef STATE
 #define STATE
@@ -42,5 +43,7 @@ state *create_new_state();
 bool load_state(char *filename, state *s);
 
 bool kill_state(state *s);
+
+bool echo_and_kill_state(state *s, FILE *target);
 
 #endif // STATE
