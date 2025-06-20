@@ -43,6 +43,26 @@ int btor_counter(FILE *f, int next_line) {
   return next_line + 6; // Next line number
 }
 
+int btor_register_initialisation_flags(FILE *f, int next_line, state *s) {
+  fprintf(f, ";\n; Define Register Initialisation flags\n");
+  int reg_flags_loc = next_line;
+  for (uint8_t i = 0; i < 32; i++) {
+    fprintf(f, "%d state 1 flag_x%d\n", next_line, i);
+    next_line++;
+  }
+  for (uint8_t i = 0; i < 32; i++) {
+    if (is_register_initialised(s, i)) {
+      fprintf(f, "%d init 1 %d 15\n", next_line,
+              reg_flags_loc + i); // 15 is true
+    } else {
+      fprintf(f, "%d init 1 %d 16\n", next_line,
+              reg_flags_loc + i); // 16 is false
+    }
+    next_line++;
+  }
+  return next_line;
+}
+
 int btor_register_consts(FILE *f, int next_line, state *s) {
   fprintf(f, ";\n; Define Register Constants\n");
   for (size_t i = 0; i < 32; i++) {
@@ -55,6 +75,7 @@ int btor_register_consts(FILE *f, int next_line, state *s) {
           s->pc % (int)pow(2, BTOR_MEMORY_SIZE));
   return next_line + 1;
 }
+
 int btor_registers(FILE *f, int next_line, int reg_const_loc, state *s) {
   fprintf(f, ";\n; Define Registers\n");
   int reg_state_loc = next_line;
@@ -474,7 +495,7 @@ int btor_check_4_all_commands(FILE *f, int next_line, int opcode_comp,
 
 int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
                  int command_check_loc, int immediate_loc, int opcode_comp,
-                 int *codes) {
+                 int *codes, int reg_init_flag_loc) {
   fprintf(f, ";\n; Next Functions for Registers and Memory\n");
   int comparison_constants_loc = next_line;
   fprintf(f, "; Get rs1, rs2 values\n");
@@ -852,6 +873,10 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   fprintf(f, "%d next 5 %d %d x0_new\n", next_line, register_loc + 0,
           register_loc + 0);
   next_line++;
+  fprintf(f, "; Update x0 flag\n");
+  fprintf(f, "%d next 1 %d 15 x0_always_initialised\n", next_line,
+          reg_init_flag_loc);
+  next_line++;
   for (size_t i = 1; i < 32; i++) {
     fprintf(f, ";\n; Update register x%ld\n", i);
     fprintf(f, "%d eq 1 %ld %d x%ld_is_rd\n", next_line,
@@ -946,7 +971,13 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
             next_line + 39, register_loc + i, i); // check if xi is rd
     fprintf(f, "%d next 5 %ld %d x%ld_new\n", next_line + 41, register_loc + i,
             next_line + 40, i);
-    next_line += 42;
+    fprintf(f, ";Also update init-flag\n");
+    fprintf(f, "%d ite 1 %d 15 %ld\n", next_line + 42, next_line,
+            reg_init_flag_loc + i);
+    fprintf(f, "%d next 1 %ld %d reg_init_flag_new\n", next_line + 43,
+            reg_init_flag_loc + i, next_line + 42);
+
+    next_line += 44;
   }
   fprintf(f, ";\n; Update PC\n");
   fprintf(f, "%d ite 2 %d %d %d pc_beq_decider\n", next_line, beq_check,
@@ -1080,6 +1111,9 @@ void relational_btor(FILE *f, state *s, int iterations) {
   int registers = next_line; // PC is assumed as 32th register
   next_line = btor_registers(f, next_line, reg_const_loc, s);
 
+  int reg_init_flag_loc = next_line;
+  next_line = btor_register_initialisation_flags(f, next_line, s);
+
   next_line = btor_memory(f, next_line, s);
   int memory =
       next_line - 2; // last line is initiation, state is the line before
@@ -1109,7 +1143,7 @@ void relational_btor(FILE *f, state *s, int iterations) {
   int command_check_loc = next_line - 49;
 
   next_line = btor_updates(f, next_line, registers, memory, command_check_loc,
-                           immediate, opcode_comp, codes);
+                           immediate, opcode_comp, codes, reg_init_flag_loc);
   int update_loc = next_line - 2;
 
   next_line = btor_bad_command(f, next_line, command_check_loc, opcode_comp,

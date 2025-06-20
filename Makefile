@@ -45,7 +45,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/utils/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR)
+	rm -rf $(OBJ_DIR) $(BIN_DIR) *.tmp little_scripts/*.state
 
 style-check:
 	clang-tidy $(SRC_DIR)/*.c $(UTILS_SRC) -- -std=c11

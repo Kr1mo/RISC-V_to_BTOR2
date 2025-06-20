@@ -176,6 +176,23 @@ int main(int argc, char *argv[]) {
   }
   set_pc(s, strtol(pc_value_str, NULL, 2)); // Convert binary string to long int
 
+  // Read the initialisation flags
+  for (int i = 0; i < 32; i++) {
+    buff_ptr = fgets(buff, sizeof(buff), witness_file);
+    token = strtok(buff, " "); // ID
+    token = strtok(NULL, " ");
+    if (token == NULL || strlen(token) != 1) { // flags
+      fprintf(stderr,
+              "Invalid state part format. Expected flag "
+              "for x%d, got: %s\n",
+              i, token);
+      close_if_not_std(witness_file);
+      close_if_not_std(target_file);
+      return 1;
+    }
+    s->regs_init[i] = (token[0] == '1'); // Convert to boolean
+  }
+
   // Read memory values
   while (fgets(buff, sizeof(buff), witness_file) != NULL && buff[0] != '@') {
     if (buff[0] == '\n') {
