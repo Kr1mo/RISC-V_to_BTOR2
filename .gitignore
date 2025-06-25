@@ -21,3 +21,8 @@ bin/*
 
 # Exclude output files
 *.out
+
+# Exclude directories diffs generated states and witness
+sh_utils/diffs/
+sh_utils/generated_states/
+sh_utils/witness/

@@ -159,7 +159,7 @@ int main(int argc, char *argv[]) {
       return 1;
     }
     set_register(s, i - 1,
-                 strtol(token, NULL, 2)); // Convert binary string to long int
+                 strtoull(token, NULL, 2)); // Convert binary string to long int
   }
   buff_ptr = fgets(buff, sizeof(buff), witness_file); // This should be pc
   token = strtok(buff, " ");
@@ -248,7 +248,9 @@ int main(int argc, char *argv[]) {
     set_byte(s, address, value);
   }
 
-  echo_and_kill_state(s, target_file); // Write the state to the target file
+  echo_and_kill_state_keep_seed(
+      s, target_file,
+      NULL); // Write the state to the target file. No seed to be kept
 
   // Close files if they are not stdin/stdout
   close_if_not_std(witness_file);

@@ -44,6 +44,7 @@ bool load_state(char *filename, state *s);
 
 bool kill_state(state *s);
 
-bool echo_and_kill_state(state *s, FILE *target);
+bool echo_and_kill_state(state *s, FILE *end_state);
+bool echo_and_kill_state_keep_seed(state *s, FILE *target, uint32_t* seed);
 
 #endif // STATE

@@ -407,8 +407,11 @@ bool kill_state(state *s) {
   return true;
 }
 
-bool echo_and_kill_state(state *s, FILE *end_state) {
+bool echo_and_kill_state_keep_seed(state *s, FILE *end_state, uint32_t *seed) {
   fprintf(end_state, "REGISTERS:\n");
+  if (seed != NULL) {
+    fprintf(end_state, "# seed %u\n", *seed);
+  }
   fprintf(end_state, "PC:%lx\n", s->pc);
   for (size_t i = 0; i < 32; i++) {
     if (s->regs_init[i]) {

@@ -25,7 +25,7 @@ int btor_constants(FILE *f) { // This sadly grew as-needed
   fprintf(f, "11 constd 4 20 shift_rs2\n");
   fprintf(f, "12 constd 4 12 shift_funct3\n");
   fprintf(f, "13 constd 4 25 shift_funct7\n");
-  fprintf(f, "14 one 4 little_helper\n");
+  fprintf(f, "14 one 4 bit_picker\n");
   fprintf(f, "15 one 1 true\n");
   fprintf(f, "16 zero 1 false\n");
   return 17; // Next line number
@@ -111,8 +111,10 @@ int btor_memory(
   int empty_cell = next_line;
   next_line++;
   fprintf(f, "%d state 6 memory_initialzer\n", next_line);
+  fprintf(f, "%d init 6 %d %d\n", next_line + 1, next_line,
+          empty_cell); // Initialise the memory with empty cells
   int memory_initializer = next_line;
-  next_line++;
+  next_line += 2;
   uint64_t *addresses = get_initialised_adresses(s->memory);
 
   for (size_t i = 1; i <= addresses[0]; i++) { // TODO also initialise 0s??
@@ -120,9 +122,7 @@ int btor_memory(
       break; // Only take the first pow(2, BTOR_MEMORY_SIZE) addresses into
              // account
     }
-    if (get_byte(s, addresses[i]) ==
-        0) // If the byte is 0, do not write it to memory
-    {
+    if (get_byte(s, addresses[i]) == 0) {
       fprintf(f, "%d constd 2 %ld\n", next_line,
               addresses[i]); // with previous if-statement, size of addresses[i]
                              // is always smaller than 2^BTOR_MEMORY_SIZE
@@ -140,6 +140,7 @@ int btor_memory(
       next_line += 3;
     }
   }
+
   fprintf(f, "%d state 6 memory\n", next_line);
   fprintf(f, "%d init 6 %d %d\n", next_line + 1, next_line, memory_initializer);
   next_line += 2;
@@ -231,107 +232,137 @@ int btor_get_immediate(FILE *f, int next_line, int command_loc, int *codes) {
   fprintf(f, "%d constd 4 103 jump_r\n", next_line + 9);
   fprintf(f, "%d constd 4 111 jump\n", next_line + 10);
 
+  int opcode_const_loc = next_line;
+  next_line += 11;
+
   fprintf(f, ";\n; Get possible immediate values\n");
-  fprintf(f, "%d sra 4 %d 11 i-immediate\n", next_line + 12, command_loc);
+  fprintf(f, "%d sra 4 %d 11 i-immediate\n", next_line,
+          command_loc); // shift right by 20
+  int i_immediate_loc = next_line;
+  next_line++;
+  ;
 
-  fprintf(f, "%d sra 4 %d 11\n", next_line + 13, command_loc);
-  fprintf(f, "%d and 4 %d -8\n", next_line + 14,
-          next_line + 13); // mask to get i[11:5] of s-type
-  fprintf(f, "%d add 4 %d %d s-immediate\n", next_line + 15, next_line + 14,
-          codes[1]);
+  fprintf(f, "%d sra 4 %d 11\n", next_line, command_loc);
+  fprintf(f, "%d and 4 %d -8\n", next_line + 1,
+          next_line); // mask to remove lower 5 bit to get i[11:5] of s-type
+  fprintf(f, "%d add 4 %d %d s-immediate\n", next_line + 2, next_line + 1,
+          codes[1]); // add rd code as rd is i[4:0]
+  int s_immediate_loc = next_line + 2;
+  next_line += 3;
 
-  fprintf(f, "%d and 4 %d -14 [4:0]\n", next_line + 16,
+  fprintf(f, "%d and 4 %d -14 [4:0]\n", next_line,
           codes[1]); // mask rd to get i[4:1] of b-type
-  fprintf(f, "%d consth 4 3f\n", next_line + 17);
-  fprintf(f, "%d and 4 %d %d\n", next_line + 18, next_line + 17, codes[5]);
-  fprintf(f, "%d constd 4 5\n", next_line + 19);
-  fprintf(f, "%d sll 4 %d %d [10:5]\n", next_line + 20, next_line + 18,
-          next_line + 19);
-  fprintf(f, "%d add 4 %d %d [10:0]\n", next_line + 21, next_line + 20,
-          next_line + 14);
-  fprintf(f, "%d sll 4 14 9\n", next_line + 22);
-  fprintf(f, "%d and 4 %d %d\n", next_line + 23, next_line + 22, codes[1]);
-  fprintf(f, "%d constd 4 4\n", next_line + 24);
-  fprintf(f, "%d sll 4 %d %d [11]\n", next_line + 25, next_line + 23,
-          next_line + 24);
-  fprintf(f, "%d add 4 %d %d [11:0]\n", next_line + 26, next_line + 21,
-          next_line + 25);
-  fprintf(f, "%d sra 4 %d %d [31:12]\n", next_line + 27, command_loc,
-          next_line + 1); // shift right by 19 -> opcode math i
-  fprintf(f, "%d consth 4 fff\n", next_line + 28);
-  fprintf(f, "%d and 4 %d -%d [31:12]\n", next_line + 29, next_line + 27,
-          next_line + 28); // mask to get i[31:12] of u-type
-  fprintf(f, "%d add 4 %d %d b-immediate\n", next_line + 30, next_line + 29,
-          next_line + 27);
+  fprintf(f, "%d consth 4 3f\n", next_line + 1);
+  fprintf(f, "%d and 4 %d %d\n", next_line + 2, next_line + 1,
+          codes[5]); // mask funct7 to lower 6bit get i[10:5] of b-type
+  fprintf(f, "%d constd 4 5\n", next_line + 3);
+  fprintf(f, "%d sll 4 %d %d [10:5]\n", next_line + 4, next_line + 2,
+          next_line + 3); // move to correct place
+  fprintf(f, "%d add 4 %d %d [10:0]\n", next_line + 5, next_line + 4,
+          next_line); // combine
+  fprintf(f, "%d sll 4 14 9\n", next_line + 6);
+  fprintf(f, "%d and 4 %d %d\n", next_line + 7, next_line + 6, command_loc);
+  fprintf(f, "%d constd 4 4\n", next_line + 8);
+  fprintf(f, "%d sll 4 %d %d [11]\n", next_line + 9, next_line + 7,
+          next_line + 8);
+  fprintf(f, "%d add 4 %d %d [11:0]\n", next_line + 10, next_line + 5,
+          next_line + 9); // combine
+  fprintf(f, "%d sra 4 %d %d\n", next_line + 11, command_loc,
+          opcode_const_loc + 1); // shift right by 19 -> opcode math i
+  fprintf(f, "%d consth 4 fff\n", next_line + 12);
+  fprintf(f, "%d and 4 %d -%d [31:12]\n", next_line + 13, next_line + 11,
+          next_line + 12); // mask to get i[31:12] of u-type
+  fprintf(f, "%d add 4 %d %d b-immediate\n", next_line + 14, next_line + 13,
+          next_line + 10);
+  int b_immediate_loc = next_line + 14;
+  next_line += 15;
 
-  fprintf(f, "%d and 4 %d -%d u-immediate\n", next_line + 31, command_loc,
-          next_line + 28);
+  fprintf(f, "%d and 4 %d -%d u-immediate\n", next_line, command_loc,
+          b_immediate_loc - 2); // HACKY! reuse mask from b-type to get u[31:12]
+  int u_immediate_loc = next_line;
+  next_line++;
 
-  fprintf(f, "%d and 4 %d -14 [4:0]\n", next_line + 32, codes[3]);
-  fprintf(f, "%d add 4 %d %d [10:0]\n", next_line + 33, next_line + 32,
-          next_line + 20);
-  fprintf(f, "%d and 4 %d 14\n", next_line + 34, codes[3]);
-  fprintf(f, "%d constd 4 11\n", next_line + 35);
-  fprintf(f, "%d sll 4 %d %d [11]\n", next_line + 36, next_line + 34,
-          next_line + 35);
-  fprintf(f, "%d add 4 %d %d [11:0]\n", next_line + 37, next_line + 33,
-          next_line + 36);
-  fprintf(f, "%d sll 4 %d 12 [14:12]\n", next_line + 38, codes[4]);
-  fprintf(f, "%d add 4 %d %d [14:0]\n", next_line + 39, next_line + 37,
-          next_line + 38);
-  fprintf(f, "%d sll 4 %d 11 [19:15]\n", next_line + 40, codes[2]);
-  fprintf(f, "%d add 4 %d %d [19:0]\n", next_line + 41, next_line + 39,
-          next_line + 40);
-  fprintf(f, "%d consth 4 fffff\n", next_line + 42);
-  fprintf(f, "%d sra 4 %d %d\n", next_line + 43, command_loc, next_line + 42);
-  fprintf(f, "%d and 4 %d -%d [31:20]\n", next_line + 44, next_line + 43,
-          next_line + 42);
-  fprintf(f, "%d add 4 %d %d j-immediate\n", next_line + 45, next_line + 41,
-          next_line + 44);
+  fprintf(f, "%d and 4 %d -14 [4:0]\n", next_line, codes[3]);
+  fprintf(f, "%d add 4 %d %d [10:0]\n", next_line + 1, next_line,
+          b_immediate_loc - 10); // HACKY AF!!! Point on i[10:5] of b-type
+  fprintf(f, "%d and 4 %d 14\n", next_line + 2, codes[3]);
+  fprintf(f, "%d constd 4 11\n", next_line + 3);
+  fprintf(f, "%d sll 4 %d %d [11]\n", next_line + 4, next_line + 2,
+          next_line + 3);
+  fprintf(f, "%d add 4 %d %d [11:0]\n", next_line + 5, next_line + 1,
+          next_line + 4); // combine
+  fprintf(f, "%d sll 4 %d 12 [14:12]\n", next_line + 6,
+          codes[4]); // [14:12] is at funct3
+  fprintf(f, "%d add 4 %d %d [14:0]\n", next_line + 7, next_line + 5,
+          next_line + 6); // combine
+  fprintf(f, "%d sll 4 %d 11 [19:15]\n", next_line + 8,
+          codes[2]); // [19:15] is at rs1
+  fprintf(f, "%d add 4 %d %d [19:0]\n", next_line + 9, next_line + 7,
+          next_line + 8); // combine
+  fprintf(f, "%d consth 4 fffff\n", next_line + 10);
+  fprintf(f, "%d sra 4 %d %d\n", next_line + 11, command_loc,
+          next_line + 10); // shift is way too much, but because arithmetic
+                           // right shift now all bits ar equal to highest bit
+  fprintf(f, "%d and 4 %d -%d [31:20]\n", next_line + 12, next_line + 11,
+          next_line + 10);
+  fprintf(f, "%d add 4 %d %d j-immediate\n", next_line + 13, next_line + 9,
+          next_line + 12);
+  int j_immediate_loc = next_line + 13;
+  next_line += 14;
 
   fprintf(f, ";\n; sort opcodes to immediates\n");
-  fprintf(f, "%d eq 1 %d %d\n", next_line + 46, next_line,
+  fprintf(f, "%d eq 1 %d %d\n", next_line, opcode_const_loc,
           codes[0]); // i opcode load
-  fprintf(f, "%d eq 1 %d %d\n", next_line + 47, next_line + 1,
+  fprintf(f, "%d eq 1 %d %d\n", next_line + 1, opcode_const_loc + 1,
           codes[0]); // i opcode math i
-  fprintf(f, "%d eq 1 %d %d\n", next_line + 48, next_line + 2,
+  fprintf(f, "%d eq 1 %d %d\n", next_line + 2, opcode_const_loc + 2,
           codes[0]); // u opcode auipc
-  fprintf(f, "%d eq 1 %d %d\n", next_line + 49, next_line + 3,
+  fprintf(f, "%d eq 1 %d %d\n", next_line + 3, opcode_const_loc + 3,
           codes[0]); // i opcode math wi
-  fprintf(f, "%d eq 1 %d %d\n", next_line + 50, next_line + 4,
+  fprintf(f, "%d eq 1 %d %d\n", next_line + 4, opcode_const_loc + 4,
           codes[0]); // s opcode store
-  fprintf(f, "%d eq 1 %d %d\n", next_line + 51, next_line + 5,
+  fprintf(f, "%d eq 1 %d %d\n", next_line + 5, opcode_const_loc + 5,
           codes[0]); //- opcode math reg
-  fprintf(f, "%d eq 1 %d %d\n", next_line + 52, next_line + 6,
+  fprintf(f, "%d eq 1 %d %d\n", next_line + 6, opcode_const_loc + 6,
           codes[0]); // u opcode lui
-  fprintf(f, "%d eq 1 %d %d\n", next_line + 53, next_line + 7,
+  fprintf(f, "%d eq 1 %d %d\n", next_line + 7, opcode_const_loc + 7,
           codes[0]); //- opcode math w
-  fprintf(f, "%d eq 1 %d %d\n", next_line + 54, next_line + 8,
+  fprintf(f, "%d eq 1 %d %d\n", next_line + 8, opcode_const_loc + 8,
           codes[0]); // b opcode branch
-  fprintf(f, "%d eq 1 %d %d\n", next_line + 55, next_line + 9,
+  fprintf(f, "%d eq 1 %d %d\n", next_line + 9, opcode_const_loc + 9,
           codes[0]); // i opcode jump r
-  fprintf(f, "%d eq 1 %d %d\n", next_line + 56, next_line + 10,
+  fprintf(f, "%d eq 1 %d %d\n", next_line + 10, opcode_const_loc + 10,
           codes[0]); // j opcode jump
+
   // i types: JALR(jump r), LOAD, math i, math wi
-  fprintf(f, "%d or 1 %d %d\n", next_line + 57, next_line + 46, next_line + 47);
-  fprintf(f, "%d or 1 %d %d\n", next_line + 58, next_line + 57, next_line + 49);
-  fprintf(f, "%d or 1 %d %d\n", next_line + 59, next_line + 58, next_line + 55);
-  // s types: Store -> 50
-  // b types: Branch -> 54
+  fprintf(f, "%d or 1 %d %d\n", next_line + 11, next_line, next_line + 1);
+  fprintf(f, "%d or 1 %d %d\n", next_line + 12, next_line + 11, next_line + 3);
+  fprintf(f, "%d or 1 %d %d\n", next_line + 13, next_line + 12, next_line + 9);
   // u types: AUIPC, LUI
-  fprintf(f, "%d or 1 %d %d\n", next_line + 60, next_line + 48, next_line + 52);
-  // j types: JAL (jump) -> 56
+  fprintf(f, "%d or 1 %d %d\n", next_line + 14, next_line + 2, next_line + 6);
+
+  int i_type_loc = next_line + 13;
+  int s_type_loc = next_line + 4;
+  int b_type_loc = next_line + 8;
+  int u_type_loc = next_line + 14;
+  int j_type_loc = next_line + 10;
+  next_line += 15;
+
   // i type as default, can be used for shift amount shamt in S[L|R][L|A]I
   // commands
-  fprintf(f, "%d ite 4 %d %d %d s/i\n", next_line + 61, next_line + 50,
-          next_line + 15, next_line + 12);
-  fprintf(f, "%d ite 4 %d %d %d b\n", next_line + 62, next_line + 54,
-          next_line + 30, next_line + 61);
-  fprintf(f, "%d ite 4 %d %d %d u\n", next_line + 63, next_line + 60,
-          next_line + 31, next_line + 62);
-  fprintf(f, "%d ite 4 %d %d %d j\n", next_line + 64, next_line + 56,
-          next_line + 45, next_line + 63);
-  return next_line + 65;
+  fprintf(f, "%d ite 4 %d %d 14 i/r\n", next_line, i_type_loc,
+          i_immediate_loc); // default to one to find errors. in random testing
+                            // an i val of 1 is unexpected. in r-type, i is not
+                            // used so it should have no impact
+  fprintf(f, "%d ite 4 %d %d %d s\n", next_line + 1, s_type_loc,
+          s_immediate_loc, next_line);
+  fprintf(f, "%d ite 4 %d %d %d b\n", next_line + 2, b_type_loc,
+          b_immediate_loc, next_line + 1);
+  fprintf(f, "%d ite 4 %d %d %d u\n", next_line + 3, u_type_loc,
+          u_immediate_loc, next_line + 2);
+  fprintf(f, "%d ite 4 %d %d %d j\n", next_line + 4, j_type_loc,
+          j_immediate_loc, next_line + 3);
+  return next_line + 5;
 }
 
 int btor_check_4_all_commands(FILE *f, int next_line, int opcode_comp,
@@ -547,27 +578,30 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   fprintf(f, ";\n; Calculating values for commands\n");
   fprintf(f, ";\n; Flow Control\n");
   fprintf(f, "%d uext 5 %d %d pc_val_64bit\n", next_line, register_loc + 32,
-          64 - BTOR_MEMORY_SIZE); // LUI
+          64 - BTOR_MEMORY_SIZE);
   fprintf(f, "%d sext 5 %d 32 immediate_64bit\n", next_line + 1, immediate_loc);
   fprintf(f, "%d add 5 %d %d auipc_rd\n", next_line + 2, next_line,
           next_line + 1);
-  int lui_rd = next_line + 1; // is also sign extended immediate!
-  int auipc_rd = next_line + 2;
+  int pc_64bit = next_line;
+  int immediate_64bit = next_line + 1;
+  int pc_immediate_added =
+      next_line +
+      2; // as immediate is opcode sensitive, this holds for all commands
+  int lui_rd = immediate_64bit; // is also sign extended immediate!
+  int auipc_rd = pc_immediate_added;
   next_line += 3;
 
-  fprintf(f, "%d slice 2 %d %d 0 jal_pc\n", next_line, auipc_rd,
+  fprintf(f, "%d slice 2 %d %d 0 jal_pc\n", next_line, pc_immediate_added,
           BTOR_MEMORY_SIZE - 1);
   int jal_pc = next_line;
   next_line++;
 
   fprintf(f, "%d constd 5 4\n", next_line);
-  fprintf(f, "%d uext 5 %d %d\n", next_line + 1, register_loc + 32,
-          64 - BTOR_MEMORY_SIZE); // Sign extend PC
-  fprintf(f, "%d add 5 %d %d\n", next_line + 2, next_line + 1, next_line);
-  int jal_rd = next_line + 2;
-  next_line += 3;
+  fprintf(f, "%d add 5 %d %d\n", next_line + 1, pc_64bit, next_line);
+  int jal_rd = next_line + 1; // pc + 4
+  next_line += 2;
 
-  fprintf(f, "%d add 5 %d %d\n", next_line, rs1_val_loc, lui_rd);
+  fprintf(f, "%d add 5 %d %d\n", next_line, rs1_val_loc, immediate_64bit);
   fprintf(f, "%d and 5 %d -%d\n", next_line + 1, next_line,
           comparison_constants_loc + 1);
   fprintf(f, "%d slice 2 %d %d 0\n", next_line + 2, next_line + 1,
@@ -576,7 +610,9 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   int jalr_pc = next_line - 1;
   int jalr_rd = jal_rd; // JALR rd is the same as JAL rd
 
-  int branch_pc_true = jal_pc; // Branches use the same PC as JAL
+  int branch_pc_true = jal_pc; // as immediate is command sensitive, this also
+                               // works for b-type encoding
+
   fprintf(f, "%d slice 2 %d %d 0\n", next_line, jal_rd, BTOR_MEMORY_SIZE - 1);
   int branch_pc_false = next_line;
   next_line++;
@@ -780,9 +816,15 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
           rs2_val_loc); // SUB
   next_line++;
 
+  fprintf(f, "%d consth 5 3f\n", next_line);
+  fprintf(f, "%d and 5 %d %d\n", next_line + 1, rs2_val_loc, next_line);
+  int rs2_shamt_loc =
+      next_line + 1; // rs2 shamt is the lower 6 bits of rs2_val_cut_loc
+  next_line += 2;
+
   int math_reg_rd_sll = next_line;
   fprintf(f, "%d sll 5 %d %d sll_rd\n", next_line, rs1_val_loc,
-          rs2_val_loc); // SLL
+          rs2_shamt_loc); // SLL
   next_line++;
 
   int math_reg_rd_slt = next_line + 1;
@@ -802,12 +844,12 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
 
   int math_reg_rd_srl = next_line;
   fprintf(f, "%d srl 5 %d %d srl_rd\n", next_line, rs1_val_loc,
-          rs2_val_loc); // SRL
+          rs2_shamt_loc); // SRL
   next_line++;
 
   int math_reg_rd_sra = next_line;
   fprintf(f, "%d sra 5 %d %d sra_rd\n", next_line, rs1_val_loc,
-          rs2_val_loc); // SRA
+          rs2_shamt_loc); // SRA
   next_line++;
 
   int math_reg_rd_or = next_line;
@@ -823,48 +865,70 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   // MATH W
   fprintf(f, ";\n; MATH Word\n");
 
-  fprintf(f, "%d slice 4 %d 31 0\n", next_line, rs1_val_loc); // ADDIW
-  fprintf(f, "%d add 4 %d %d\n", next_line + 1, next_line, immediate_loc);
-  fprintf(f, "%d sext 5 %d 32 addiw_rd\n", next_line + 2, next_line + 1);
-  int math_iw_rd_addiw = next_line + 2;
-  next_line += 3;
+  fprintf(f, "%d slice 4 %d 31 0\n", next_line,
+          rs1_val_loc); // rs1 cut to 32 bit
+  int rs1_val_cut_loc = next_line;
+  next_line++;
 
-  fprintf(f, "%d slice 4 %d 31 0\n", next_line, math_i_rd_slli); // SLLIW
+  fprintf(f, "%d add 4 %d %d\n", next_line, rs1_val_cut_loc,
+          immediate_loc); // ADDIW
+  fprintf(f, "%d sext 5 %d 32 addiw_rd\n", next_line + 1, next_line);
+  int math_iw_rd_addiw = next_line + 1;
+  next_line += 2;
+
+  fprintf(f, "%d sll 4 %d %d\n", next_line, rs1_val_cut_loc,
+          codes[2]); // SLLIW, shamt is exactly at the place of rs2 encoding
   fprintf(f, "%d sext 5 %d 32 slliw_rd\n", next_line + 1, next_line);
   int math_iw_rd_slliw = next_line + 1;
   next_line += 2;
 
-  fprintf(f, "%d slice 4 %d 31 0\n", next_line, math_i_rd_srli); // SRLIW
+  fprintf(f, "%d srl 4 %d %d\n", next_line, rs1_val_cut_loc, codes[2]); // SRLIW
   fprintf(f, "%d sext 5 %d 32 srliw_rd\n", next_line + 1, next_line);
   int math_iw_rd_srliw = next_line + 1;
   next_line += 2;
 
-  fprintf(f, "%d slice 4 %d 31 0\n", next_line, math_i_rd_srai); // SRAIW
+  fprintf(f, "%d sra 4 %d %d\n", next_line, rs1_val_cut_loc, codes[2]); // SRAIW
   fprintf(f, "%d sext 5 %d 32 sraiw_rd\n", next_line + 1, next_line);
   int math_iw_rd_sraiw = next_line + 1;
   next_line += 2;
 
-  fprintf(f, "%d slice 4 %d 31 0\n", next_line, math_reg_rd_add); // ADDW
+  fprintf(f, "%d slice 4 %d 31 0\n", next_line,
+          rs2_val_loc); // rs2 cut to 32 bit
+  int rs2_val_cut_loc = next_line;
+  next_line++;
+
+  fprintf(f, "%d add 4 %d %d\n", next_line, rs1_val_cut_loc,
+          rs2_val_cut_loc); // ADDW
   fprintf(f, "%d sext 5 %d 32 addw_rd\n", next_line + 1, next_line);
   int math_w_rd_addw = next_line + 1;
   next_line += 2;
 
-  fprintf(f, "%d slice 4 %d 31 0\n", next_line, math_reg_rd_sub); // SUBW
+  fprintf(f, "%d sub 4 %d %d\n", next_line, rs1_val_cut_loc,
+          rs2_val_cut_loc); // SUBW
   fprintf(f, "%d sext 5 %d 32 subw_rd\n", next_line + 1, next_line);
   int math_w_rd_subw = next_line + 1;
   next_line += 2;
 
-  fprintf(f, "%d slice 4 %d 31 0\n", next_line, math_reg_rd_sll); // SLLW
+  fprintf(f, "%d consth 4 1f\n", next_line);
+  fprintf(f, "%d and 4 %d %d\n", next_line + 1, rs2_val_cut_loc, next_line);
+  int rs2_w_shamt_loc =
+      next_line + 1; // rs2 shamt is the lower 6 bits of rs2_val_cut_loc
+  next_line += 2;
+
+  fprintf(f, "%d sll 4 %d %d\n", next_line, rs1_val_cut_loc,
+          rs2_w_shamt_loc); // SLLW
   fprintf(f, "%d sext 5 %d 32 sllw_rd\n", next_line + 1, next_line);
   int math_w_rd_sllw = next_line + 1;
   next_line += 2;
 
-  fprintf(f, "%d slice 4 %d 31 0\n", next_line, math_reg_rd_srl); // SRLW
+  fprintf(f, "%d srl 4 %d %d\n", next_line, rs1_val_cut_loc,
+          rs2_w_shamt_loc); // SRLW
   fprintf(f, "%d sext 5 %d 32 srlw_rd\n", next_line + 1, next_line);
   int math_w_rd_srlw = next_line + 1;
   next_line += 2;
 
-  fprintf(f, "%d slice 4 %d 31 0\n", next_line, math_reg_rd_sra); // SRAW
+  fprintf(f, "%d sra 4 %d %d\n", next_line, rs1_val_cut_loc,
+          rs2_w_shamt_loc); // SRAW
   fprintf(f, "%d sext 5 %d 32 sraw_rd\n", next_line + 1, next_line);
   int math_w_rd_sraw = next_line + 1;
   next_line += 2;
@@ -992,10 +1056,12 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
           branch_pc_true, branch_pc_false);
   fprintf(f, "%d ite 2 %d %d %d pc_bgeu_decider\n", next_line + 5, bgeu_check,
           branch_pc_true, branch_pc_false);
+
   fprintf(f, "%d ite 2 %d %d %d pc_jal\n", next_line + 6, command_check_loc + 2,
           jal_pc, branch_pc_false);
   fprintf(f, "%d ite 2 %d %d %d pc_jalr\n", next_line + 7,
           command_check_loc + 3, jalr_pc, next_line + 6);
+
   fprintf(f, "%d ite 2 %d %d %d pc_beq\n", next_line + 8, command_check_loc + 4,
           next_line, next_line + 7);
   fprintf(f, "%d ite 2 %d %d %d pc_bne\n", next_line + 9, command_check_loc + 5,
@@ -1136,8 +1202,8 @@ void relational_btor(FILE *f, state *s, int iterations) {
   codes[5] = next_line - 1; // funct7
 
   next_line = btor_get_immediate(f, next_line, command, codes);
-  int immediate = next_line - 1; // immediate
-  int opcode_comp = immediate - 18;
+  int immediate = next_line - 1;    // immediate
+  int opcode_comp = immediate - 18; // HACKY
 
   next_line = btor_check_4_all_commands(f, next_line, opcode_comp, codes);
   int command_check_loc = next_line - 49;
