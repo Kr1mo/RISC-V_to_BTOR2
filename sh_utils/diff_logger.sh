@@ -184,7 +184,7 @@ for state_file in "$states_dir"/${identifier}_*.state; do
     rd=""
     case "$opcode" in
         "0110011"|"0010011"|"0000011"|"1101111"|"1100111"|"0110111"|"0010111"|"0011011"|"0111011") # Instructions that use rd
-            rd=$(echo "$current_command_binary" | cut -c20-25)
+            rd=$(echo "$current_command_binary" | cut -c21-25)
             rd_decimal=$((2#$rd)) # Convert binary to decimal
             ;;
         esac
@@ -216,13 +216,13 @@ for state_file in "$states_dir"/${identifier}_*.state; do
             ;;
         "0100011") # S-type instructions
             immediate=$(echo "$current_command_binary" | cut -c1-7) # Extract immediate value
-            immediate+="$(echo "$current_command_binary" | cut -c20-25)" # Combine the two parts of the immediate
+            immediate+="$(echo "$current_command_binary" | cut -c21-25)" # Combine the two parts of the immediate
             ;;
         "1100011") # B-type instructions
             immediate=$(echo "$current_command_binary" | cut -c1) # Extract immediate value
             immediate+="$(echo "$current_command_binary" | cut -c25)" # Combine the two parts of the immediate
             immediate+="$(echo "$current_command_binary" | cut -c2-7)" # Combine the next 6 bits
-            immediate+="$(echo "$current_command_binary" | cut -c20-25)" # Combine the next 4 bits
+            immediate+="$(echo "$current_command_binary" | cut -c21-25)" # Combine the next 4 bits
             immediate+="0" # Add the last bit for B-type instructions
             ;;
         "0110111" | "0010111") # U-type instructions LUI and AUIPC
@@ -273,6 +273,8 @@ for state_file in "$states_dir"/${identifier}_*.state; do
         echo ""
         echo "Diff Lines:"
         echo "$diff_lines"
+        echo ""
+        echo "Notes:"
         echo ""
         echo "----------------------------------------"
         echo ""
