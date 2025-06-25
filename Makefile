@@ -60,7 +60,7 @@ clean_keep_bin:
 	rm -rf $(OBJ_DIR) *.tmp *.out sh_utils/*.state sh_utils/*.diff
 
 clean_tests:
-	rm -rf sh_utils/*.state sh_utils/*.diff sh_utils/witness/*tmp sh_utils/diffs sh_utils/generated_states sh_utils/witness
+	rm -rf sh_utils/*.state sh_utils/*.diff sh_utils/*.log sh_utils/witness/*tmp sh_utils/diffs sh_utils/generated_states sh_utils/witness
 
 style-check:
 	clang-tidy $(SRC_DIR)/*.c $(UTILS_SRC) -- -std=c11

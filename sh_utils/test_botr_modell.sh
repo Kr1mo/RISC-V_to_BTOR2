@@ -86,6 +86,7 @@ for ((i=1; i<=num_tests; i++)); do
 
 done
 
-
+# log the completion of all tests
+sh_utils/diff_logger.sh "$identifier"
 
 echo "All tests completed."
