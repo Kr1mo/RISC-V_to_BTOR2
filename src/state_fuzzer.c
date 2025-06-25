@@ -285,7 +285,8 @@ int main(int argc, char *argv[]) {
   if (u_type || j_type) {
     command |= funct3imm;
   }
-  if (!r_type && !pc_influence && !load) // avoid too high immediates with jumps
+  if (!r_type && !pc_influence && !load &&
+      !shift_type) // avoid too high immediates with jumps
   {
     command |= funct7imm;
   }

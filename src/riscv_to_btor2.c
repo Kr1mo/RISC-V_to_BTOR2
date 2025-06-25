@@ -1074,6 +1074,7 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
           command_check_loc + 8, next_line + 4, next_line + 11);
   fprintf(f, "%d ite 2 %d %d %d pc_bgeu\n", next_line + 13,
           command_check_loc + 9, next_line + 5, next_line + 12);
+
   fprintf(f, "%d next 2 %d %d pc_new\n", next_line + 14, register_loc + 32,
           next_line + 13);
   next_line += 15;
@@ -1203,7 +1204,7 @@ void relational_btor(FILE *f, state *s, int iterations) {
 
   next_line = btor_get_immediate(f, next_line, command, codes);
   int immediate = next_line - 1;    // immediate
-  int opcode_comp = immediate - 18; // HACKY
+  int opcode_comp = immediate - 19; // HACKY
 
   next_line = btor_check_4_all_commands(f, next_line, opcode_comp, codes);
   int command_check_loc = next_line - 49;
