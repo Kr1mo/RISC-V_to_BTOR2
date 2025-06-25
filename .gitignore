@@ -22,6 +22,9 @@ bin/*
 # Exclude output files
 *.out
 
+# Exclude log files in all subfolders
+**/*.log
+
 # Exclude directories diffs generated states and witness
 sh_utils/diffs/
 sh_utils/generated_states/
