@@ -726,34 +726,38 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
           rs2_val_loc); // Store byte 8
   next_line += 8;
 
-  int pc_consts_loc = next_line;
+  int mem_address_consts_loc = next_line;
+  fprintf(f, "%d one 2\n", next_line);
+  next_line++;
+
+  fprintf(f, "%d add 5 %d %d mem_adress_uncut\n", next_line, rs1_val_loc,
+          immediate_64bit); // Add rs1 value to immediate
+  fprintf(f, "%d slice 2 %d %d 0 mem_address\n", next_line + 1, next_line,
+          BTOR_MEMORY_SIZE - 1); // Cut to BTOR memory size
+  int mem_address_cut = next_line + 1;
+  next_line += 2;
   for (size_t i = 0; i < 8; i++) {
-    fprintf(f, "%d constd 2 %ld\n", next_line, i);
-    next_line++;
-  }
-  int pc_countup_loc = next_line;
-  for (size_t i = 0; i < 8; i++) {
-    fprintf(f, "%d add 2 %ld %d pc+%ld\n", next_line, pc_consts_loc + i,
-            register_loc + 32, i);
+    fprintf(f, "%d add 2 %d %d mem_address+%ld\n", next_line, next_line - 1,
+            mem_address_consts_loc, i);
     next_line++;
   }
 
-  fprintf(f, "%d write 6 %d %d %d sb\n", next_line, memory_loc, pc_countup_loc,
+  fprintf(f, "%d write 6 %d %d %d sb\n", next_line, memory_loc, mem_address_cut,
           store_memory_bytes); // Store byte 1
   fprintf(f, "%d write 6 %d %d %d sh\n", next_line + 1, next_line,
-          pc_countup_loc + 1, store_memory_bytes + 1); // Store byte 2
+          mem_address_cut + 1, store_memory_bytes + 1); // Store byte 2
   fprintf(f, "%d write 6 %d %d %d\n", next_line + 2, next_line + 1,
-          pc_countup_loc + 2, store_memory_bytes + 2); // Store byte 3
+          mem_address_cut + 2, store_memory_bytes + 2); // Store byte 3
   fprintf(f, "%d write 6 %d %d %d sw\n", next_line + 3, next_line + 2,
-          pc_countup_loc + 3, store_memory_bytes + 3); // Store byte 4
+          mem_address_cut + 3, store_memory_bytes + 3); // Store byte 4
   fprintf(f, "%d write 6 %d %d %d\n", next_line + 4, next_line + 3,
-          pc_countup_loc + 4, store_memory_bytes + 4); // Store byte 5
+          mem_address_cut + 4, store_memory_bytes + 4); // Store byte 5
   fprintf(f, "%d write 6 %d %d %d\n", next_line + 5, next_line + 4,
-          pc_countup_loc + 5, store_memory_bytes + 5); // Store byte 6
+          mem_address_cut + 5, store_memory_bytes + 5); // Store byte 6
   fprintf(f, "%d write 6 %d %d %d\n", next_line + 6, next_line + 5,
-          pc_countup_loc + 6, store_memory_bytes + 6); // Store byte 7
+          mem_address_cut + 6, store_memory_bytes + 6); // Store byte 7
   fprintf(f, "%d write 6 %d %d %d sd\n", next_line + 7, next_line + 6,
-          pc_countup_loc + 7, store_memory_bytes + 7); // Store byte 8
+          mem_address_cut + 7, store_memory_bytes + 7); // Store byte 8
   int sb_mem = next_line;
   int sh_mem = next_line + 1;
   int sw_mem = next_line + 3;
@@ -1115,8 +1119,11 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
 
   fprintf(f, ";\n; Some little helpers for bad command detection\n");
   fprintf(f, "; misaligned instruction fetch error\n");
-  fprintf(f, "%d and 2 %d %d\n", next_line, pc_consts_loc + 2, jal_pc);
-  fprintf(f, "%d and 2 %d %d\n", next_line + 1, pc_consts_loc + 2, jalr_pc);
+  fprintf(f, "%d constd 2 2\n", next_line);
+  int pc_consts_loc = next_line;
+  next_line++;
+  fprintf(f, "%d and 2 %d %d\n", next_line, pc_consts_loc, jal_pc);
+  fprintf(f, "%d and 2 %d %d\n", next_line + 1, pc_consts_loc, jalr_pc);
   fprintf(f, "%d or 2 %d %d\n", next_line + 2, next_line,
           next_line + 1); // not 0 if jal or jalr is misaligned
   fprintf(f, "%d eq 1 %d %d no_misaligned_fetch\n", next_line + 3,
