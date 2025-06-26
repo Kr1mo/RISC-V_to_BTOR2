@@ -515,7 +515,7 @@ int btor_check_4_all_commands(FILE *f, int next_line, int opcode_comp,
           opcode_comp + 7); // ADDW
   fprintf(f, "%d and 1 %d %d\n", next_line + 45, pre_comp + 3,
           opcode_comp + 7); // SUBW
-  fprintf(f, "%d and 1 %d %d\n", next_line + 46, comp_funct3 + 0,
+  fprintf(f, "%d and 1 %d %d\n", next_line + 46, comp_funct3 + 1,
           opcode_comp + 7); // SLLW
   fprintf(f, "%d and 1 %d %d\n", next_line + 47, pre_comp + 0,
           opcode_comp + 7); // SRLW
@@ -1119,7 +1119,7 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
 
   fprintf(f, ";\n; Some little helpers for bad command detection\n");
   fprintf(f, "; misaligned instruction fetch error\n");
-  fprintf(f, "%d constd 2 2\n", next_line);
+  fprintf(f, "%d consth 2 3\n", next_line);
   int pc_consts_loc = next_line;
   next_line++;
   fprintf(f, "%d and 2 %d %d\n", next_line, pc_consts_loc, jal_pc);
@@ -1127,7 +1127,7 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   fprintf(f, "%d or 2 %d %d\n", next_line + 2, next_line,
           next_line + 1); // not 0 if jal or jalr is misaligned
   fprintf(f, "%d eq 1 %d %d no_misaligned_fetch\n", next_line + 3,
-          next_line + 2, pc_consts_loc + 2); // error
+          next_line + 2, pc_consts_loc); // error
   fprintf(f, "%d or 1 %d %d\n", next_line + 4, command_check_loc + 2 /*JAL*/,
           command_check_loc + 3 /*JALR*/); // Command is jal or jalr
   int jal_jalr_pc_test = next_line + 3;

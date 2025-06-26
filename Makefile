@@ -74,4 +74,6 @@ style-check:
 format:
 	clang-format -i $(SRC_DIR)/*.c $(UTILS_SRC)
 
-.PHONY: all clean clean_keep_bin clean_tests format style-check
+ct: clean_tests
+
+.PHONY: all clean clean_keep_bin clean_tests format style-check ct

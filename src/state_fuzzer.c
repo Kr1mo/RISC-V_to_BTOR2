@@ -218,10 +218,17 @@ int main(int argc, char *argv[]) {
                               // 8bit, also must be 4-aligned
   } else if (command_picker == 3) {
     i_type = true; // jalr
-    if (rs2 + get_register(s, rs1) >= MEMORY_ADDRESSES) {
+    if (rs2 + get_register(s, rs1) >= MEMORY_ADDRESSES && rs1 != 0) {
       set_register(s, rs1, rand() % 128); // Ensure rs2 value is low enough that
                                           // it does not overflow the memory
     }
+    int alignment_bad = rs2 + get_register(s, rs1) % 4;
+    if (alignment_bad && rs1 != 0) {
+      set_register(s, rs1,
+                   get_register(s, rs1) - alignment_bad); // Ensure address is
+                                                          // 4-aligned
+    }
+
   } else if (command_picker >= 4 && command_picker < 10) {
     b_type = true; // beq, bne, blt, bge, bltu, bgeu
     rd_placed &= CUT_LOW_BIT_MASK
@@ -242,10 +249,12 @@ int main(int argc, char *argv[]) {
 
   } else if (command_picker >= 10 && command_picker < 17) {
     i_type = true; // lb, lh, lw, ld, lbu, lhu, lwu
-    set_register(s, rs1,
-                 rand() % MEMORY_ADDRESSES -
-                     9); // Ensure rs2 value is low enough that it does not
-                         // overflow the memory
+    if (rs1 != 0) {
+      set_register(s, rs1,
+                   rand() % MEMORY_ADDRESSES -
+                       9); // Ensure rs1 value is low enough that it does not
+                           // overflow the memory
+    }
     if (get_register(s, rs1) + rs2 >= MEMORY_ADDRESSES - 9) {
       rs2_placed =
           0; // Ensure rs2 value is low enough that it does not overflow the
@@ -259,17 +268,19 @@ int main(int argc, char *argv[]) {
 
   } else if (command_picker >= 17 && command_picker < 21) {
     s_type = true; // sb, sh, sw, sd
-    set_register(s, rs1,
-                 rand() % MEMORY_ADDRESSES -
-                     9); // Ensure rs2 value is low enough that it does not
-                         // overflow the memory
+    if (rs1 != 0) {
+      set_register(s, rs1,
+                   rand() % MEMORY_ADDRESSES -
+                       9); // Ensure rs2 value is low enough that it does not
+                           // overflow the memory
+    }
     if (get_register(s, rs1) + rd >= MEMORY_ADDRESSES - 9) {
       rs2 = 0; // Ensure rs2 value is low enough that it does not overflow the
                // memory
                // could be prettier, but this should be enough
       rs2_placed = 0;
     }
-    if (rd + s->pc < MEMORY_ADDRESSES - 64) {
+    if (rd + get_register(s, rs1) < MEMORY_ADDRESSES - 64) {
       command |=
           sixth_bit_for_shift; // Immediate bit 5 can be set if
                                // rd + pc is low enough, otherwise it must be 0
