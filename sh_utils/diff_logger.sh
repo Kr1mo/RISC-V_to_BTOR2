@@ -208,7 +208,7 @@ for state_file in "$states_dir"/${identifier}_*.state; do
     rs2=""
     case "$opcode" in
         "0110011"|"0111011"|"0100011"|"1100011") # Instructions that use rs2
-            rs2=$(echo "$current_command_binary" | cut -c1-5)
+            rs2=$(echo "$current_command_binary" | cut -c8-12)
             rs2_decimal=$((2#$rs2)) # Convert binary to decimal
             ;;
     esac

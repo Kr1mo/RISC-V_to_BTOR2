@@ -96,6 +96,8 @@ int main(int argc, char *argv[]) {
   if (s->pc >= MEMORY_ADDRESSES - 5) {
     s->pc = MEMORY_ADDRESSES - 5; // Ensure pc is not out of bounds
   }
+  uint64_t pc_mask = ~0x3; // Mask to ensure pc is 4-aligned
+  s->pc &= pc_mask;        // Cut the lowest bit of pc
 
   uint64_t rs1 = rand() % 32; // Random rs1 register
   uint64_t rs2 = rand() % 32; // Random rs2 register
@@ -210,10 +212,13 @@ int main(int argc, char *argv[]) {
     j_type = true;  // jal
     rs1_placed = 0; // bits 15-19 are too high for address space of 8bit
     rs2_placed &= CUT_LOW_BIT_MASK
-                  << 20; // bit 11 is too high for address space of 8bit
+                  << 21; // bit 11 is too high for address space of 8bit, also
+                         // must be 4-aligned
+    funct7imm &= 0b111 << 25; // bits 31-25 are too high for address space of
+                              // 8bit, also must be 4-aligned
   } else if (command_picker == 3) {
     i_type = true; // jalr
-    if (rs1 + get_register(s, rs1) >= MEMORY_ADDRESSES) {
+    if (rs2 + get_register(s, rs1) >= MEMORY_ADDRESSES) {
       set_register(s, rs1, rand() % 128); // Ensure rs2 value is low enough that
                                           // it does not overflow the memory
     }
@@ -265,7 +270,7 @@ int main(int argc, char *argv[]) {
       rs2_placed = 0;
     }
     if (rd + s->pc < MEMORY_ADDRESSES - 64) {
-      command &=
+      command |=
           sixth_bit_for_shift; // Immediate bit 5 can be set if
                                // rd + pc is low enough, otherwise it must be 0
     }
@@ -282,10 +287,10 @@ int main(int argc, char *argv[]) {
   }
 
   command |= rd_placed | rs1_placed | rs2_placed;
-  if (u_type || j_type) {
+  if (u_type /*|| j_type*/) { // immediate gets too high with func3 immediate
     command |= funct3imm;
   }
-  if (!r_type && !pc_influence && !load &&
+  if (!r_type && !pc_influence && !load && !store &&
       !shift_type) // avoid too high immediates with jumps
   {
     command |= funct7imm;
