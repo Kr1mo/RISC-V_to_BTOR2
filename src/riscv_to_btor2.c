@@ -176,7 +176,7 @@ int btor_get_current_command(FILE *f, int next_line, int registers,
 }
 int btor_get_opcode(FILE *f, int next_line, int command_loc) {
   fprintf(f, ";\n; Get the opcode\n");
-  fprintf(f, "%d consth 4 7f\n", next_line); // bitmask
+  fprintf(f, "%d consth 4 07f\n", next_line); // bitmask
   fprintf(f, "%d and 4 %d %d\n", next_line + 1, next_line,
           command_loc); // Extract the opcode (first byte)
   return next_line + 2;
@@ -674,7 +674,7 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
 
   fprintf(f, "%d concat %d %d %d\n", next_line, size16_loc, read_cells + 3,
           read_cells + 2);
-  fprintf(f, "%d concat 4 %d %d\n", next_line + 1, lh_rd - 1, next_line);
+  fprintf(f, "%d concat 4 %d %d\n", next_line + 1, next_line, lh_rd - 1);
   fprintf(f, "%d sext 5 %d 32 lw_rd\n", next_line + 2, next_line + 1);
   int lw_rd = next_line + 2;
   next_line += 3;
@@ -689,7 +689,7 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   int ld_rd = next_line + 3;
   next_line += 4;
 
-  fprintf(f, "%d uext 5 %d 56 lbu\n", next_line, lb_rd - 1);
+  fprintf(f, "%d uext 5 %d 56 lbu\n", next_line, read_cells + 0);
   int lbu_rd = next_line;
   next_line++;
 
@@ -1094,13 +1094,17 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
 
   fprintf(f, ";\n; Some little helpers for bad command detection\n");
   fprintf(f, "; misaligned instruction fetch error\n");
-  fprintf(f, "%d constd 2 2\n", next_line);
-  fprintf(f, "%d and 2 %d %d\n", next_line + 1, next_line, jal_pc);
-  fprintf(f, "%d and 2 %d %d\n", next_line + 2, next_line, jalr_pc);
-  fprintf(f, "%d or 2 %d %d\n", next_line + 3, next_line + 1,
-          next_line + 2); // not 0 if jal or jalr is misaligned
-  int jal_jalr_combination = next_line + 3;
-  next_line += 4;
+  fprintf(f, "%d and 2 %d %d\n", next_line, pc_consts_loc + 2, jal_pc);
+  fprintf(f, "%d and 2 %d %d\n", next_line + 1, pc_consts_loc + 2, jalr_pc);
+  fprintf(f, "%d or 2 %d %d\n", next_line + 2, next_line,
+          next_line + 1); // not 0 if jal or jalr is misaligned
+  fprintf(f, "%d eq 1 %d %d no_misaligned_fetch\n", next_line + 3,
+          next_line + 2, pc_consts_loc + 2); // error
+  fprintf(f, "%d or 1 %d %d\n", next_line + 4, command_check_loc + 2 /*JAL*/,
+          command_check_loc + 3 /*JALR*/); // Command is jal or jalr
+  int jal_jalr_pc_test = next_line + 3;
+  int jal_jalr_command_test = next_line + 4;
+  next_line += 5;
 
   fprintf(f, "; load to x0 error\n");
   fprintf(f, "%d eq 1 %d %d\n", next_line, rd_code_ext,
@@ -1108,8 +1112,8 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   int rd_x0_check = next_line;
   next_line++;
   fprintf(f, ";\n");
-  fprintf(f, "%d eq 1 %d %d no_misaligned_fetch\n", next_line,
-          jal_jalr_combination, pc_consts_loc + 2); // no error
+  fprintf(f, "%d ite 1 %d %d 16\n", next_line, jal_jalr_command_test,
+          jal_jalr_pc_test); // if jal or jalr, no error
   fprintf(f, "%d or 1 -%d -%d no_load2x0\n", next_line + 1, rd_x0_check,
           opcode_comp); // no error if not load or not rd = x0
   next_line += 2;
@@ -1154,8 +1158,7 @@ int btor_bad_command(FILE *f, int next_line, int command_loc, int opcode_comp,
 
   next_line += 2;
   fprintf(f, ";\n; Bad jump alignment\n");
-
-  fprintf(f, "%d bad -%d misaligned_instruction_fetch_ERROR\n", next_line,
+  fprintf(f, "%d bad %d misaligned_instruction_fetch_ERROR\n", next_line,
           badstate_pretest); // bad if pretest is false
   next_line++;
 
@@ -1213,10 +1216,10 @@ void relational_btor(FILE *f, state *s, int iterations) {
                            immediate, opcode_comp, codes, reg_init_flag_loc);
   int update_loc = next_line - 2;
 
+  next_line = btor_bad_counter(f, next_line, counter_loc, iterations);
+
   next_line = btor_bad_command(f, next_line, command_check_loc, opcode_comp,
                                update_loc);
-
-  next_line = btor_bad_counter(f, next_line, counter_loc, iterations);
 }
 
 int main(int argc, char *argv[]) {
