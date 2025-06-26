@@ -216,6 +216,12 @@ int main(int argc, char *argv[]) {
                          // must be 4-aligned
     funct7imm &= 0b111 << 25; // bits 31-25 are too high for address space of
                               // 8bit, also must be 4-aligned
+    if (s->pc + (rs2_placed >> 20) + (funct7imm >> 20) >= MEMORY_ADDRESSES) {
+      s->pc = (rand() % (MEMORY_ADDRESSES - (rs2_placed >> 20) -
+                         (funct7imm >> 20)) >>
+               2)
+              << 2;
+    }
   } else if (command_picker == 3) {
     i_type = true; // jalr
     if (rs2 + get_register(s, rs1) >= MEMORY_ADDRESSES && rs1 != 0) {
@@ -275,11 +281,10 @@ int main(int argc, char *argv[]) {
                            // overflow the memory
     }
     if (get_register(s, rs1) + rd >= MEMORY_ADDRESSES - 9) {
-      rs2 = 0; // Ensure rs2 value is low enough that it does not overflow the
-               // memory
-               // could be prettier, but this should be enough
-      rs2_placed = 0;
+      rd = rand() % (MEMORY_ADDRESSES - 9 - get_register(s, rs1));
+      rd_placed = rd << 7;
     }
+
     if (rd + get_register(s, rs1) < MEMORY_ADDRESSES - 64) {
       command |=
           sixth_bit_for_shift; // Immediate bit 5 can be set if

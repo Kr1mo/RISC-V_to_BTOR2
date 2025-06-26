@@ -1120,31 +1120,26 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   fprintf(f, ";\n; Some little helpers for bad command detection\n");
   fprintf(f, "; misaligned instruction fetch error\n");
   fprintf(f, "%d consth 2 3\n", next_line);
+  fprintf(f, "%d zero 2\n", next_line + 1);
   int pc_consts_loc = next_line;
-  next_line++;
+  int pc_zero = next_line + 1;
+  next_line += 2;
   fprintf(f, "%d and 2 %d %d\n", next_line, pc_consts_loc, jal_pc);
   fprintf(f, "%d and 2 %d %d\n", next_line + 1, pc_consts_loc, jalr_pc);
-  fprintf(f, "%d or 2 %d %d\n", next_line + 2, next_line,
-          next_line + 1); // not 0 if jal or jalr is misaligned
-  fprintf(f, "%d eq 1 %d %d no_misaligned_fetch\n", next_line + 3,
-          next_line + 2, pc_consts_loc); // error
-  fprintf(f, "%d or 1 %d %d\n", next_line + 4, command_check_loc + 2 /*JAL*/,
-          command_check_loc + 3 /*JALR*/); // Command is jal or jalr
-  int jal_jalr_pc_test = next_line + 3;
-  int jal_jalr_command_test = next_line + 4;
-  next_line += 5;
 
-  fprintf(f, "; load to x0 error\n");
-  fprintf(f, "%d eq 1 %d %d\n", next_line, rd_code_ext,
-          comparison_constants_loc + 0); // x0 is not allowed to be rd
-  int rd_x0_check = next_line;
-  next_line++;
-  fprintf(f, ";\n");
-  fprintf(f, "%d ite 1 %d %d 16\n", next_line, jal_jalr_command_test,
-          jal_jalr_pc_test); // if jal or jalr, no error
-  fprintf(f, "%d or 1 -%d -%d no_load2x0\n", next_line + 1, rd_x0_check,
-          opcode_comp); // no error if not load or not rd = x0
-  next_line += 2;
+  fprintf(f, "%d neq 1 %d %d misaligned_jal_pc\n", next_line + 2, next_line,
+          pc_zero); // error
+  fprintf(f, "%d neq 1 %d %d misaligned_jalr_pc\n", next_line + 3,
+          next_line + 1, pc_zero); // error
+
+  fprintf(f, "%d and 1 %d %d mis_and_jal\n", next_line + 4,
+          command_check_loc + 2, next_line + 2);
+  fprintf(f, "%d and 1 %d %d mis_and_jalr\n", next_line + 5,
+          command_check_loc + 3, next_line + 3);
+
+  fprintf(f, "%d or 1 %d %d\n", next_line + 6, next_line + 4,
+          next_line + 5); // Command is jal or jalr
+  next_line += 7;
 
   return next_line;
 }
@@ -1190,11 +1185,7 @@ int btor_bad_command(FILE *f, int next_line, int command_loc, int opcode_comp,
           badstate_pretest); // bad if pretest is false
   next_line++;
 
-  fprintf(f, ";\n; Bad load (to x0)\n");
-  fprintf(f, "%d bad -%d load_to_x0_ERROR\n", next_line,
-          badstate_pretest + 1); // bad if rd is x0
-
-  return next_line + 1;
+  return next_line;
 }
 
 void relational_btor(FILE *f, state *s, int iterations) {
@@ -1242,12 +1233,12 @@ void relational_btor(FILE *f, state *s, int iterations) {
 
   next_line = btor_updates(f, next_line, registers, memory, command_check_loc,
                            immediate, opcode_comp, codes, reg_init_flag_loc);
-  int update_loc = next_line - 2;
+  int bad_helper_loc = next_line - 1;
 
   next_line = btor_bad_counter(f, next_line, counter_loc, iterations);
 
   next_line = btor_bad_command(f, next_line, command_check_loc, opcode_comp,
-                               update_loc);
+                               bad_helper_loc);
 }
 
 int main(int argc, char *argv[]) {
