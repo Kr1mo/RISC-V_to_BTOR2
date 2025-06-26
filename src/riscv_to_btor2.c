@@ -506,9 +506,9 @@ int btor_check_4_all_commands(FILE *f, int next_line, int opcode_comp,
           opcode_comp + 3); // ADDIW
   fprintf(f, "%d and 1 %d %d\n", next_line + 41, comp_funct3 + 1,
           opcode_comp + 3); // SLLIW
-  fprintf(f, "%d and 1 %d %d\n", next_line + 42, pre_comp + 2,
+  fprintf(f, "%d and 1 %d %d\n", next_line + 42, pre_comp + 0,
           opcode_comp + 3); // SRLIW
-  fprintf(f, "%d and 1 %d %d\n", next_line + 43, pre_comp + 3,
+  fprintf(f, "%d and 1 %d %d\n", next_line + 43, pre_comp + 1,
           opcode_comp + 3); // SRAIW
 
   fprintf(f, "%d and 1 %d %d\n", next_line + 44, pre_comp + 2,
@@ -764,49 +764,57 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   fprintf(f, ";\n; MATH immediate\n");
   int math_i_rd_addi = next_line;
   fprintf(f, "%d add 5 %d %d addi_rd\n", next_line, rs1_val_loc,
-          lui_rd); // ADDI
+          immediate_64bit); // ADDI
   next_line++;
+
+  int immediate_6bit_shamt = next_line + 1;
+  fprintf(f, "%d consth 5 3f\n", next_line);
+  fprintf(f, "%d and 5 %d %d\n", next_line + 1, immediate_64bit, next_line);
+  next_line += 2;
 
   int math_i_rd_slli = next_line;
   fprintf(f, "%d sll 5 %d %d slli_rd\n", next_line, rs1_val_loc,
-          lui_rd); // SLLI
+          immediate_6bit_shamt); // SLLI
   next_line++;
 
   int math_i_rd_slti = next_line + 1;
-  fprintf(f, "%d slt 1 %d %d slti_rd\n", next_line, rs1_val_loc, lui_rd);
+  fprintf(f, "%d slt 1 %d %d slti_rd\n", next_line, rs1_val_loc,
+          immediate_64bit);
   fprintf(f, "%d uext 5 %d 63 slti_rd\n", next_line + 1, next_line); // SLTI
   next_line += 2;
 
   int math_i_rd_sltiu = next_line + 1;
-  fprintf(f, "%d ult 1 %d %d sltiu_rd\n", next_line, rs1_val_loc, lui_rd);
+  fprintf(f, "%d ult 1 %d %d sltiu_rd\n", next_line, rs1_val_loc,
+          immediate_64bit);
   fprintf(f, "%d uext 5 %d 63 sltiu_rd\n", next_line + 1, next_line); // SLTIU
   next_line += 2;
 
   int math_i_rd_xori = next_line;
   fprintf(f, "%d xor 5 %d %d xori_rd\n", next_line, rs1_val_loc,
-          lui_rd); // XORI
+          immediate_64bit); // XORI
   next_line++;
 
   int math_i_rd_srli = next_line;
   fprintf(f, "%d srl 5 %d %d srli_rd\n", next_line, rs1_val_loc,
-          lui_rd); // SRLI
+          immediate_6bit_shamt); // SRLI
   next_line++;
 
   int math_i_rd_srai = next_line + 1;
-  fprintf(f, "%d sub 5 %d %d srai_rd\n", next_line, lui_rd,
+  fprintf(f, "%d sub 5 %d %d srai_rd\n", next_line, immediate_64bit,
           comparison_constants_loc + 32); // -32 removes the bit in funct7 wich
                                           // differentiates SRAI from SRLI
   fprintf(f, "%d sra 5 %d %d srai_rd\n", next_line + 1, rs1_val_loc,
-          lui_rd); // SRAI
+          immediate_6bit_shamt); // SRAI
   next_line += 2;
 
   int math_i_rd_ori = next_line;
-  fprintf(f, "%d or 5 %d %d ori_rd\n", next_line, rs1_val_loc, lui_rd); // ORI
+  fprintf(f, "%d or 5 %d %d ori_rd\n", next_line, rs1_val_loc,
+          immediate_64bit); // ORI
   next_line++;
 
   int math_i_rd_andi = next_line;
   fprintf(f, "%d and 5 %d %d andi_rd\n", next_line, rs1_val_loc,
-          lui_rd); // ANDI
+          immediate_64bit); // ANDI
   next_line++;
 
   // MATH reg
@@ -867,7 +875,7 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
           rs2_val_loc); // AND
   next_line++;
 
-  // MATH W
+  // MATH WI
   fprintf(f, ";\n; MATH Word Immediate\n");
 
   fprintf(f, "%d slice 4 %d 31 0\n", next_line,
@@ -882,21 +890,20 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   next_line += 2;
 
   fprintf(f, "%d sll 4 %d %d\n", next_line, rs1_val_cut_loc,
-          codes[2]); // SLLIW, shamt is exactly at the place of rs2 encoding
+          codes[3]); // SLLIW, shamt is exactly at the place of rs2 encoding
   fprintf(f, "%d sext 5 %d 32 slliw_rd\n", next_line + 1, next_line);
   int math_iw_rd_slliw = next_line + 1;
   next_line += 2;
 
-  fprintf(f, "%d srl 4 %d %d\n", next_line, rs1_val_cut_loc, codes[2]); // SRLIW
+  fprintf(f, "%d srl 4 %d %d\n", next_line, rs1_val_cut_loc, codes[3]); // SRLIW
   fprintf(f, "%d sext 5 %d 32 srliw_rd\n", next_line + 1, next_line);
   int math_iw_rd_srliw = next_line + 1;
   next_line += 2;
 
-  fprintf(f, "%d sra 4 %d %d\n", next_line, rs1_val_cut_loc, codes[2]); // SRAIW
+  fprintf(f, "%d sra 4 %d %d\n", next_line, rs1_val_cut_loc, codes[3]); // SRAIW
   fprintf(f, "%d sext 5 %d 32 sraiw_rd\n", next_line + 1, next_line);
   int math_iw_rd_sraiw = next_line + 1;
   next_line += 2;
-
 
   fprintf(f, ";\n; MATH Word\n");
 
