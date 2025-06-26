@@ -1041,12 +1041,18 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
     fprintf(f, "%d next 5 %ld %d x%ld_new\n", next_line + 41, register_loc + i,
             next_line + 40, i);
     fprintf(f, ";Also update init-flag\n");
-    fprintf(f, "%d ite 1 %d 15 %ld\n", next_line + 42, next_line,
-            reg_init_flag_loc + i);
-    fprintf(f, "%d next 1 %ld %d reg_init_flag_new\n", next_line + 43,
-            reg_init_flag_loc + i, next_line + 42);
+    // Test if command is Branch or Store
+    fprintf(f, "%d or 1 %d %d opcode_is_branch_store\n", next_line + 42,
+            opcode_comp + 4, opcode_comp + 8);
+    fprintf(f, "%d ite 1 -%d 15 %ld command_check\n", next_line + 43,
+            next_line + 42,
+            reg_init_flag_loc + i); // only if not branch or store
+    fprintf(f, "%d ite 1 %d %d %ld rd_check\n", next_line + 44, next_line,
+            next_line + 43, reg_init_flag_loc + i);
+    fprintf(f, "%d next 1 %ld %d reg_init_flag_new\n", next_line + 45,
+            reg_init_flag_loc + i, next_line + 44);
 
-    next_line += 44;
+    next_line += 46;
   }
   fprintf(f, ";\n; Update PC\n");
   fprintf(f, "%d ite 2 %d %d %d pc_beq_decider\n", next_line, beq_check,
