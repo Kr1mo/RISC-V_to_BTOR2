@@ -10,6 +10,7 @@ identifier=$1
 log_file="sh_utils/${identifier}.log"
 states_dir="sh_utils/generated_states"
 diffs_dir="sh_utils/diffs"
+witness_dir="sh_utils/witness"
 
 # if log file already exists, make a copy
 if [ -f "$log_file" ]; then
@@ -265,11 +266,22 @@ for state_file in "$states_dir"/${identifier}_*.state; do
     if [ -n "$notes" ]; then
         notes=$(echo "$notes" | sed 's/.*_notes: //')
     fi
+
+    # Check for the corresponding witness file
+    witness_file="$witness_dir/$(basename "$state_file" .state)_witness.tmp"
+    if [ -f "$witness_file" ]; then
+        # Extract the second line of the witness file
+        bad_state=$(grep "b" "$witness_file")
+    fi
      
     # Write to the log file
     {
         echo "State File: $(basename "$state_file")"
         echo "Seed: $seed"
+        if [ -n "$bad_state" ] && [ "$bad_state" != "b0" ]; then
+            echo "Unexpected Stop: $bad_state"
+        fi
+        echo ""
         echo "Command Hex   : $current_command"
         echo "Command Binary: $current_command_binary"
         echo "opcode >$opcode<, funct3 >$funct3<, funct7 >$funct7<"
@@ -291,7 +303,9 @@ for state_file in "$states_dir"/${identifier}_*.state; do
         echo ""
         echo "$(basename "$state_file" .state)_notes: $notes"
         echo ""
-        echo "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        echo ""
+        echo "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        echo ""
         echo ""
     } >> "$log_file"
 done

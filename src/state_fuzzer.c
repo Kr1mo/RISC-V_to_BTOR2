@@ -257,9 +257,9 @@ int main(int argc, char *argv[]) {
     i_type = true; // lb, lh, lw, ld, lbu, lhu, lwu
     if (rs1 != 0) {
       set_register(s, rs1,
-                   rand() % MEMORY_ADDRESSES -
-                       9); // Ensure rs1 value is low enough that it does not
-                           // overflow the memory
+                   rand() % (MEMORY_ADDRESSES -
+                             9)); // Ensure rs1 value is low enough that it does
+                                  // not overflow the memory
     }
     if (get_register(s, rs1) + rs2 >= MEMORY_ADDRESSES - 9) {
       rs2_placed =
@@ -276,9 +276,9 @@ int main(int argc, char *argv[]) {
     s_type = true; // sb, sh, sw, sd
     if (rs1 != 0) {
       set_register(s, rs1,
-                   rand() % MEMORY_ADDRESSES -
-                       9); // Ensure rs2 value is low enough that it does not
-                           // overflow the memory
+                   rand() % (MEMORY_ADDRESSES -
+                             9)); // Ensure rs2 value is low enough that it does
+                                  // not overflow the memory
     }
     if (get_register(s, rs1) + rd >= MEMORY_ADDRESSES - 9) {
       rd = rand() % (MEMORY_ADDRESSES - 9 - get_register(s, rs1));
