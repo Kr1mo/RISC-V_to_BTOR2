@@ -250,16 +250,6 @@ for state_file in "$states_dir"/${identifier}_*.state; do
         rs2_decimal=$((2#$rs2)) # Convert binary to decimal
         register_concat+="; RS2: $rs2_decimal "
     fi
-
-    # Check if the log file already exists and contains the current state file
-    if [ -f "$log_file" ]; then
-        existing_notes=$(awk -v state_file="$(basename "$state_file")" '
-            $0 ~ "State File: " state_file {found=1}
-            found && $0 ~ "Notes:" {notes_start=1; next}
-            notes_start && $0 ~ "----------------------------------------" {exit}
-            notes_start {print}
-        ' "$log_file")
-    fi
     
     # Write to the log file
     {
@@ -284,9 +274,9 @@ for state_file in "$states_dir"/${identifier}_*.state; do
         echo "Diff Lines:"
         echo "$diff_lines"
         echo ""
-        echo "Notes:$existing_notes"
+        echo "Notes:$"
         echo ""
-        echo "----------------------------------------"
+        echo "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
         echo ""
     } >> "$log_file"
 done
