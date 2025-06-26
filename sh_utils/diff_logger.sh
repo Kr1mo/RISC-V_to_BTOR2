@@ -11,6 +11,11 @@ log_file="sh_utils/${identifier}.log"
 states_dir="sh_utils/generated_states"
 diffs_dir="sh_utils/diffs"
 
+# if log file already exists, make a copy
+if [ -f "$log_file" ]; then
+    cp "$log_file" "${log_file}.bak"
+fi
+
 # Ensure directories exist
 if [ ! -d "$states_dir" ] || [ ! -d "$diffs_dir" ]; then
     echo "Error: Directories 'generated_states' or 'diffs' not found."
@@ -250,7 +255,17 @@ for state_file in "$states_dir"/${identifier}_*.state; do
         rs2_decimal=$((2#$rs2)) # Convert binary to decimal
         register_concat+="; RS2: $rs2_decimal "
     fi
-    
+
+    # If a backup of the log file exists, keep the notes from it
+    notes=""
+    if [ -f "${log_file}.bak" ]; then
+        notes=$(grep "$(basename "$state_file" .state)_notes:" "${log_file}.bak")
+    fi
+    # If notes exist, remove the prefix
+    if [ -n "$notes" ]; then
+        notes=$(echo "$notes" | sed 's/.*_notes: //')
+    fi
+     
     # Write to the log file
     {
         echo "State File: $(basename "$state_file")"
@@ -274,11 +289,16 @@ for state_file in "$states_dir"/${identifier}_*.state; do
         echo "Diff Lines:"
         echo "$diff_lines"
         echo ""
-        echo "Notes:$"
+        echo "$(basename "$state_file" .state)_notes: $notes"
         echo ""
         echo "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
         echo ""
     } >> "$log_file"
 done
+
+# If backup exists, remove it
+if [ -f "${log_file}.bak" ]; then
+    rm "${log_file}.bak"
+fi
 
 echo "Log file created: $log_file"
