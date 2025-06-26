@@ -643,9 +643,14 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   fprintf(f, "%d sort bitvec 16\n", next_line);
   int size16_loc = next_line;
   next_line++;
+
+  fprintf(f, "%d add 5 %d %d\n", next_line, rs1_val_loc, immediate_64bit);
+  int load_address = next_line;
+  next_line++;
+
   int rs1_added = next_line;
   for (size_t i = 0; i < 8; i++) {
-    fprintf(f, "%d add 5 %d %ld\n", next_line, rs1_val_loc,
+    fprintf(f, "%d add 5 %d %ld\n", next_line, load_address,
             comparison_constants_loc + i);
     next_line++;
   }
