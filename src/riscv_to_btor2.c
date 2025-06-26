@@ -868,7 +868,7 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   next_line++;
 
   // MATH W
-  fprintf(f, ";\n; MATH Word\n");
+  fprintf(f, ";\n; MATH Word Immediate\n");
 
   fprintf(f, "%d slice 4 %d 31 0\n", next_line,
           rs1_val_loc); // rs1 cut to 32 bit
@@ -896,6 +896,9 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   fprintf(f, "%d sext 5 %d 32 sraiw_rd\n", next_line + 1, next_line);
   int math_iw_rd_sraiw = next_line + 1;
   next_line += 2;
+
+
+  fprintf(f, ";\n; MATH Word\n");
 
   fprintf(f, "%d slice 4 %d 31 0\n", next_line,
           rs2_val_loc); // rs2 cut to 32 bit

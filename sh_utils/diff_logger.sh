@@ -200,7 +200,7 @@ for state_file in "$states_dir"/${identifier}_*.state; do
         "0110111"|"0010111"|"1101111") # Instructions that not use rs1 (LUI, AUIPC, JAL)
             ;;
         *)
-            rs1=$(echo "$current_command_binary" | cut -c12-17)
+            rs1=$(echo "$current_command_binary" | cut -c13-17)
             rs1_decimal=$((2#$rs1)) # Convert binary to decimal
             ;;
     esac
