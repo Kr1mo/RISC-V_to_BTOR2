@@ -132,8 +132,8 @@ int btor_memory(
       // btormc does not track. therefore, I created a change that will be
       // overwritten, so 0-bytes will always be tracked.
       if (i == 1) {
-        fprintf(f, "%d one 3", next_line);
-        fprintf(f, "%d write 6 %d %d %d", next_line + 1, memory_initializer,
+        fprintf(f, "%d one 3\n", next_line);
+        fprintf(f, "%d write 6 %d %d %d\n", next_line + 1, memory_initializer,
                 mem_adr, next_line);
         memory_initializer = next_line + 1;
         next_line += 2;

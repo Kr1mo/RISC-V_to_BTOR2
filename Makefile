@@ -53,14 +53,14 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/utils/%.c
 	@mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-clean:
-	rm -rf $(OBJ_DIR) $(BIN_DIR) *.tmp *.out sh_utils/*.state sh_utils/*.diff 
+clean: clean_tests 
+	rm -rf $(OBJ_DIR) $(BIN_DIR) *.tmp *.out $(SRC_DIR)/*.state $(SRC_DIR)/*.tmp $(SRC_DIR)/*.btor2 *.state *.btor2
 
 clean_keep_bin:
 	rm -rf $(OBJ_DIR) *.tmp *.out sh_utils/*.state sh_utils/*.diff
 
 clean_witness:
-	rm -rf sh_utils/witness
+	rm -rf sh_utils/witness sh_utils/*.tmp
 
 clean_diffs:
 	rm -rf sh_utils/diffs
