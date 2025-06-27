@@ -225,14 +225,17 @@ int main(int argc, char *argv[]) {
   } else if (command_picker == 3) {
     i_type = true; // jalr
     if (rs2 + get_register(s, rs1) >= MEMORY_ADDRESSES && rs1 != 0) {
-      set_register(s, rs1, rand() % 128); // Ensure rs2 value is low enough that
+      set_register(s, rs1, rand() % 128); // Ensure rs1 value is low enough that
                                           // it does not overflow the memory
     }
-    int alignment_bad = rs2 + get_register(s, rs1) % 4;
+    int alignment_bad = (rs2 + get_register(s, rs1)) % 4;
     if (alignment_bad && rs1 != 0) {
       set_register(s, rs1,
                    get_register(s, rs1) - alignment_bad); // Ensure address is
                                                           // 4-aligned
+    } else if (alignment_bad && rs1 == 0) {
+      rs2 -= alignment_bad;
+      rs2_placed = rs2 << 20;
     }
 
   } else if (command_picker >= 4 && command_picker < 10) {

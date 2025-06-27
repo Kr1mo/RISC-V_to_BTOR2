@@ -125,11 +125,23 @@ int btor_memory(
     if (get_byte(s, addresses[i]) == 0) {
       fprintf(f, "%d constd 2 %ld\n", next_line,
               addresses[i]); // with previous if-statement, size of addresses[i]
-                             // is always smaller than 2^BTOR_MEMORY_SIZE
-      fprintf(f, "%d write 6 %d %d %d\n", next_line + 1, memory_initializer,
-              next_line, empty_cell);
-      memory_initializer = next_line + 1;
-      next_line += 2;
+      // is always smaller than 2^BTOR_MEMORY_SIZE
+      int mem_adr = next_line;
+      next_line++;
+      // If first byte is 0, this does not change zero initialised memory and
+      // btormc does not track. therefore, I created a change that will be
+      // overwritten, so 0-bytes will always be tracked.
+      if (i == 1) {
+        fprintf(f, "%d one 3", next_line);
+        fprintf(f, "%d write 6 %d %d %d", next_line + 1, memory_initializer,
+                mem_adr, next_line);
+        memory_initializer = next_line + 1;
+        next_line += 2;
+      }
+      fprintf(f, "%d write 6 %d %d %d\n", next_line, memory_initializer,
+              mem_adr, empty_cell);
+      memory_initializer = next_line;
+      next_line++;
     } else {
       fprintf(f, "%d consth 3 %x\n", next_line, get_byte(s, addresses[i]));
       fprintf(f, "%d constd 2 %ld\n", next_line + 1,
@@ -1138,7 +1150,7 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
           command_check_loc + 3, next_line + 3);
 
   fprintf(f, "%d or 1 %d %d\n", next_line + 6, next_line + 4,
-          next_line + 5); // Command is jal or jalr
+          next_line + 5); // option jal or jalr
   next_line += 7;
 
   return next_line;
