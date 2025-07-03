@@ -19,6 +19,12 @@
 #define CUT_LOW_BIT_MASK                                                       \
   0b11110 // Mask to cut the lowest bit of a register id (for immediates)
 
+#define RD_LOCATION 7
+#define RS1_LOCATION 15
+#define RS2_LOCATION 20
+#define FUNCT3_LOCATION 12
+#define FUNCT7_LOCATION 25
+
 uint64_t rand_uint64_t() {
   uint64_t value = 0;
   // rand gives a random value between 0 and RAND_MAX, which is usually 2^31-1.
@@ -102,30 +108,16 @@ int main(int argc, char *argv[]) {
   uint64_t rs1 = rand() % 32; // Random rs1 register
   uint64_t rs2 = rand() % 32; // Random rs2 register
   uint64_t rd = rand() % 32;  // Random rd register
-  for (size_t i = 1; i < 32;
-       i++) { // Register x0 is always initialised and zero
-    if (rand() % 2 == 0 && i != rs1 &&
-        i != rs2) // Randomly decide if register is initialised
-    {
-      s->regs_init[i] = false; // Register is not initialised
-    } else {
-      s->regs_values[i] = rand_uint64_t(); // Random register values
-      s->regs_init[i] = true;              // All registers are initialised
-    }
-  }
 
-  uint32_t rd_placed = rd << 7;    // Shift rd to the correct position
-  uint32_t rs1_placed = rs1 << 15; // Shift rs1 to the correct position
-  uint32_t rs2_placed = rs2 << 20; // Shift rs2 to the correct position
+  set_register(s, rs1, rand_uint64_t()); // Set a random value for rs1
+  set_register(s, rs2, rand_uint64_t()); // Set a random value for rs2
+  set_register(s, rd, rand_uint64_t());  // Set a random value for rd
 
   uint32_t sixth_bit_for_shift =
       ((rand() % 2) << 25); // Random 6. bit for shift commands, where lowest
                             // bit of funct7 is part of shift amount
 
-  uint32_t funct7imm =
-      (rand() % 128) << 25; // Random legal funct7 value for immediate commands,
-                            // where lowest bit is part of immediate value
-  uint32_t funct3imm = (rand() % 8) << 12;
+  uint64_t immediate = rand_uint64_t(); // Random immediate value
 
   // Create a random command
   uint32_t command_base[] = {
@@ -182,6 +174,8 @@ int main(int argc, char *argv[]) {
   int command_picker =
       rand() % (sizeof(command_base) /
                 sizeof(command_base[0])); // Randomly pick a command
+  uint32_t command = command_base[command_picker];
+
   bool pc_influence = false;
   bool load = false;
   bool store = false;
@@ -193,8 +187,6 @@ int main(int argc, char *argv[]) {
   bool u_type = false;     // U-type commands
   bool j_type = false;     // J-type commands
   bool shift_type = false; // Shift commands with 6bit shift ammount
-
-  uint32_t command = command_base[command_picker];
 
   if (command_picker < 10 && command_picker >= 2) {
     pc_influence = true; // Branch and jump commands
@@ -210,69 +202,78 @@ int main(int argc, char *argv[]) {
     u_type = true; // lui and auipc
   } else if (command_picker == 2) {
     j_type = true;  // jal
-    rs1_placed = 0; // bits 15-19 are too high for address space of 8bit
-    rs2_placed &= CUT_LOW_BIT_MASK
-                  << 21; // bit 11 is too high for address space of 8bit, also
-                         // must be 4-aligned
-    funct7imm &= 0b111 << 25; // bits 31-25 are too high for address space of
-                              // 8bit, also must be 4-aligned
-    if (s->pc + (rs2_placed >> 20) + (funct7imm >> 20) >= MEMORY_ADDRESSES) {
-      s->pc = (rand() % (MEMORY_ADDRESSES - (rs2_placed >> 20) -
-                         (funct7imm >> 20)) >>
-               2)
-              << 2;
+    if (rand() % 2) // Randomly choose between negative or positive
+    {
+      immediate = rand() % (MEMORY_ADDRESSES - s->pc -
+                            1); // Ensure immediate value is low enough that it
+                                // does not overflow the memory
+    } else {
+      immediate = rand() % s->pc; // Ensure immediate value is low enough that
+                                  // it does not overflow the memory
+      immediate = -immediate;     // Make it negative
     }
+    immediate &= CUT_LOW_BIT_MASK
+                 << 1; // this can only lower immediate, must be 4aligned
   } else if (command_picker == 3) {
     i_type = true; // jalr
-    if (rs2 + get_register(s, rs1) >= MEMORY_ADDRESSES && rs1 != 0) {
-      set_register(s, rs1, rand() % 128); // Ensure rs1 value is low enough that
-                                          // it does not overflow the memory
-    }
-    int alignment_bad = (rs2 + get_register(s, rs1)) % 4;
-    if (alignment_bad && rs1 != 0) {
+    if (rs1)       // != 0
+    {
       set_register(s, rs1,
-                   get_register(s, rs1) - alignment_bad); // Ensure address is
-                                                          // 4-aligned
-    } else if (alignment_bad && rs1 == 0) {
-      rs2 -= alignment_bad;
-      rs2_placed = rs2 << 20;
+                   rand() % MEMORY_ADDRESSES); // Ensure rs1 value is low
+                                               // enough that it does not
+                                               // overflow the memory}
+      if (rand() % 2) // Randomly choose between negative or positive
+      {
+        immediate = rand() % (MEMORY_ADDRESSES - get_register(s, rs1) -
+                              1); // Ensure immediate value is low enough that
+                                  // it does not overflow the memory
+      } else {
+        immediate =
+            rand() %
+            get_register(s, rs1); // Ensure immediate value is low enough that
+                                  // it does not overflow the memory
+        immediate = -immediate;   // Make it negative
+      }
     }
 
   } else if (command_picker >= 4 && command_picker < 10) {
     b_type = true; // beq, bne, blt, bge, bltu, bgeu
-    rd_placed &= CUT_LOW_BIT_MASK
-                 << 7; // rd is not used in branch commands, so we can cut it
-    if ((rd + s->pc) >= MEMORY_ADDRESSES) {
-      rd_placed = rand() % (MEMORY_ADDRESSES - s->pc -
-                            1);      // Ensure rd value is low enough that
-                                     // it does not overflow the memory
-      rd_placed &= CUT_LOW_BIT_MASK; // this can only lower rd
-      rd = rd_placed;                // Set rd to the new value
-      rd_placed = rd_placed << 7;    // Shift rd to the correct position
+
+    if (rand() % 2) // Randomly choose between negative or positive
+    {
+      immediate = rand() % (MEMORY_ADDRESSES - s->pc -
+                            1); // Ensure immediate value is low enough that
+                                // it does not overflow the memory
+    } else {
+      immediate = rand() % s->pc; // Ensure immediate value is low enough that
+                                  // it does not overflow the memory
+      immediate = -immediate;     // Make it negative
     }
-    if (rd + s->pc < MEMORY_ADDRESSES - 64) {
-      command |=
-          sixth_bit_for_shift; // Immediate bit 5 can be set if
-                               // rd + pc is low enough, otherwise it must be 0
-    }
+    immediate &= CUT_LOW_BIT_MASK
+                 << 1; // this can only lower immediate, must be 4aligned
 
   } else if (command_picker >= 10 && command_picker < 17) {
     i_type = true; // lb, lh, lw, ld, lbu, lhu, lwu
     if (rs1 != 0) {
       set_register(s, rs1,
                    rand() % (MEMORY_ADDRESSES -
-                             9)); // Ensure rs1 value is low enough that it does
-                                  // not overflow the memory
+                             8)); // Ensure rs1 value is low enough that it
+                                  // does not overflow the memory
     }
-    if (get_register(s, rs1) + rs2 >= MEMORY_ADDRESSES - 9) {
-      rs2_placed =
-          0; // Ensure rs2 value is low enough that it does not overflow the
-             // memory
-             // could be prettier, but this should be enough
-      rs2 = 0;
+    if (rand() % 2) // Randomly choose between negative or positive
+    {
+      immediate = rand() % (MEMORY_ADDRESSES - get_register(s, rs1) -
+                            8); // Ensure immediate value is low enough that it
+                                // does not overflow the memory
+    } else {
+      immediate = rand() % get_register(s, rs1); // Ensure immediate value is
+                                                 // low enough that it does not
+                                                 // overflow the memory
+      immediate = -immediate;                    // Make it negative
     }
+
     set_doubleword(
-        s, get_register(s, rs1) + rs2,
+        s, get_register(s, rs1) + immediate,
         rand_uint64_t()); // Set a random value in memory at the address
 
   } else if (command_picker >= 17 && command_picker < 21) {
@@ -280,18 +281,19 @@ int main(int argc, char *argv[]) {
     if (rs1 != 0) {
       set_register(s, rs1,
                    rand() % (MEMORY_ADDRESSES -
-                             9)); // Ensure rs2 value is low enough that it does
-                                  // not overflow the memory
+                             9)); // Ensure rs2 value is low enough that it
+                                  // does not overflow the memory
     }
-    if (get_register(s, rs1) + rd >= MEMORY_ADDRESSES - 9) {
-      rd = rand() % (MEMORY_ADDRESSES - 9 - get_register(s, rs1));
-      rd_placed = rd << 7;
-    }
-
-    if (rd + get_register(s, rs1) < MEMORY_ADDRESSES - 64) {
-      command |=
-          sixth_bit_for_shift; // Immediate bit 5 can be set if
-                               // rd + pc is low enough, otherwise it must be 0
+    if (rand() % 2) // Randomly choose between negative or positive
+    {
+      immediate = rand() % (MEMORY_ADDRESSES - get_register(s, rs1) -
+                            8); // Ensure immediate value is low enough that it
+                                // does not overflow the memory
+    } else {
+      immediate = rand() % get_register(s, rs1); // Ensure immediate value is
+                                                 // low enough that it does not
+                                                 // overflow the memory
+      immediate = -immediate;                    // Make it negative
     }
   } else if (command_picker >= 21 && command_picker < 27) {
     i_type = true; // addi, slti, sltiu, xori, ori, andi
@@ -303,19 +305,44 @@ int main(int argc, char *argv[]) {
     i_type = true; // addiw
   } else if (command_picker >= 41 && command_picker < 49) {
     r_type = true; // slliw, srliw, sraiw, addw, subw, sllw, srlw, sraw
-  }
+  } // slliw, srliw and sraiw are no true r types but i takes exactly the space
+    // of rs2
 
-  command |= rd_placed | rs1_placed | rs2_placed;
-  if (u_type /*|| j_type*/) { // immediate gets too high with func3 immediate
-    command |= funct3imm;
-  }
-  if (!r_type && !pc_influence && !load && !store &&
-      !shift_type) // avoid too high immediates with jumps
-  {
-    command |= funct7imm;
-  }
-  if (shift_type) {
-    command |= sixth_bit_for_shift; // Set the 6th bit for shift commands
+  if (r_type) {
+    command |= (rd << RD_LOCATION) | (rs1 << RS1_LOCATION) |
+               (rs2 << RS2_LOCATION); // Set rd, rs1 and rs2 in the command
+  } else if (i_type) {
+    command |=
+        (rd << RD_LOCATION) | (rs1 << RS1_LOCATION) |
+        (immediate << RS2_LOCATION); // Set rd, rs1 and immediate in the command
+  } else if (s_type) {
+    command |=
+        (rs1 << RS1_LOCATION) |
+        (rs2 << RS2_LOCATION); // Set rs1, rd and immediate in the command
+    command |= (immediate & 0b011111) << RD_LOCATION; // [4:0]
+    command |= (immediate & 0b011111110000000) << 20; // [11:5]
+  } else if (b_type) {
+    command |=
+        (rs1 << RS1_LOCATION) |
+        (rs2 << RS2_LOCATION); // Set rs1, rd and immediate in the command
+    command |= (immediate & 0b011110) << RD_LOCATION; // [4:1]
+    command |= (immediate & 0b011111100000) << 20;    // [10:5]
+    command |= (immediate & 0b0100000000000) >> 4;    // [11]
+    command |= (immediate & 0b01000000000000) << 19;  // [12]
+  } else if (u_type) {
+    command |=
+        (rd << RD_LOCATION) |
+        (immediate << RS1_LOCATION); // Set rd and immediate in the command,
+                                     // immediate bits position is trivial
+  } else if (j_type) {
+    command |=
+        (rd << RD_LOCATION) |
+        (immediate << RS1_LOCATION); // Set rd and immediate in the command,
+                                     // immediate bits position is trivial
+  } else if (shift_type) {
+    command |= (rd << RD_LOCATION) | (rs1 << RS1_LOCATION) |
+               (rs2 << RS2_LOCATION); // Set rd, rs1 and shamt in the command
+    command |= sixth_bit_for_shift;   // Set the sixth bit for shift commands
   }
 
   set_word(s, s->pc, command); // Set the command at the pc address
