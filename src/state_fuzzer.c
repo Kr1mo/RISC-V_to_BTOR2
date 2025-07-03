@@ -249,9 +249,11 @@ int main(int argc, char *argv[]) {
                              8)); // Ensure rs1 value is low enough that it
                                   // does not overflow the memory
     }
-    if (rand() % 2 || rs1 == 0) // Randomly choose between negative or positive
+    if (rand() % 2 || get_register(rs1) == 0) // Randomly choose between negative or positive
     {
       int max = MEMORY_ADDRESSES - get_register(s, rs1) - 8;
+      if (max)
+      {      
       immediate =
           rand() %
           (max <= I_TYPE_POSITIVE_IMMEDIATE_MAX
@@ -260,6 +262,9 @@ int main(int argc, char *argv[]) {
                                                  // low enough that it does not
                                                  // overflow the memory or the
                                                  // immediate
+          } else {
+        immediate = 0; // If max is 0, set immediate to 0
+      }
       set_doubleword(
           s, get_register(s, rs1) + immediate,
           rand_uint64_t()); // Set a random value in memory at the address
@@ -287,16 +292,22 @@ int main(int argc, char *argv[]) {
                              9)); // Ensure rs2 value is low enough that it
                                   // does not overflow the memory
     }
-    if (rand() % 2 || rs1 == 0) // Randomly choose between negative or positive
+    if (rand() % 2 || get_register(s, rs1) == 0) // Randomly choose between negative or positive
     {
       int max = MEMORY_ADDRESSES - get_register(s, rs1) - 8;
+      if (max)
+      {      
       immediate =
           rand() %
           (max <= I_TYPE_POSITIVE_IMMEDIATE_MAX
                ? max
                : I_TYPE_POSITIVE_IMMEDIATE_MAX); // Ensure immediate value is
                                                  // low enough that it does not
-                                                 // overflow the memory
+                                                 // overflow the memory or the
+                                                 // immediate
+          } else {
+        immediate = 0; // If max is 0, set immediate to 0
+      }
     } else {
       immediate =
           rand() %
