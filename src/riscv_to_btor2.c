@@ -6,7 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#define BTOR_MEMORY_SIZE 8 // Should be raised to 16 or 32 in future
+#define BTOR_MEMORY_SIZE 16 // Should be raised to 16 or 32 in future
 
 int btor_constants(FILE *f) { // This sadly grew as-needed
   fprintf(f, "; Basics\n");
@@ -164,17 +164,17 @@ int btor_get_current_command(FILE *f, int next_line, int registers,
                              int memory) {
   fprintf(f, ";\n; Get the current command\n");
   fprintf(f, "%d sort bitvec 16\n", next_line);
-  fprintf(f, "%d one 3\n", next_line + 1);
+  fprintf(f, "%d one 2\n", next_line + 1);
 
   fprintf(f, "%d read 3 %d %d\n", next_line + 2, memory,
           registers + 32); // Read the memory at the PC address
-  fprintf(f, "%d add 3 %d %d\n", next_line + 3, registers + 32, next_line + 1);
+  fprintf(f, "%d add 2 %d %d\n", next_line + 3, registers + 32, next_line + 1);
   fprintf(f, "%d read 3 %d %d\n", next_line + 4, memory,
           next_line + 3); // Read the next memory cell
-  fprintf(f, "%d add 3 %d %d\n", next_line + 5, next_line + 3, next_line + 1);
+  fprintf(f, "%d add 2 %d %d\n", next_line + 5, next_line + 3, next_line + 1);
   fprintf(f, "%d read 3 %d %d\n", next_line + 6, memory,
           next_line + 5); // Read the next memory cell
-  fprintf(f, "%d add 3 %d %d\n", next_line + 7, next_line + 5, next_line + 1);
+  fprintf(f, "%d add 2 %d %d\n", next_line + 7, next_line + 5, next_line + 1);
   fprintf(f, "%d read 3 %d %d\n", next_line + 8, memory,
           next_line + 7); // Read the last memory cell
 

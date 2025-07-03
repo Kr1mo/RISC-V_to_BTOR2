@@ -8,7 +8,7 @@
 
 # Check if at least one *.state file is provided as an argument
 if [ "$#" -lt 1 ]; then
-    echo "Usage: $0 [-r] [-k] [-w] <file1.state> <file2.state> ..."
+    echo "Usage: $0 [-r] [-k] [-w] <file1.state> (<file2.state> ...)"
     exit 1
 fi
 

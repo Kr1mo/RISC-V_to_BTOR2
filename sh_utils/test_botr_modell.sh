@@ -1,15 +1,19 @@
 #!/bin/bash
 
 # Check if the user provided the number of tests as an argument
-if [ $# -ne 2 ]; then
+if [ "$#" -lt 2 ]; then
     echo "Usage: $0 <number_of_tests> <Identifier>"
     exit 1
 fi
 
 # Check if the user wants to keep the initial states
 del_bad_states=false
-if [ "$3" == "--keep-states" ]; then
+if [ "${3:-}" == "--del-all-states" ]; then
     del_bad_states=true
+fi
+keep_all_states=false
+if [ "${3:-}" == "--keep-all-states" ]; then
+    keep_all_states=true
 fi
 
 # Get the number of tests from the argument
@@ -52,10 +56,11 @@ chmod +x ./sh_utils/compare_iteration.sh
 
 # Loop to run the specified number of tests
 for ((i=1; i<=num_tests; i++)); do
-    echo "Running test $i..."
 
     # get a random seed for the statefuzzer
     seed=$((RANDOM * RANDOM))
+
+    echo "Running test $i with seed $seed ..."
 
     # Generate a random state using statefuzzer
     ./bin/state_fuzzer -o "sh_utils/generated_states/${identifier}_$i.state" -s $seed
@@ -80,7 +85,9 @@ for ((i=1; i<=num_tests; i++)); do
     else
         echo "No differences found for test $i."
         # remove the generated state file
+        if ! $keep_all_states; then
         rm "sh_utils/generated_states/${identifier}_$i.state"
+        fi
     fi
 
 

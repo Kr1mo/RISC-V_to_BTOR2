@@ -292,7 +292,12 @@ for state_file in "$states_dir"/${identifier}_*.state; do
         fi
         echo ""
         if [ -n "$immediate" ]; then
-            immediate_decimal=$((2#$immediate)) # Convert binary immediate to decimal
+            # Convert binary immediate to decimal, interpreting it as a two's complement number
+            if [ "${immediate:0:1}" == "1" ]; then
+                immediate_decimal=$((-(2**${#immediate} - 2#$immediate)))
+            else
+                immediate_decimal=$((2#$immediate))
+            fi
             immediate_hex=$(printf "%X" $immediate_decimal) # Convert decimal immediate to hexadecimal
             echo "Immediate     : $immediate"
             echo "Immediate Hex : $immediate_hex (Decimal: $immediate_decimal)"
