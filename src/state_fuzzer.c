@@ -232,7 +232,7 @@ int main(int argc, char *argv[]) {
                : I_TYPE_POSITIVE_IMMEDIATE_MAX); // Ensure immediate value is
                                                  // low enough that it does not
                                                  // overflow the memory
-      immediate = -immediate; // Make it negative
+      immediate = -immediate;                    // Make it negative
     }
 
     if ((immediate + get_register(s, rs1)) % 4 != 0) {
@@ -243,7 +243,8 @@ int main(int argc, char *argv[]) {
   } else if (command_picker >= 4 && command_picker < 10) {
     b_type = true; // beq, bne, blt, bge, bltu, bgeu
 
-    if (rand() % 2 || s->pc == 0) // Randomly choose between negative or positive
+    if (rand() % 2 ||
+        s->pc == 0) // Randomly choose between negative or positive
     {
       immediate = rand() % (MEMORY_ADDRESSES - s->pc -
                             1); // Ensure immediate value is low enough that
