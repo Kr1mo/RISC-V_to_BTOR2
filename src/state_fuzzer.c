@@ -394,10 +394,10 @@ int main(int argc, char *argv[]) {
                                      // immediate bits position is trivial
   } else if (j_type) {
     command |= (rd << RD_LOCATION);
-    command |= (immediate & 0b011111111000000000000); // [19:12]
-    command |= (immediate & 0b0100000000000) << 9;    // [11]
-    command |= (immediate & 0b01111111111000000000000000000000) >> 20; // [10:1]
-    command |= (immediate & 0b10000000000000000000000000000000);       // [20]
+    command |= (immediate & 0b011111111000000000000);            // [19:12]
+    command |= (immediate & 0b0100000000000) << 9;               // [11]
+    command |= (immediate & 0b011111111110) << 20;               // [10:1]
+    command |= (immediate & 0b10000000000000000000000000000000); // [20]
   } else if (shift_type) {
     command |= (rd << RD_LOCATION) | (rs1 << RS1_LOCATION) |
                (rs2 << RS2_LOCATION); // Set rd, rs1 and shamt in the command
