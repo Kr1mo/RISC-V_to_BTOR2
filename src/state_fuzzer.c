@@ -5,6 +5,8 @@
 #include <time.h>
 #include <unistd.h>
 
+//test
+
 /* Generate a random generated riscv .state file.
  * This file can then be used to test the
  * the simulation via btormc against risc_v_sim.
