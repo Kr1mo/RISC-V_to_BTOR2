@@ -246,9 +246,12 @@ int main(int argc, char *argv[]) {
     if (rand() % 2 ||
         s->pc == 0) // Randomly choose between negative or positive
     {
-      immediate = rand() % (MEMORY_ADDRESSES - s->pc -
-                            1); // Ensure immediate value is low enough that
-                                // it does not overflow the memory
+      int limit = MEMORY_ADDRESSES - s->pc - 4;
+      if (limit <= 0) {
+        immediate = 0; // Ensure limit is at least 1 to avoid division by zero
+      } else {
+        immediate = rand() % limit; // Ensure immediate value is low enough that
+      } // it does not overflow the memory
     } else {
       immediate = rand() % s->pc; // Ensure immediate value is low enough that
                                   // it does not overflow the memory
