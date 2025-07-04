@@ -16,14 +16,16 @@
 #define MEMORY_ADDRESSES                                                       \
   (1 << MEMORY_SIZE) // Maximum memory size, 256 addresses
 
-#define CUT_LOW_BIT_MASK                                                       \
-  0b11110 // Mask to cut the lowest bit of a register id (for immediates)
+#define CUT_LOW_BITS_MASK                                                      \
+  -4 // == 1...10; Mask to cut the lowest bit of a register id (for immediates)
 
 #define RD_LOCATION 7
 #define RS1_LOCATION 15
 #define RS2_LOCATION 20
 
 #define I_TYPE_POSITIVE_IMMEDIATE_MAX 0x7FF // I-type immediate value modulo
+#define B_TYPE_POSITIVE_IMMEDIATE_MAX                                          \
+  0xFFF // B type i has 13 bits so 12 for positive half
 
 uint64_t rand_uint64_t() {
   uint64_t value = 0;
@@ -186,8 +188,9 @@ int main(int argc, char *argv[]) {
   if (command_picker < 2) {
     u_type = true; // lui and auipc
   } else if (command_picker == 2) {
-    j_type = true;  // jal
-    if (rand() % 2) // Randomly choose between negative or positive
+    j_type = true; // jal
+    if (rand() % 2 ||
+        s->pc == 0) // Randomly choose between negative or positive
     {
       immediate = rand() % (MEMORY_ADDRESSES - s->pc -
                             1); // Ensure immediate value is low enough that it
@@ -197,8 +200,8 @@ int main(int argc, char *argv[]) {
                                   // it does not overflow the memory
       immediate = -immediate;     // Make it negative
     }
-    immediate &= CUT_LOW_BIT_MASK
-                 << 1; // this can only lower immediate, must be 4aligned
+    immediate &=
+        CUT_LOW_BITS_MASK; // this can only lower immediate, must be 4aligned
   } else if (command_picker == 3) {
     i_type = true; // jalr
     if (rs1)       // != 0
@@ -224,15 +227,18 @@ int main(int argc, char *argv[]) {
         immediate = 0; // If max is 0, set immediate to 0
       }
     } else {
-
-      immediate =
-          rand() %
-          (get_register(s, rs1) <= I_TYPE_POSITIVE_IMMEDIATE_MAX
-               ? get_register(s, rs1)
-               : I_TYPE_POSITIVE_IMMEDIATE_MAX); // Ensure immediate value is
-                                                 // low enough that it does not
-                                                 // overflow the memory
-      immediate = -immediate;                    // Make it negative
+      if (get_register(s, rs1)) {
+        immediate =
+            rand() %
+            (get_register(s, rs1) <= I_TYPE_POSITIVE_IMMEDIATE_MAX
+                 ? get_register(s, rs1)
+                 : I_TYPE_POSITIVE_IMMEDIATE_MAX); // Ensure immediate value is
+                                                   // low enough that it does
+                                                   // not overflow the memory
+        immediate = -immediate;                    // Make it negative
+      } else {
+        immediate = 0;
+      }
     }
 
     if ((immediate + get_register(s, rs1)) % 4 != 0) {
@@ -250,15 +256,25 @@ int main(int argc, char *argv[]) {
       if (limit <= 0) {
         immediate = 0; // Ensure limit is at least 1 to avoid division by zero
       } else {
-        immediate = rand() % limit; // Ensure immediate value is low enough that
+        immediate =
+            rand() %
+            (limit <= B_TYPE_POSITIVE_IMMEDIATE_MAX
+                 ? limit
+                 : B_TYPE_POSITIVE_IMMEDIATE_MAX); // Ensure immediate value is
+                                                   // low enough that
       } // it does not overflow the memory
     } else {
-      immediate = rand() % s->pc; // Ensure immediate value is low enough that
-                                  // it does not overflow the memory
-      immediate = -immediate;     // Make it negative
+      immediate =
+          rand() %
+          (s->pc <= B_TYPE_POSITIVE_IMMEDIATE_MAX
+               ? s->pc
+               : B_TYPE_POSITIVE_IMMEDIATE_MAX); // Ensure immediate value is
+                                                 // low enough that it does not
+                                                 // overflow the memory
+      immediate = -immediate;                    // Make it negative
     }
-    immediate &= CUT_LOW_BIT_MASK
-                 << 1; // this can only lower immediate, must be 4aligned
+    immediate &=
+        CUT_LOW_BITS_MASK; // this can only lower immediate, must be 4aligned
 
   } else if (command_picker >= 10 && command_picker < 17) {
     i_type = true; // lb, lh, lw, ld, lbu, lhu, lwu
