@@ -249,20 +249,20 @@ int main(int argc, char *argv[]) {
                              8)); // Ensure rs1 value is low enough that it
                                   // does not overflow the memory
     }
-    if (rand() % 2 || get_register(rs1) == 0) // Randomly choose between negative or positive
+    if (rand() % 2 ||
+        get_register(rs1) == 0) // Randomly choose between negative or positive
     {
       int max = MEMORY_ADDRESSES - get_register(s, rs1) - 8;
-      if (max)
-      {      
-      immediate =
-          rand() %
-          (max <= I_TYPE_POSITIVE_IMMEDIATE_MAX
-               ? max
-               : I_TYPE_POSITIVE_IMMEDIATE_MAX); // Ensure immediate value is
-                                                 // low enough that it does not
-                                                 // overflow the memory or the
-                                                 // immediate
-          } else {
+      if (max) {
+        immediate =
+            rand() %
+            (max <= I_TYPE_POSITIVE_IMMEDIATE_MAX
+                 ? max
+                 : I_TYPE_POSITIVE_IMMEDIATE_MAX); // Ensure immediate value is
+                                                   // low enough that it does
+                                                   // not overflow the memory or
+                                                   // the immediate
+      } else {
         immediate = 0; // If max is 0, set immediate to 0
       }
       set_doubleword(
@@ -292,20 +292,20 @@ int main(int argc, char *argv[]) {
                              9)); // Ensure rs2 value is low enough that it
                                   // does not overflow the memory
     }
-    if (rand() % 2 || get_register(s, rs1) == 0) // Randomly choose between negative or positive
+    if (rand() % 2 || get_register(s, rs1) ==
+                          0) // Randomly choose between negative or positive
     {
       int max = MEMORY_ADDRESSES - get_register(s, rs1) - 8;
-      if (max)
-      {      
-      immediate =
-          rand() %
-          (max <= I_TYPE_POSITIVE_IMMEDIATE_MAX
-               ? max
-               : I_TYPE_POSITIVE_IMMEDIATE_MAX); // Ensure immediate value is
-                                                 // low enough that it does not
-                                                 // overflow the memory or the
-                                                 // immediate
-          } else {
+      if (max) {
+        immediate =
+            rand() %
+            (max <= I_TYPE_POSITIVE_IMMEDIATE_MAX
+                 ? max
+                 : I_TYPE_POSITIVE_IMMEDIATE_MAX); // Ensure immediate value is
+                                                   // low enough that it does
+                                                   // not overflow the memory or
+                                                   // the immediate
+      } else {
         immediate = 0; // If max is 0, set immediate to 0
       }
     } else {
