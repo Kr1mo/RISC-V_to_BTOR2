@@ -307,7 +307,7 @@ int btor_get_immediate(FILE *f, int next_line, int command_loc, int *codes) {
           codes[4]); // [14:12] is at funct3
   fprintf(f, "%d add 4 %d %d [14:0]\n", next_line + 7, next_line + 5,
           next_line + 6); // combine
-  fprintf(f, "%d sll 4 %d 11 [19:15]\n", next_line + 8,
+  fprintf(f, "%d sll 4 %d 10 [19:15]\n", next_line + 8,
           codes[2]); // [19:15] is at rs1
   fprintf(f, "%d add 4 %d %d [19:0]\n", next_line + 9, next_line + 7,
           next_line + 8); // combine
