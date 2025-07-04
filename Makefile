@@ -53,7 +53,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/utils/%.c
 	@mkdir -p $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-clean: clean_tests 
+clean: clean_tests clean_default
 	rm -rf $(OBJ_DIR) $(BIN_DIR) *.tmp *.out $(SRC_DIR)/*.state $(SRC_DIR)/*.tmp $(SRC_DIR)/*.btor2 *.state *.btor2
 
 clean_keep_bin:
@@ -65,8 +65,14 @@ clean_witness:
 clean_diffs:
 	rm -rf sh_utils/diffs
 
-clean_tests: clean_witness clean_diffs
+clean_tests: clean_witness clean_diffs clean_bench clean_default
 	rm -rf sh_utils/*.log sh_utils/generated_states
+
+clean_bench:
+	rm -rf benchmark_files/temp_files bench*.log
+
+clean_default:
+	rm -rf fuzzed.state output.btor2
 
 style-check:
 	clang-tidy $(SRC_DIR)/*.c $(UTILS_SRC) -- -std=c11
