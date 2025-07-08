@@ -94,7 +94,7 @@ for ((i=1; i<=num_tests; i++)); do
 done
 
 # log the completion of all tests if there are states in generated_states
-if [ "$(ls -A sh_utils/generated_states)" ]; then
+if [ "$(ls -A sh_utils/generated_states | grep "^${identifier}_")" ]; then
     echo "Number of failed tests: $(ls sh_utils/generated_states | grep "^${identifier}_" | wc -l)"
     sh_utils/diff_logger.sh "$identifier"
 else
