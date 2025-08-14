@@ -46,6 +46,7 @@ sh_utils/witness/
 *.lot
 *.out
 *.toc
+*.gz
 
 # OS generated files #
 ######################
