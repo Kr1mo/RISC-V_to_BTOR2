@@ -31,52 +31,48 @@
 % include all packages and define commands in setup.tex
 \input{setup}
 
-\begin{document}
+\begin{document}\pagestyle{empty} % no header and no page number
+% disable hyper links to remove warning "destination with same identifier"
+% this means within this section nothing can be referenced with a hyperlink
+\hypersetup{pageanchor=false}
 
-    \input{chapters/x-template_introduction.tex}
-    
-    \pagestyle{empty} % no header and no page number
-    % disable hyper links to remove warning "destination with same identifier"
-    % this means within this section nothing can be referenced with a hyperlink
-    \hypersetup{pageanchor=false}
+% enable/disable, depending on your chosen language
+\input{chapters/0_0-titlepage_en}
+%\input{chapters/0_0-titlepage_de}
 
-    % enable/disable, depending on your chosen language
-    \input{chapters/0_0-titlepage_en}
-    %\input{chapters/0_0-titlepage_de}
+\pagestyle{plain} % remove chapter name from top, page number at the bottom
+% use \pagestyle{headings} for having the chapter on top of the pages
+% if you wang a more fancy header use \usepackage[automark,headsepline]{scrlayer-scrpage}
+% and read about it in the KOMA script documentation, https://www.ctan.org/pkg/koma-script
+\frontmatter  % roman page numbers
+\input{chapters/0_1-declaration}
+\input{chapters/0_2-abstract}
+\tableofcontents
+\listoffigures
+\listoftables
+\listofalgorithms
+\hypersetup{pageanchor=true}  % re-enable hyperlinking
 
-    \pagestyle{plain} % remove chapter name from top, page number at the bottom
-    % use \pagestyle{headings} for having the chapter on top of the pages
-    % if you wang a more fancy header use \usepackage[automark,headsepline]{scrlayer-scrpage}
-    % and read about it in the KOMA script documentation, https://www.ctan.org/pkg/koma-script
-    \frontmatter  % roman page numbers
-    \input{chapters/0_1-declaration}
-    \input{chapters/0_2-abstract}
-    \tableofcontents
-    \listoffigures
-    \listoftables
-    \listofalgorithms
-    \hypersetup{pageanchor=true}  % re-enable hyperlinking
+\mainmatter  % Arabic page numbers
+\input{chapters/1-motivation}
+\input{chapters/2-RiscV}
+\input{chapters/3-BTOR2}
+\input{chapters/4-Transforming RiscV to BTOR2}
+\input{chapters/5-Benchmarks}
 
-    \mainmatter  % Arabic page numbers
-    \input{chapters/1-motivation}
-    \input{chapters/2-RiscV}
-    \input{chapters/3-BTOR2}
-    \input{chapters/4-Transforming RiscV to BTOR2}
-    \input{chapters/5-Benchmarks}
-    
-    % If you want a list of your ToDos at the end of the document
-    % don't forget to remove before submission!
-    %\input{todo_list}
+% If you want a list of your ToDos at the end of the document
+% don't forget to remove before submission!
+%\input{todo_list}
 
-    \bibliographystyle{IEEEtran}
-    \bibliography{bib/main,bib/additional}
-    % bibliography is not in the table of contents per default, add it manually
-    % enable the \renewcommand for german header
-    % \renewcommand{\bibname}{Literaturverzeichnis}
-    \addcontentsline{toc}{chapter}{Bibliography}
-    \newpage
-    \thispagestyle{empty}
-    \mbox{}
+\bibliographystyle{IEEEtran}
+\bibliography{bib/main,bib/additional}
+% bibliography is not in the table of contents per default, add it manually
+% enable the \renewcommand for german header
+% \renewcommand{\bibname}{Literaturverzeichnis}
+\addcontentsline{toc}{chapter}{Bibliography}
+\newpage
+\thispagestyle{empty}
+\mbox{}
 
 
 \end{document}

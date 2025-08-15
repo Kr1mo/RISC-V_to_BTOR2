@@ -40,7 +40,11 @@ Like almost all the standard ISAs of RISC-V, RV64I has a standard encoding
 length of 32bit or 1 \emph{word}. Only the compressed extension C adds
 instructions with a length of 16bit \cite{riscv-isa}(Chapter 1.5), but it is
 irrelevant for us. All instructions of RV64I are encoded in one of the six
-formats shown in \figref{fig:rv64i_formats}.\\ The design of these format
+formats shown in \figref{fig:rv64i_formats}.
+
+\input{figures/Encoding-Types/rv64i_formats}
+
+The design of these format
 results in the following features:
 \begin{itemize}
     \item As of RISC-Vs little endianess, the $opcode$, which encodes the general
@@ -51,8 +55,6 @@ results in the following features:
     \item The highest bit of the immediate value $imm$ is always at the last bit. This
           makes finding the sign of a signed immediate value trivial.
 \end{itemize}
-
-\input{figures/Encoding-Types/rv64i_formats}
 
 \section{Simulation of RISC-V}
 
