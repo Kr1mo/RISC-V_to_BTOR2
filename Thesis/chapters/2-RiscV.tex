@@ -2,48 +2,57 @@
 
 \section{Overview}
 
-RISC-V is an open source instruction set architecture first published in May 2011 by A. Waterman et al. \cite{first_riscv}.
-As contained in the name, it is based on the RISC design philosophy. \todo{Explain RISK (compare wiki)}
-Since 2015 the development of RISC-V is coordinated by the RISC-V International Association,
-a non-profit corporation based in Switzerland since 2020 \cite{riscvorg}.
-Its goals are among others an \emph{open} ISA that is freely available to all,
-a \emph{real} ISA suitable for native hardware implementation and
-an ISA separated into a \emph{small} base integer ISA usable by itself e.g. for educational purpose
-and optional standard extensions to support general purpose software development \cite{riscv-isa}(Chapter 1).
+RISC-V is an open source instruction set architecture first published in May
+2011 by A. Waterman et al. \cite{first_riscv}. As contained in the name, it is
+based on the RISC design philosophy. \todo{Explain RISK (compare wiki)} Since
+2015 the development of RISC-V is coordinated by the RISC-V International
+Association, a non-profit corporation based in Switzerland since 2020
+\cite{riscvorg}. Its goals are among others an \emph{open} ISA that is freely
+available to all, a \emph{real} ISA suitable for native hardware implementation
+and an ISA separated into a \emph{small} base integer ISA usable by itself e.g.
+for educational purpose and optional standard extensions to support general
+purpose software development \cite{riscv-isa}(Chapter 1).
 
 It currently contains four base ISAs, namely RV32I, RV64I, RV32E and RV64E,
-which may be extended with one or more of the 47 ratified extension ISAs \cite{riscv-isa} (Preface).
+which may be extended with one or more of the 47 ratified extension ISAs
+\cite{riscv-isa} (Preface).
 
 \extend{Hier brauchts vlt noch was} \todo{little endian erwähnen?}
 
 For my work, I will focus on a subset of the RV64I ISA.
 
 \section{The RV64I ISA}
-RV64I is not complex, but its structure is relevant to understand my later work.
-So I explain all elements relevant for my thesis.
+RV64I is not complex, but its structure is relevant to understand my later
+work. So I explain all elements relevant for my thesis.
 
-RV64I has 32 64bit registers called $x0$-$x31$, where $x0$ is hardwired to 0 on all bits.
-Registers $x1$-$x31$ are general purpose and are interpreted by various instructions as a collection of booleans, two's complement signed binary integers or unsigned integers.
-Additionally, there is a register called $pc$ acting as program counter and holding the address of the current instruction \cite{riscv-isa}(Chapters 4.1, 2.1).
+RV64I has 32 64bit registers called $x0$-$x31$, where $x0$ is hardwired to 0 on
+all bits. Registers $x1$-$x31$ are general purpose and are interpreted by
+various instructions as a collection of booleans, two's complement signed
+binary integers or unsigned integers. Additionally, there is a register called
+$pc$ acting as program counter and holding the address of the current
+instruction \cite{riscv-isa}(Chapters 4.1, 2.1).
 
-In RV64I, a memory address has the size of 64bit. As the memory model is defined to be single byte addressable,
-the address space of RV64I is $2^{64}$ bytes \cite{riscv-isa}(Chapter 1.4).
+In RV64I, a memory address has the size of 64bit. As the memory model is
+defined to be single byte addressable, the address space of RV64I is $2^{64}$
+bytes \cite{riscv-isa}(Chapter 1.4).
 
-Like almost all the standard ISAs of RISC-V, RV64I has a standard encoding length of 32bit or 1 \emph{word}.
-Only the compressed extension C adds instructions with a length of 16bit \cite{riscv-isa}(Chapter 1.5), but it is irrelevant for us.
-All instructions of RV64I are encoded in one of the six formats shown in \figref{fig:rv64i_formats}.\\
-The design of these format results in the following features:
+Like almost all the standard ISAs of RISC-V, RV64I has a standard encoding
+length of 32bit or 1 \emph{word}. Only the compressed extension C adds
+instructions with a length of 16bit \cite{riscv-isa}(Chapter 1.5), but it is
+irrelevant for us. All instructions of RV64I are encoded in one of the six
+formats shown in \figref{fig:rv64i_formats}.\\ The design of these format
+results in the following features:
 \begin{itemize}
-    \item As of RISC-Vs little endianess, the $opcode$, which encodes the general instruction, is always read first.
-          Also, further specification of the instruction by $funct3$ and $funct7$ is found always at the same location.
-    \item If used by the instruction, the destination register $rd$ and the source registers $rs1$ \& $rs2$ are always at the same place. This simplifys decoding.
-    \item The highest bit of the immediate value $imm$ is always at the last bit. This makes finding the sign of a signed immediate value trivial.
+    \item As of RISC-Vs little endianess, the $opcode$, which encodes the general
+          instruction, is always read first. Also, further specification of the
+          instruction by $funct3$ and $funct7$ is found always at the same location.
+    \item If used by the instruction, the destination register $rd$ and the source
+          registers $rs1$ \& $rs2$ are always at the same place. This simplifys decoding.
+    \item The highest bit of the immediate value $imm$ is always at the last bit. This
+          makes finding the sign of a signed immediate value trivial.
 \end{itemize}
 
 \input{figures/Encoding-Types/rv64i_formats}
-
-
-
 
 \section{Simulation of RISC-V}
 
