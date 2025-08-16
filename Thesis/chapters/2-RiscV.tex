@@ -50,14 +50,16 @@ The design of these format results in the following features:
           instruction, is always read first. Also, further specification of the
           instruction by $funct3$ and $funct7$ is found always at the same location.
     \item If used by the instruction, the destination register $rd$ and the source
-          registers $rs1$ \& $rs2$ are always at the same place. This simplifys decoding.
+          registers $rs1$ \& $rs2$ are always at the same place. This simplifies
+          decoding.
     \item The highest bit of the immediate value $imm$ is always bit 31. This makes
           finding the sign of a signed immediate value trivial.
 \end{itemize}
 Note that each immediate subfield is labeled with the bit position in the immediate value.
-Also, immediate values are always sign extended.
+Immediate values are always sign extended to 31bit and in case of U-, B- and J-type the missing lower bits are filled with zeros.
 
-The following instructions are included in RV64I:
+The instructions relevant to my work are listed in
+\tabref{tab:rv64i-instructions} \input{figures/2-RiscV/instructions-table.tex}
 
 \section{Simulation of RISC-V}
 

@@ -1,3 +1,99 @@
-\begin{tabular}{ll}
+\begin{table}[!htb]
+    \centering
+    % spacing in table
+    \ra{1.3}
+    \begin{minipage}{.25\linewidth}
+        \centering
+        \begin{tabular}{r|l}
+            \hline
+            INSTR          & TYPE \\
+            \hline
+            \texttt{LUI}   & U    \\
+            \texttt{AUIPC} & U    \\
+            \hline
+            \texttt{JAL}   & J    \\
+            \texttt{JALR}  & I    \\
+            \hline
+            \texttt{BEG}   & B    \\
+            \texttt{BNE}   & B    \\
+            \texttt{BLT}   & B    \\
+            \texttt{BGE}   & B    \\
+            \texttt{BLTU}  & B    \\
+            \texttt{BGEU}  & B    \\
+            \hline
+            \texttt{LB}    & I    \\
+            \texttt{LH}    & I    \\
 
-\end{tabular}
+        \end{tabular}
+    \end{minipage}%
+    \begin{minipage}{.25\linewidth}
+        \centering
+        \begin{tabular}{r|l}
+            \hline
+            INSTR          & TYPE \\
+            \hline
+            \texttt{LW}    & I    \\
+            \texttt{LD}    & I    \\
+            \texttt{LBU}   & I    \\
+            \texttt{LHU}   & I    \\
+            \texttt{LWU}   & I    \\
+            \hline
+            \texttt{SB}    & S    \\
+            \texttt{SH}    & S    \\
+            \texttt{SW}    & S    \\
+            \texttt{SD}    & S    \\
+            \hline
+            \texttt{ADDI}  & I    \\
+            \texttt{SLTI}  & I    \\
+            \texttt{SLTIU} & I    \\
+
+        \end{tabular}
+    \end{minipage}%
+    \begin{minipage}{.25\linewidth}
+        \centering
+        \begin{tabular}{r|l}
+            \hline
+            INSTR          & TYPE \\
+            \hline
+            \texttt{XORI}  & I    \\
+            \texttt{ORI}   & I    \\
+            \texttt{ANDI}  & I    \\
+            \texttt{SLLI}  & I    \\
+            \texttt{SRLI}  & I    \\
+            \texttt{SRAI}  & I    \\
+            \hline
+            \texttt{ADDIW} & I    \\
+            \texttt{SLLIW} & I    \\
+            \texttt{SRLIW} & I    \\
+            \texttt{SRAIW} & I    \\
+            \hline
+            \texttt{ADD}   & I    \\
+            \texttt{SUB}   & I    \\
+
+        \end{tabular}
+    \end{minipage}%
+    \begin{minipage}{0.25\linewidth}
+        \centering
+        \begin{tabular}{r|l}
+            \hline
+            INSTR         & TYPE \\
+            \hline
+            \texttt{SLT}  & I    \\
+            \texttt{SLTU} & I    \\
+            \texttt{XOR}  & I    \\
+            \texttt{OR}   & I    \\
+            \texttt{AND}  & I    \\
+            \texttt{SLL}  & I    \\
+            \texttt{SRL}  & I    \\
+            \texttt{SRA}  & I    \\
+            \hline
+            \texttt{ADDW} & I    \\
+            \texttt{SLLW} & I    \\
+            \texttt{SRLW} & I    \\
+            \texttt{SRAW} & I    \\
+            \hline
+        \end{tabular}
+    \end{minipage}
+    \caption[RV64I Instruction Subset]{Subset of RV64I instructions}
+    \label{tab:rv64i-instructions}
+\end{table}
