@@ -1,19 +1,21 @@
 \chapter{RISC-V}\label{chap:riscv}
 
-As the first foundation for my benchmarks and, consequently, this thesis, I will discuss RISC-V and its operational principles.
+As the first foundation for my benchmarks and, consequently, this thesis, I
+will discuss RISC-V and its operational principles.
 
 \section{Overview}
 
 RISC-V is an open-source instruction set architecture first published in May
 2011 by A. Waterman et al. \cite{first_riscv}. As indicated by its name, it is
 based on the RISC design philosophy. \todo{Explain RISC (compare wiki)} Since
-2015, the development of RISC-V has been coordinated by the RISC-V International
-Association, a non-profit corporation based in Switzerland since 2020
-\cite{riscvorg}. Its objectives include providing an \emph{open} ISA that is freely
-available to all, a \emph{real} ISA suitable for native hardware implementation,
-and an ISA divided into a \emph{small} base integer ISA usable independently,
-for example in educational contexts, with optional standard extensions to
-support general-purpose software development \cite{riscv-isa}(Chapter 1).
+2015, the development of RISC-V has been coordinated by the RISC-V
+International Association, a non-profit corporation based in Switzerland since
+2020 \cite{riscvorg}. Its objectives include providing an \emph{open} ISA that
+is freely available to all, a \emph{real} ISA suitable for native hardware
+implementation, and an ISA divided into a \emph{small} base integer ISA usable
+independently, for example in educational contexts, with optional standard
+extensions to support general-purpose software development
+\cite{riscv-isa}(Chapter 1).
 
 Currently, RISC-V comprises four base ISAs: RV32I, RV64I, RV32E, and RV64E,
 which can be extended with one or more of the 47 ratified extension ISAs
@@ -24,38 +26,39 @@ which can be extended with one or more of the 47 ratified extension ISAs
 For the purposes of this work, I will focus on a subset of the RV64I ISA.
 
 \section{The RV64I ISA}
-RV64I is not overly complex, but its structure is essential for understanding the
-subsequent work presented in this thesis. Therefore, I will explain all elements
-relevant to my research.
+RV64I is not overly complex, but its structure is essential for understanding
+the subsequent work presented in this thesis. Therefore, I will explain all
+elements relevant to my research.
 
-RV64I features 32 64-bit registers, labeled $x0$–$x31$, where $x0$ is hardwired to
-zero across all bits. Registers $x1$–$x31$ are general-purpose and may be
-interpreted by various instructions as collections of booleans, two's complement
-signed binary integers, or unsigned integers. Additionally, there is a register
-called $pc$, which serves as the program counter and holds the address of the
-current instruction \cite{riscv-isa}(Chapters 4.1, 2.1).
+RV64I features 32 64-bit registers, labeled $x0$–$x31$, where $x0$ is hardwired
+to zero across all bits. Registers $x1$–$x31$ are general-purpose and may be
+interpreted by various instructions as collections of booleans, two's
+complement signed binary integers, or unsigned integers. Additionally, there is
+a register called $pc$, which serves as the program counter and holds the
+address of the current instruction \cite{riscv-isa}(Chapters 4.1, 2.1).
 
-In RV64I, memory addresses are 64 bits in size. As the memory model is defined to
-be single-byte addressable, the address space of RV64I encompasses $2^{64}$ bytes
-\cite{riscv-isa}(Chapter 1.4).
+In RV64I, memory addresses are 64 bits in size. As the memory model is defined
+to be single-byte addressable, the address space of RV64I encompasses $2^{64}$
+bytes \cite{riscv-isa}(Chapter 1.4).
 
 Like nearly all standard ISAs of RISC-V, RV64I employs a standard instruction
 encoding length of 32 bits, or one \emph{word}. Only the compressed extension C
 introduces instructions with a length of 16 bits \cite{riscv-isa}(Chapter 1.5),
-which is not relevant for this discussion. All RV64I instructions are encoded in
-one of the six formats illustrated in \figref{fig:rv64i_formats}.
+which is not relevant for this discussion. All RV64I instructions are encoded
+in one of the six formats illustrated in \figref{fig:rv64i_formats}.
 
 \input{figures/2-RiscV/rv64i_formats.tex}
 
 The design of these formats results in the following features:
 \begin{itemize}
       \item Due to RISC-V's little-endian nature, the $opcode$, which encodes the general
-            instruction, is always read first. Further specification of the
-            instruction via $funct3$ and $funct7$ is consistently located at the same positions.
+            instruction, is always read first. Further specification of the instruction via
+            $funct3$ and $funct7$ is consistently located at the same positions.
       \item If utilized by the instruction, the destination register $rd$ and the source
-            registers $rs1$ and $rs2$ are always found in the same locations, simplifying decoding.
-      \item The highest bit of the immediate value $imm$ is always bit 31, making it straightforward
-            to sign-extend the immediate value.
+            registers $rs1$ and $rs2$ are always found in the same locations, simplifying
+            decoding.
+      \item The highest bit of the immediate value $imm$ is always bit 31, making it
+            straightforward to sign-extend the immediate value.
 \end{itemize}
 Note that each immediate subfield is labeled with its bit position within the immediate value.
 Immediate values are always sign-extended to 31 bits, and in the case of U-, B-, and J-type formats, the missing lower bits are filled with zeros.
@@ -63,17 +66,26 @@ Immediate values are always sign-extended to 31 bits, and in the case of U-, B-,
 The instructions relevant to my work are listed in
 \tabref{tab:rv64i-instructions} \input{figures/2-RiscV/instructions-table.tex}
 
-I have divided the instructions in \tabref{tab:rv64i-instructions} into nine groups based on their operations.
-\texttt{LUI} and \texttt{AUIPC} move a high immediate into $rd$; \texttt{JA*} instructions are unconditional jumps, and \texttt{B*} instructions are conditional jumps.
-\texttt{L*} instructions load sign-extended values from memory, either as \texttt{B}yte, \texttt{H}alfword, \texttt{W}ord, or \texttt{D}oubleword lengths.
-Conversely, \texttt{S*} instructions write values of the specified length to memory.
-\todo{arithmetic}
-Note that the suffix \texttt{U} denotes operations where values are processed as unsigned.
+I have divided the instructions in \tabref{tab:rv64i-instructions} into nine
+groups based on their operations. \texttt{LUI} and \texttt{AUIPC} move a high
+immediate into $rd$; \texttt{JA*} instructions are unconditional jumps, and
+\texttt{B*} instructions are conditional jumps. \texttt{L*} instructions load
+sign-extended values from memory, either as \texttt{B}yte, \texttt{H}alfword,
+\texttt{W}ord, or \texttt{D}oubleword lengths. Conversely, \texttt{S*}
+instructions write values of the specified length to memory. \todo{arithmetic}
+Note that the suffix \texttt{U} denotes operations where values are processed
+as unsigned.
+
+I left out \texttt{FENCE}, \texttt{ECALL} and \texttt{EBREAK} instructions as
+without I/O interaction or an environment like an OS or a debugger, these are
+not needed.
 
 \section{Simulation of RISC-V}
 \todo{This may be better placed in Chapter 4, but the state file is relevant here.}
 
 \subsection{Saving the State of a RISC-V Processor}\label{statefile}
-To preserve the current state of a RISC-V processor, both the registers and memory must be stored.
-For this purpose, I have devised the format shown in \figref{statefileform}. The minimal file consists only of the two designators \dq REGISTERS:\dq\ and \dq MEMORY:\dq, the current $pc$, and one empty line.
+To preserve the current state of a RISC-V processor, both the registers and
+memory must be stored. For this purpose, I have devised the format shown in
+\figref{statefileform}. The minimal file consists only of the two designators
+\dq REGISTERS:\dq\ and \dq MEMORY:\dq, the current $pc$, and one empty line.
 \input{figures/2-RiscV/statefile.tex}
