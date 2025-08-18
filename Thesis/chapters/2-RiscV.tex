@@ -46,14 +46,14 @@ formats shown in \figref{fig:rv64i_formats}.
 
 The design of these format results in the following features:
 \begin{itemize}
-    \item As of RISC-Vs little endianess, the $opcode$, which encodes the general
-          instruction, is always read first. Also, further specification of the
-          instruction by $funct3$ and $funct7$ is found always at the same location.
-    \item If used by the instruction, the destination register $rd$ and the source
-          registers $rs1$ \& $rs2$ are always at the same place. This simplifies
-          decoding.
-    \item The highest bit of the immediate value $imm$ is always bit 31. This makes
-          finding the sign of a signed immediate value trivial.
+      \item As of RISC-Vs little endianess, the $opcode$, which encodes the general
+            instruction, is always read first. Also, further specification of the
+            instruction by $funct3$ and $funct7$ is found always at the same location.
+      \item If used by the instruction, the destination register $rd$ and the source
+            registers $rs1$ \& $rs2$ are always at the same place. This simplifies
+            decoding.
+      \item The highest bit of the immediate value $imm$ is always bit 31. This makes
+            finding the sign of a signed immediate value trivial.
 \end{itemize}
 Note that each immediate subfield is labeled with the bit position in the immediate value.
 Immediate values are always sign extended to 31bit and in case of U-, B- and J-type the missing lower bits are filled with zeros.
@@ -61,6 +61,17 @@ Immediate values are always sign extended to 31bit and in case of U-, B- and J-t
 The instructions relevant to my work are listed in
 \tabref{tab:rv64i-instructions} \input{figures/2-RiscV/instructions-table.tex}
 
+I splitted the instructions of \tabref{tab:rv64i-instructions} into nine groups based on their operations.
+\texttt{LUI} \& \texttt{AUIPC} move a high immediate into $rd$, \texttt{JA*} instructions are unconditional jumps and \texttt{B*} instructions conditional jumps.
+\texttt{L*} are loading sign extended values from memory, either at \texttt{B}yte, \texttt{H}alfword, \texttt{W}ord or \texttt{D}oubleword length.
+In contrast, \texttt{S*} instructions write the defined length to memory.
+\todo{arithmetic}
+Note that the suffix \texttt{U} defines an operation where the values are processed as unsigned.
+
 \section{Simulation of RISC-V}
+\todo{Vielleicht besser aufgehoben in Kap.4, aber statefile relevant.}
 
 \subsection{Saving the State of a RISC-V Processor}\label{statefile}
+To save the current state of a RISC-V processor, the registers and the memory have to be stored.
+For this I devised the format as shown in \figref{statefileform}. The minimal file only consists of the two designators \dq REGISTERS:\dq \& \dq MEMORY:\dq, the current $pc$ and one empty line.
+\input{figures/2-RiscV/statefile.tex}
