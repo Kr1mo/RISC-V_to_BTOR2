@@ -1,40 +1,85 @@
 \chapter{Transforming RISC-V to BTOR2}\label{chap:riscv_to_btor2}
-Now to the main problem of the thesis: Transforming RISC-V code into the BTOR2
-format for the benchmarks. My main source in this endeavour is F.
-Schrögendorfers master thesis \dq Bounded Model Checking in Lockless
-Programs\dq \cite{bmcOfLockless} where he, among other things, describes an
-encoding concept for a minimal machine in a multiprocessor context
-\cite[chapter 2]{bmcOfLockless} and two approaches to a Next-State-Logic, a
-funtional \cite[Chapter 6]{bmcOfLockless} and a relational \cite[Chapter
-    7]{bmcOfLockless} I will focus on the relational approach, an argument on both
-approaches is found in \secref{sec:funcVSrel}
+
+This chapter addresses the main problem of the thesis: transforming RISC-V code
+into the BTOR2 format for benchmarking purposes. My primary reference for this
+endeavor is F. Schrögendorfer's master's thesis, \dq Bounded Model Checking in
+Lockless Programs\dq \cite{bmcOfLockless}, in which he describes, among other
+topics, an encoding concept for a minimal machine in a multiprocessor context
+\cite[Chapter 2]{bmcOfLockless} and two approaches to next-state logic: a
+functional \cite[Chapter 6]{bmcOfLockless} and a relational \cite[Chapter
+    7]{bmcOfLockless} approach. I will focus on the relational approach; a
+discussion of both approaches can be found in \secref{sec:funcVSrel}.
 
 \section{The Concept}
-To successfully execute RISC-V instruction, three basic steps have to happen in
-order:
+To successfully execute a RISC-V instruction, three fundamental steps must
+occur in sequence:
 \begin{itemize}
-    \item Fetching the current instruction from memory
-    \item Identifying this instruction
-    \item Execute this instruction
+    \item Fetch the current instruction from memory
+    \item Identify the instruction
+    \item Execute the instruction
 \end{itemize}
-Because of the fixed instruction length of RISC-V, earlier mentioned in \secref{sec:riscvIsa}, fetching the current instruction becomes trivially easy.
+Due to the fixed instruction length of RISC-V, as mentioned in \secref{sec:riscvIsa}, fetching the current instruction is straightforward. Ultimately, we want a node that retrieves a $word$ from memory at the location specified by $pc$.
 
-For Identifying,
+For basic identification, the $opcode$ must be extracted and checked. Depending
+on the opcode, further distinctions between instructions require extracting and
+checking $funct3$ and, if necessary, $funct7$. Ultimately, we want a node for
+each instruction, which holds a boolean value indicating whether this
+instruction was fetched.
+
+To execute the instruction, we need to extract the values of the immediate
+$imm$ and, if used, the registers $rs1$ and $rs2$. All instructions only modify
+$rd$, $pc$, or memory. Therefore, the next-state logic can be generalized for
+these three cases.
+
+Memory is only modified when a store instruction is identified. As all store
+instructions share the same type, computing the memory address is consistent
+across them. The final step is overwriting the memory at this address.
+
+For the $pc$, except for jump commands, it always increments to point to the
+next instruction. The two unconditional jumps, \texttt{JAL} and \texttt{JALR},
+must be handled separately. For branch instructions, after determining whether
+the relevant condition for the instruction holds, we can generalize, as all
+branch instructions execute the same operation from this point onward.
+
+With $rd$, generalization across instructions is not feasible. However, we can
+generalize across all possible registers by adding a check in each register's
+update function to determine whether the register in question is $rd$.
 
 \section{Encoding}
+For better visualisation in the BTOR2 code I will mark all sort-ids in
+\textcolor{UniGrey}{grey}, all node-ids in \textcolor{UniRed}{red} and all
+non-id numbers \textcolor{UniBlue}{blue}.
+
 \subsection{Constants}
+First off, I added the sorts needed and some general purpose useful constants
+into the BTOR2 model as seen in \figref{fig:constants}.
+\input{figures/4-Transform/btor2constants.tex} Of note is the Representation of
+the memory as an array of addressable memory cells of each 1byte. Obviously,
+the set address space of 16bit is magnitudes away of the expected address space
+of 64bit, but representing a 64bit addressable memory with its resulting
+$2^{64}B \approx 18 Exabyte$ is not implementable. Therefore, as I needed a
+feasible amount of memory space, I artificially chose a 16bit address space as
+a soft minimum. With $~65kB$ and therefore programs with possibly $>10000$
+instructions I deemed this memory sufficient for most use cases. Despite this,
+the encoding is implemented in such a way that the address space can be altered
+with. \todo{benchmark auswirkungen von memory size}
+
 \subsection{State Representation}
 \subsection{Initialization}
 \subsection{Fetching}
-\subsection{Computing values}
+\subsection{Computing Values}
 \subsubsection{Opcode}
 \subsubsection{funct3 \& funct7}
 \subsubsection{Registers}
 \subsubsection{Immediate}
 \subsection{Command Detection}
-\subsection{Next-State-Logic}
+\subsection{Next-State Logic}
+\subsubsection{$rd$}
+\subsubsection{$pc$}
+\subsubsection{Memory}
 \subsection{Constraints}
 \section{Testing for Correctness}
 \subsection{State Fuzzer}
 \subsection{Automated Logging}
-\section{Functional vs Relational Next-State-Logic}\label{sec:funcVSrel}
+
+\section{Functional vs Relational Next-State Logic}\label{sec:funcVSrel}
