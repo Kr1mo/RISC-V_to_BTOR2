@@ -14,12 +14,12 @@ International Association, a non-profit corporation based in Switzerland since
 is freely available to all, a \emph{real} ISA suitable for native hardware
 implementation, and an ISA divided into a \emph{small} base integer ISA usable
 independently, for example in educational contexts, with optional standard
-extensions to support general-purpose software development
-\cite{riscv-isa}(Chapter 1).
+extensions to support general-purpose software development \cite[Chapter
+      1]{riscv-isa}.
 
 Currently, RISC-V comprises four base ISAs: RV32I, RV64I, RV32E, and RV64E,
 which can be extended with one or more of the 47 ratified extension ISAs
-\cite{riscv-isa} (Preface).
+\cite[Preface]{riscv-isa}.
 
 \extend{Additional content may be required here} \todo{Mention little endian?}
 
@@ -35,15 +35,15 @@ to zero across all bits. Registers $x1$–$x31$ are general-purpose and may be
 interpreted by various instructions as collections of booleans, two's
 complement signed binary integers, or unsigned integers. Additionally, there is
 a register called $pc$, which serves as the program counter and holds the
-address of the current instruction \cite{riscv-isa}(Chapters 4.1, 2.1).
+address of the current instruction \cite[Chapters 4.1, 2.1]{riscv-isa}.
 
 In RV64I, memory addresses are 64 bits in size. As the memory model is defined
 to be single-byte addressable, the address space of RV64I encompasses $2^{64}$
-bytes \cite{riscv-isa}(Chapter 1.4).
+bytes \cite[Chapter 1.4]{riscv-isa}.
 
 Like nearly all standard ISAs of RISC-V, RV64I employs a standard instruction
 encoding length of 32 bits, or one \emph{word}. Only the compressed extension C
-introduces instructions with a length of 16 bits \cite{riscv-isa}(Chapter 1.5),
+introduces instructions with a length of 16 bits \cite[Chapter 1.5]{riscv-isa},
 which is not relevant for this discussion. All RV64I instructions are encoded
 in one of the six formats illustrated in \figref{fig:rv64i_formats}.
 
