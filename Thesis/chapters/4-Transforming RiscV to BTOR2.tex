@@ -1,9 +1,31 @@
 \chapter{Transforming RISC-V to BTOR2}\label{chap:riscv_to_btor2}
+Now to the main problem of the thesis: Transforming RISC-V code into the BTOR2
+format for the benchmarks. My main source in this endeavour is F.
+Schrögendorfers master thesis \dq Bounded Model Checking in Lockless
+Programs\dq \cite{bmcOfLockless} where he, among other things, describes an
+encoding concept for a minimal machine in a multiprocessor context
+\cite[chapter 2]{bmcOfLockless} and two approaches to a Next-State-Logic, a
+funtional \cite[Chapter 6]{bmcOfLockless} and a relational \cite[Chapter
+    7]{bmcOfLockless} I will focus on the relational approach, an argument on both
+approaches is found in \secref{sec:funcVSrel}
+
 \section{The Concept}
+To successfully execute RISC-V instruction, three basic steps have to happen in
+order:
+\begin{itemize}
+    \item Fetching the current instruction from memory
+    \item Identifying this instruction
+    \item Execute this instruction
+\end{itemize}
+Because of the fixed instruction length of RISC-V, earlier mentioned in \secref{sec:riscvIsa}, fetching the current instruction becomes trivially easy.
+
+For Identifying,
+
 \section{Encoding}
 \subsection{Constants}
 \subsection{State Representation}
 \subsection{Initialization}
+\subsection{Fetching}
 \subsection{Computing values}
 \subsubsection{Opcode}
 \subsubsection{funct3 \& funct7}
@@ -15,4 +37,4 @@
 \section{Testing for Correctness}
 \subsection{State Fuzzer}
 \subsection{Automated Logging}
-\section{Functional vs Relational Next-State-Logic}
+\section{Functional vs Relational Next-State-Logic}\label{sec:funcVSrel}

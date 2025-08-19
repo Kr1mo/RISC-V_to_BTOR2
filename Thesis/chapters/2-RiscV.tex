@@ -25,7 +25,7 @@ which can be extended with one or more of the 47 ratified extension ISAs
 
 For the purposes of this work, I will focus on a subset of the RV64I ISA.
 
-\section{The RV64I ISA}
+\section{The RV64I ISA} \label{sec:riscvIsa}
 RV64I is not overly complex, but its structure is essential for understanding
 the subsequent work presented in this thesis. Therefore, I will explain all
 elements relevant to my research.
@@ -83,7 +83,7 @@ not needed.
 \section{Simulation of RISC-V}
 \todo{This may be better placed in Chapter 4, but the state file is relevant here.}
 
-\subsection{Saving the State of a RISC-V Processor}\label{statefile}
+\subsection{Saving the State of a RISC-V Processor}\label{sub:statefile}
 To preserve the current state of a RISC-V processor, both the registers and
 memory must be stored. For this purpose, I have devised the format shown in
 \figref{statefileform}. The minimal file consists only of the two designators
