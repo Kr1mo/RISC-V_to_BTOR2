@@ -49,6 +49,8 @@ update function to determine whether the register in question is $rd$.
 For better visualisation in the BTOR2 code I will mark all sort-ids in
 \textcolor{UniGrey}{grey}, all node-ids in \textcolor{UniRed}{red} and all
 non-id numbers \textcolor{UniBlue}{blue}.
+As described in the BTOR2 syntax \cite[Figure 1]{btor2}, each line can get an accompanying symbol. Sadly those cant be used as an alias to the line numbers, but for increased clarity, in the following figures I will use them as such aliases.
+
 
 \subsection{Constants}
 First off, I added the sorts needed and some general purpose useful constants
@@ -65,6 +67,10 @@ the encoding is implemented in such a way that the address space can be altered
 with. \todo{benchmark auswirkungen von memory size}
 
 \subsection{State Representation}
+
+The next logical step is defining a representation of a RISC-V state. Tis is straightforward as shown in \figref{fig:states}
+\input{figures/4-Transform/btor2staterep.tex}
+
 \subsection{Initialization}
 \subsection{Fetching}
 \subsection{Computing Values}

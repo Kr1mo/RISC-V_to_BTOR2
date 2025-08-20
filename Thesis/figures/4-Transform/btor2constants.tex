@@ -2,22 +2,23 @@
     \centering
     \ttfamily
     \begin{tabular}{>{\color{UniRed}}r l l l >{\itshape} l}
-        \textcolor{UniGrey}{1} & sort   & bitvec                 & \textcolor{UniBlue}{1}   & Boolean           \\
-        \textcolor{UniGrey}{2} & sort   & bitvec                 & \textcolor{UniBlue}{16}  & Address\_space    \\
-        \textcolor{UniGrey}{3} & sort   & bitvec                 & \textcolor{UniBlue}{8}   & Memory\_cell      \\
-        \textcolor{UniGrey}{4} & sort   & bitvec                 & \textcolor{UniBlue}{32}  & Command           \\
-        \textcolor{UniGrey}{5} & sort   & bitvec                 & \textcolor{UniBlue}{64}  & Register          \\
-        \textcolor{UniGrey}{6} & sort   & array                  & \textcolor{UniGrey}{2 3} & Memory            \\
-        7                      & zero   & \textcolor{UniGrey}{5} &                          & empty\_reg        \\
-        8                      & constd & \textcolor{UniGrey}{4} & \textcolor{UniBlue}{31}  & register\_bitmask \\
-        9                      & constd & \textcolor{UniGrey}{4} & \textcolor{UniBlue}{7}   & shift\_rd         \\
-        10                     & constd & \textcolor{UniGrey}{4} & \textcolor{UniBlue}{15}  & shift\_rs1        \\
-        11                     & constd & \textcolor{UniGrey}{4} & \textcolor{UniBlue}{20}  & shift\_rs2        \\
-        12                     & constd & \textcolor{UniGrey}{4} & \textcolor{UniBlue}{12}  & shift\_funct3     \\
-        13                     & constd & \textcolor{UniGrey}{4} & \textcolor{UniBlue}{25}  & shift\_funct7     \\
-        14                     & one    & \textcolor{UniGrey}{4} &                          & bit\_picker       \\
-        15                     & one    & \textcolor{UniGrey}{1} &                          & true              \\
-        16                     & zero   & \textcolor{UniGrey}{1} &                          & false             \\
+        \textcolor{UniGrey}{1} & sort   & bitvec                 & \textcolor{UniBlue}{1}   & Bool              \\
+        \textcolor{UniGrey}{2} & sort   & bitvec                 & \textcolor{UniBlue}{16}  & AS                \\
+        \textcolor{UniGrey}{3} & sort   & bitvec                 & \textcolor{UniBlue}{8}   & B                 \\
+        \textcolor{UniGrey}{4} & sort   & bitvec                 & \textcolor{UniBlue}{16}  & H                 \\
+        \textcolor{UniGrey}{5} & sort   & bitvec                 & \textcolor{UniBlue}{32}  & W                 \\
+        \textcolor{UniGrey}{6} & sort   & bitvec                 & \textcolor{UniBlue}{64}  & D                 \\
+        \textcolor{UniGrey}{7} & sort   & array                  & \textcolor{UniGrey}{2 3} & Mem               \\
+        8                      & zero   & \textcolor{UniGrey}{6} &                          & empty\_reg        \\
+        9                      & constd & \textcolor{UniGrey}{5} & \textcolor{UniBlue}{31}  & register\_bitmask \\
+        10                     & constd & \textcolor{UniGrey}{5} & \textcolor{UniBlue}{7}   & shift\_rd         \\
+        11                     & constd & \textcolor{UniGrey}{5} & \textcolor{UniBlue}{15}  & shift\_rs1        \\
+        12                     & constd & \textcolor{UniGrey}{5} & \textcolor{UniBlue}{20}  & shift\_rs2        \\
+        13                     & constd & \textcolor{UniGrey}{5} & \textcolor{UniBlue}{12}  & shift\_funct3     \\
+        14                     & constd & \textcolor{UniGrey}{5} & \textcolor{UniBlue}{25}  & shift\_funct7     \\
+        15                     & one    & \textcolor{UniGrey}{5} &                          & bit\_picker       \\
+        16                     & one    & \textcolor{UniGrey}{1} &                          & true              \\
+        17                     & zero   & \textcolor{UniGrey}{1} &                          & false             \\
     \end{tabular}
     \caption[Constants for transforming RISC-V to BTOR2]{Constants for encoding}\label{fig:constants}
 \end{figure}

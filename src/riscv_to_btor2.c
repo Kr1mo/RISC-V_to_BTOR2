@@ -29,7 +29,7 @@ int btor_constants(FILE *f) { // This sadly grew as-needed
   fprintf(f, "15 one 5 bit_picker\n");
   fprintf(f, "16 one 1 true\n");
   fprintf(f, "17 zero 1 false\n");
-  return 17; // Next line number
+  return 18; // Next line number
 }
 int btor_counter(FILE *f, int next_line) {
   fprintf(f, ";\n; Counter for executed commands\n");
