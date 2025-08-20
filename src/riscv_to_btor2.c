@@ -10,16 +10,16 @@
 
 int btor_constants(FILE *f) { // This sadly grew as-needed
   fprintf(f, "; Basics\n");
-  fprintf(f, "1 sort bitvec 1 Boolean\n"); // booleans
-  fprintf(f, "2 sort bitvec %d Address_space\n",
+  fprintf(f, "1 sort bitvec 1 Bool\n"); // booleans
+  fprintf(f, "2 sort bitvec %d AS\n",
           BTOR_MEMORY_SIZE);                   // memory representation
-  fprintf(f, "3 sort bitvec 8 Memory_cell\n"); // memory cell
-  fprintf(f, "4 sort bitvec 16 Halfword")
-  fprintf(f, "5 sort bitvec 32 Command\n");    // command
-  fprintf(f, "6 sort bitvec 64 Register\n");   // registers
-  fprintf(f, "7 sort array 2 3 Memory\n");     // Array with BTOR_MEMORY_SIZE
+  fprintf(f, "3 sort bitvec 8 B\n"); // memory cell
+  fprintf(f, "4 sort bitvec 16 H")
+  fprintf(f, "5 sort bitvec 32 W\n");    // command
+  fprintf(f, "6 sort bitvec 64 D\n");   // registers
+  fprintf(f, "7 sort array 2 3 Mem\n");     // Array with BTOR_MEMORY_SIZE
                                                // elements of 8 bit memory cells
-  fprintf(f, "8 zero 5\n");                    // register zero
+  fprintf(f, "8 zero 5 empty_reg\n");                    // register zero
   fprintf(f, "9 constd 5 31 register_bitmask\n"); // bitmask for register codes
   fprintf(f, "10 constd 5 7 shift_rd\n");
   fprintf(f, "11 constd 5 15 shift_rs1\n");
