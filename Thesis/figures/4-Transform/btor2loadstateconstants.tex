@@ -5,8 +5,10 @@
     add to model:\\
     \begin{tabular}[h]{>{\color{UniRed}}r l >{\color{UniGrey}}l l >{\itshape} l}
         \hline
+        \hline
         \ttfamily
         (n + 0) & constd & AS & \textcolor{UniBlue}{\rmfamily\textit{pc\_value}} & pc\_const \\
+        \hline
         \hline
     \end{tabular}\\
     \textcolor{UniRed}{n} += 1
@@ -19,8 +21,10 @@
                 add to model:\\
                 \begin{tabular}[h]{>{\color{UniRed}}r l >{\color{UniGrey}}l l >{\itshape} l}
                     \hline
+                    \hline
                     \ttfamily
                     (n + 0) & constd & D & \textcolor{UniBlue}{\rmfamily$register\_value$} & \textcolor{Green}{$x_i$}\_const \\
+                    \hline
                     \hline
                 \end{tabular}\\
                 \textcolor{UniRed}{n} += 1
@@ -32,8 +36,10 @@
 
     \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\ttfamily}l >{\itshape} l}
         \hline
+        \hline
         (n + 0) & state & Mem &                                       & mem\_ph \\
         (n + 1) & init  & Mem & \textcolor{UniRed}{$mem\_ph$ (n + 0)} &         \\
+        \hline
         \hline
     \end{tabular}\\
     \textcolor{UniRed}{n} += 2\\
@@ -47,10 +53,12 @@
         add to model:\\
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\ttfamily}l >{\itshape} l}
             \hline
+            \hline
             \ttfamily
             (n + 0) & constd & AS  & \textcolor{UniBlue}{\rmfamily$address$}                 &                                 \\
             (n + 1) & constd & B   & \textcolor{UniBlue}{\rmfamily$value$}                   &                                 \\
             (n + 2) & write  & Mem & \textcolor{UniRed}{\textrm{$last\_ph$} (n + 0) (n + 1)} & ph\_after\_\textcolor{Green}{c} \\
+            \hline
             \hline
         \end{tabular}\\
         \textcolor{UniRed}{n} += 3\\

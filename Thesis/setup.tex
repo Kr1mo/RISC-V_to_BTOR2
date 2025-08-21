@@ -56,7 +56,7 @@
 % You might not need the following packages, I only included them as they
 % are needed for the example floats
 % ------------------- functional, custom -------------------
-\usepackage{algorithm2e}
+\usepackage[boxed]{algorithm2e}
 \usepackage{bm}  % bold greek variables (boldmath)
 \usepackage{tikz}
 \usetikzlibrary{positioning}  % use: above left of, etc
@@ -133,7 +133,8 @@
 \newcommand{\alignedComment}[1]{\Comment{\parbox[t]{.35\linewidth}{#1}}}
 % define a foreach command in algorithms
 \SetArgSty{textrm}
-\SetAlgoInsideSkip{bigskip}
+\SetAlgoInsideSkip{smallskip}
+\IncMargin{5pt}
 % line spacing should be 1.5
 \renewcommand{\baselinestretch}{1.5}
 

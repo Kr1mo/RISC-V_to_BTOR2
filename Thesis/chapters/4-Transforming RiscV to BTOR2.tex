@@ -82,12 +82,17 @@ Due to constraints in BTOR2, these constants have to be defined \textbf{before} 
 The generation of constants is shown in \algoref{alg:generateconstantsfromstate}, whereas the actual initialization is shown in \algoref{alg:initstate}.
 \input{figures/4-Transform/btor2loadstateconstants.tex}
 \input{figures/4-Transform/btor2initstate.tex}
-\subsection{Fetching}
-\subsection{Computing Values}
-\subsubsection{Opcode}
-\subsubsection{funct3 \& funct7}
-\subsubsection{Registers}
-\subsubsection{Immediate}
+
+\subsection{Fetching the current instruction}
+To fetch the current instruction, i read the 4 bytes of the instruction and concatenate them as seen in \figref{fig:fetching}
+\input{figures/4-Transform/btor2fetching.tex}
+
+\subsection{Deconstruction of the instruction}
+Now having the instruction, we can deconstruct it to extract the $opcode$, $rd$, $rs1$, $rs2$, $funct3$, $funct7$ and $imm$.
+For everything apart of $imm$, this can be done by a shift and a masking. This is shown in \figref{fig:extractNOimm}.
+
+\input{figures/4-Transform/btor2extractNOimm.tex}
+
 \subsection{Command Detection}
 \subsection{Next-State Logic}
 \subsubsection{$rd$}
