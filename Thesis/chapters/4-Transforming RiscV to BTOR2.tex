@@ -48,48 +48,67 @@ update function to determine whether the register in question is $rd$.
 \section{Encoding}
 For better visualisation in the BTOR2 code I will mark all sort-ids in
 \textcolor{UniGrey}{grey}, all node-ids in \textcolor{UniRed}{red} and all
-non-id numbers \textcolor{UniBlue}{blue}.
-As described in the BTOR2 syntax \cite[Figure 1]{btor2}, each line can get an accompanying symbol. Sadly those cant be used as an alias to the line numbers, but for increased clarity, in the following figures I will use them as such aliases.
-With this I can also start each new figure with the relative line number \texttt{n} and it makes it feasible to describe processes with algorithms.
-In the following, i will describe how I construct a BTOR2 model for a RISC-V state file.
+non-id numbers \textcolor{UniBlue}{blue}. As described in the BTOR2 syntax
+\cite[Figure 1]{btor2}, each line can get an accompanying symbol. Sadly those
+cant be used as an alias to the line numbers, but for increased clarity, in the
+following figures I will use them as such aliases. With this I can also start
+each new figure with the relative line number \texttt{n} and it makes it
+feasible to describe processes with algorithms. In the following, i will
+describe how I construct a BTOR2 model for a RISC-V state file.
 
 \subsection{Constants}
 First off, I added the sorts needed and some general purpose useful constants
-into the BTOR2 model as seen in \figref{fig:constants}.
-Of note is the Representation of
-the memory as an array of addressable memory cells of each 1byte. Obviously,
-the set address space of 16bit is magnitudes away of the expected address space
-of 64bit, but representing a 64bit addressable memory with its resulting
-$2^{64}B \approx 18 Exabyte$ is not implementable. Therefore, as I needed a
-feasible amount of memory space, I artificially chose a 16bit address space as
-a soft minimum. With $~65kB$ and therefore programs with possibly $>10000$
-instructions I deemed this memory sufficient for most use cases. Despite this,
-the encoding is implemented in such a way that the address space can be altered
-with. \todo{benchmark auswirkungen von memory size}
-\input{figures/4-Transform/btor2constants.tex}
+into the BTOR2 model as seen in \figref{fig:constants}. Of note is the
+Representation of the memory as an array of addressable memory cells of each
+1byte. Obviously, the set address space of 16bit is magnitudes away of the
+expected address space of 64bit, but representing a 64bit addressable memory
+with its resulting $2^{64}B \approx 18 Exabyte$ is not implementable.
+Therefore, as I needed a feasible amount of memory space, I artificially chose
+a 16bit address space as a soft minimum. With $~65kB$ and therefore programs
+with possibly $>10000$ instructions I deemed this memory sufficient for most
+use cases. Despite this, the encoding is implemented in such a way that the
+address space can be altered with. \todo{benchmark auswirkungen von memory
+    size} \input{figures/4-Transform/btor2constants.tex}
 
 \subsection{State Representation}
-The next logical step is defining a representation of a RISC-V state. Tis is straightforward as shown in \figref{fig:states}.
-I also introduced a flag for each register in my code. They track if the register was written to and makes it possible to shorten a state file transformed from a witness to only the relevant registers. As they have no impact on the operation of the BTOR2 model, I will not mention them again.
-\input{figures/4-Transform/btor2staterep.tex}
+The next logical step is defining a representation of a RISC-V state. Tis is
+straightforward as shown in \figref{fig:states}. I also introduced a flag for
+each register in my code. They track if the register was written to and makes
+it possible to shorten a state file transformed from a witness to only the
+relevant registers. As they have no impact on the operation of the BTOR2 model,
+I will not mention them again. \input{figures/4-Transform/btor2staterep.tex}
 
 \subsection{Initialization}
-To initialize a state in BTOR2 from a RISC-V state file, the values in the registers must be loaded as constants, and for each memory address mentioned in the state file, the value and address has to be loaded as constants.
-Due to the inability to represent a full 64bit address space, the shrinking of the address space from state file to BTOR2 model must be handled. I decided to just initialiase the addresses up to the BTOR2 model address space maximum and cut all others in the state file as I deem this the most predictable behaivour.
-Everything not mentioned in the state file will be zero-initialised.
-At last these constants must be used to initialise the state. For the registers this is straight forward, for the memory we must first write all memory adresses into a placeholder array wich then we can use to initialise the real memory.
-Due to constraints in BTOR2, these constants have to be defined \textbf{before} the states, but initialisation with the values must happen after the states. This means that this initialisation process \textbf{wrappes around} the state representation.
-The generation of constants is shown in \algoref{alg:generateconstantsfromstate}, whereas the actual initialization is shown in \algoref{alg:initstate}.
+To initialize a state in BTOR2 from a RISC-V state file, the values in the
+registers must be loaded as constants, and for each memory address mentioned in
+the state file, the value and address has to be loaded as constants. Due to the
+inability to represent a full 64bit address space, the shrinking of the address
+space from state file to BTOR2 model must be handled. I decided to just
+initialiase the addresses up to the BTOR2 model address space maximum and cut
+all others in the state file as I deem this the most predictable behaivour.
+Everything not mentioned in the state file will be zero-initialised. At last
+these constants must be used to initialise the state. For the registers this is
+straight forward, for the memory we must first write all memory adresses into a
+placeholder array wich then we can use to initialise the real memory. Due to
+constraints in BTOR2, these constants have to be defined \textbf{before} the
+states, but initialisation with the values must happen after the states. This
+means that this initialisation process \textbf{wrappes around} the state
+representation. The generation of constants is shown in
+\algoref{alg:generateconstantsfromstate}, whereas the actual initialization is
+shown in \algoref{alg:initstate}.
 \input{figures/4-Transform/btor2loadstateconstants.tex}
 \input{figures/4-Transform/btor2initstate.tex}
 
 \subsection{Fetching the current instruction}
-To fetch the current instruction, i read the 4 bytes of the instruction and concatenate them as seen in \figref{fig:fetching}
+To fetch the current instruction, i read the 4 bytes of the instruction and
+concatenate them as seen in \figref{fig:fetching}
 \input{figures/4-Transform/btor2fetching.tex}
 
 \subsection{Deconstruction of the instruction}
-Now having the instruction, we can deconstruct it to extract the $opcode$, $rd$, $rs1$, $rs2$, $funct3$, $funct7$ and $imm$.
-For everything apart of $imm$, this can be done by a shift and a masking. This is shown in \figref{fig:extractNOimm}.
+Now having the instruction, we can deconstruct it to extract the $opcode$,
+$rd$, $rs1$, $rs2$, $funct3$, $funct7$ and $imm$. For everything apart of
+$imm$, this can be done by a shift and a masking. This is shown in
+\figref{fig:extractNOimm}.
 
 \input{figures/4-Transform/btor2extractNOimm.tex}
 
