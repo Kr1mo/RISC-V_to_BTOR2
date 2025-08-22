@@ -1,25 +1,22 @@
 \begin{figure}
     \centering
-    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\itshape\color{UniRed}}l >{\itshape} l}
+    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
         \hline
         \hline
         \ttfamily
-        (n + 0)  & one    & AS &                        & address\_inc \\
+        (n + 0) & read   & B  & memory     & pc      & instrB1 \\
+        (n + 1) & add    & AS & addressInc & pc      & pc+1    \\
+        (n + 2) & read   & B  & memory     & pc+1    & instrB2 \\
+        (n + 3) & add    & AS & addressInc & pc+1    & pc+2    \\
+        (n + 4) & read   & B  & memory     & pc+2    & instrB3 \\
+        (n + 5) & add    & AS & addressInc & pc+2    & pc+3    \\
+        (n + 6) & read   & B  & memory     & pc+3    & instrB4 \\
         \\
-        (n + 1)  & read   & B  & memory\ \ pc           & instr\_b1    \\
-        (n + 2)  & add    & AS & address\_inc\ \ pc     & pc+1         \\
-        (n + 3)  & read   & B  & memory\ \ pc+1         & instr\_b2    \\
-        (n + 4)  & add    & AS & address\_inc\ \ pc+1   & pc+2         \\
-        (n + 5)  & read   & B  & memory\ \ pc+2         & instr\_b3    \\
-        (n + 6)  & add    & AS & address\_inc\ \ pc+2   & pc+3         \\
-        (n + 7)  & read   & B  & memory\ \ pc+3         & instr\_b4    \\
-        \\
-        (n + 8)  & concat & H  & instr\_b2\ \ instr\_b1 & instr\_h1    \\
-        (n + 9)  & concat & H  & instr\_b4\ \ instr\_b3 & instr\_h2    \\
-        (n + 10) & concat & W  & instr\_h2\ \ instr\_h1 & instr        \\
+        (n + 7) & concat & H  & instrB2    & instrB1 & instrH1 \\
+        (n + 8) & concat & H  & instrB4    & instrB3 & instrH2 \\
+        (n + 9) & concat & W  & instrH2    & instrH1 & instr   \\
         \hline
         \hline
     \end{tabular}
-    \\\todo{Maybe move constant to \figref{fig:constants}}
     \caption[Fetching instruction]{Fetching the current instruction from memory}\label{fig:fetching}
 \end{figure}

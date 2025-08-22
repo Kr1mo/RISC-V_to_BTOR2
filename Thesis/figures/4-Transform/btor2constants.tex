@@ -1,31 +1,54 @@
 \begin{figure}
     \centering
     \ttfamily
-    \begin{tabular}{>{\color{UniRed}}r l l l >{\itshape} l}
+    \begin{tabular}{>{\color{UniRed}}r l l l l >{\slshape} l}
         \hline
         \hline
-        \textcolor{UniGrey}{1} & sort   & bitvec                    & \textcolor{UniBlue}{1}   & Bool              \\
-        \textcolor{UniGrey}{2} & sort   & bitvec                    & \textcolor{UniBlue}{16}  & AS                \\
-        \textcolor{UniGrey}{3} & sort   & bitvec                    & \textcolor{UniBlue}{8}   & B                 \\
-        \textcolor{UniGrey}{4} & sort   & bitvec                    & \textcolor{UniBlue}{16}  & H                 \\
-        \textcolor{UniGrey}{5} & sort   & bitvec                    & \textcolor{UniBlue}{32}  & W                 \\
-        \textcolor{UniGrey}{6} & sort   & bitvec                    & \textcolor{UniBlue}{64}  & D                 \\
-        \textcolor{UniGrey}{7} & sort   & array                     & \textcolor{UniGrey}{2 3} & Mem               \\
-        8                      & zero   & \textcolor{UniGrey}{D}    &                          & empty\_reg        \\
-        9                      & zero   & \textcolor{UniGrey}{B}    &                          & empty\_cell       \\
-        10                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{31}  & register\_bitmask \\
-        11                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{7}   & shift\_rd         \\
-        12                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{15}  & shift\_rs1        \\
-        13                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{20}  & shift\_rs2        \\
-        14                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{12}  & shift\_funct3     \\
-        15                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{25}  & shift\_funct7     \\
-        16                     & one    & \textcolor{UniGrey}{W}    &                          & bit\_picker       \\
-        17                     & one    & \textcolor{UniGrey}{Bool} &                          & true              \\
-        18                     & zero   & \textcolor{UniGrey}{Bool} &                          & false             \\
+        \textcolor{UniGrey}{1} & sort   & bitvec                    & \textcolor{UniBlue}{1}      &                        & Bool          \\
+        \textcolor{UniGrey}{2} & sort   & bitvec                    & \textcolor{UniBlue}{16}     &                        & AS            \\
+        \textcolor{UniGrey}{3} & sort   & bitvec                    & \textcolor{UniBlue}{8}      &                        & B             \\
+        \textcolor{UniGrey}{4} & sort   & bitvec                    & \textcolor{UniBlue}{16}     &                        & H             \\
+        \textcolor{UniGrey}{5} & sort   & bitvec                    & \textcolor{UniBlue}{32}     &                        & W             \\
+        \textcolor{UniGrey}{6} & sort   & bitvec                    & \textcolor{UniBlue}{64}     &                        & D             \\
+        \textcolor{UniGrey}{7} & sort   & array                     & \textcolor{UniGrey}{2}      & \textcolor{UniGrey}{3} & Mem           \\
+        \\
+        8                      & one    & \textcolor{UniGrey}{Bool} &                             &                        & true          \\
+        9                      & zero   & \textcolor{UniGrey}{Bool} &                             &                        & false         \\
+        10                     & one    & \textcolor{UniGrey}{AS}   &                             &                        & addressInc    \\
+        11                     & zero   & \textcolor{UniGrey}{B}    &                             &                        & emptyCell     \\
+        12                     & one    & \textcolor{UniGrey}{W}    &                             &                        & bitPicker     \\
+        13                     & zero   & \textcolor{UniGrey}{D}    &                             &                        & emptyReg      \\
+
+        14                     & consth & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{01F}    &                        & 5Bitmask      \\
+        15                     & consth & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{03F}    &                        & 6Bitmask      \\
+        16                     & consth & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{07f}    &                        & 7Bitmask      \\
+        17                     & consth & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{0fff}   &                        & 12Bitmask     \\
+        18                     & consth & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{0fffff} &                        & 20Bitmask     \\
+
+        19                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{7}      &                        & shiftToRd     \\
+        20                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{15}     &                        & shiftToRs1    \\
+        21                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{20}     &                        & shiftToRs2    \\
+        22                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{12}     &                        & shiftToFunct3 \\
+        23                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{25}     &                        & shiftToFunct7 \\
+
+        24                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{3}      &                        & load          \\
+        25                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{19}     &                        & mathImm       \\
+        26                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{23}     &                        & auipc         \\
+        27                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{27}     &                        & mathWImm      \\
+        28                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{35}     &                        & store         \\
+        29                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{51}     &                        & mathReg       \\
+        30                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{55}     &                        & lui           \\
+        31                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{59}     &                        & mathWReg      \\
+        32                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{99}     &                        & branch        \\
+        33                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{103}    &                        & jumpR         \\
+        34                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{111}    &                        & jump          \\
+
+        35                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{5}      &                        & shiftBy5      \\
+        36                     & constd & \textcolor{UniGrey}{W}    & \textcolor{UniBlue}{11}     &                        & shiftBy11     \\
         \hline
         \hline
     \end{tabular}
-    \\\todo{Maybe neusortieren, andere constanten aufnehmen}
+    \\\todo{Maybe neusortieren, andere constanten aufnehmen. Explain }
     \caption[Constants for transforming RISC-V to BTOR2]{Constants for encoding}\label{fig:constants}
 \end{figure}
 

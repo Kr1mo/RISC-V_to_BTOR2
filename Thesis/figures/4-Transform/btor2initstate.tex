@@ -1,23 +1,23 @@
 \begin{algorithm}
     add to model:\\
-    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\itshape\color{UniRed}}l >{\itshape} l}
+    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape} l}
         \hline
         \hline
         \ttfamily
-        (n + 0) & init & AS & pc\ \ pc\_const & \\
+        (n + 0) & init & AS & pc\ \ pcConst & \\
         \hline
         \hline
     \end{tabular}\\
     \textcolor{UniRed}{n} += 1\\
     \BlankLine
     \For{every register \textcolor{Green}{$x_i$}}{
-        \If{\textcolor{Green}{$x_i$}\textcolor{UniRed}{\_const} was defined}{
+        \If{\textcolor{Green}{$x_i$}\textcolor{UniRed}{Const} was defined}{
             add to model:\\
-            \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\itshape\color{UniRed}}l >{\itshape} l}
+            \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape} l}
                 \hline
                 \hline
                 \ttfamily
-                (n + 0) & init & D & \textcolor{Green}{$x_i$}\ \ \textcolor{Green}{$x_i$}\_const & \\
+                (n + 0) & init & D & \textcolor{Green}{$x_i$}\ \ \textcolor{Green}{$x_i$}Const & \\
                 \hline
                 \hline
             \end{tabular}\\
@@ -26,11 +26,11 @@
     }
     \BlankLine
     add to model:\\
-    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\itshape\color{UniRed}}l >{\itshape} l}
+    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape} l}
         \hline
         \hline
         \ttfamily
-        (n + 0) & init & Mem & memory\ \ last\_ph & \\
+        (n + 0) & init & Mem & memory\ \ lastPh & \\
         \hline
         \hline
     \end{tabular}\\

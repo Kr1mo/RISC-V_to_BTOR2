@@ -1,13 +1,13 @@
 \begin{algorithm}
-    $true\_pc \leftarrow$ value of pc in state file\\
-    $max\_pc \leftarrow$ number of addresses in BTOR2 model\\
-    \textcolor{UniBlue}{pc\_value} $\leftarrow true\_pc$ modulo $max\_pc$\\
+    $truePc \leftarrow$ value of pc in state file\\
+    $maxPc \leftarrow$ number of addresses in BTOR2 model\\
+    \textcolor{UniBlue}{pcValue} $\leftarrow truePc$ modulo $maxPc$\\
     add to model:\\
-    \begin{tabular}[h]{>{\color{UniRed}}r l >{\color{UniGrey}}l l >{\itshape} l}
+    \begin{tabular}[h]{>{\color{UniRed}}r l >{\color{UniGrey}}l l >{\slshape} l}
         \hline
         \hline
         \ttfamily
-        (n + 0) & constd & AS & \textcolor{UniBlue}{\rmfamily\textit{pc\_value}} & pc\_const \\
+        (n + 0) & constd & AS & \textcolor{UniBlue}{\rmfamily\textsl{pcValue}} & pcConst \\
         \hline
         \hline
     \end{tabular}\\
@@ -16,14 +16,14 @@
 
     \For{every register \textcolor{Green}{$x_i$}}{
         \If{register is initialised in state file}{
-            \textcolor{UniBlue}{$register\_value$} $\leftarrow$ value of \textcolor{Green}{$x_i$}\\
-            \If{\textcolor{UniBlue}{$register\_value$} $\neq 0$}{
+            \textcolor{UniBlue}{$registerValue$} $\leftarrow$ value of \textcolor{Green}{$x_i$}\\
+            \If{\textcolor{UniBlue}{$registerValue$} $\neq 0$}{
                 add to model:\\
-                \begin{tabular}[h]{>{\color{UniRed}}r l >{\color{UniGrey}}l l >{\itshape} l}
+                \begin{tabular}[h]{>{\color{UniRed}}r l >{\color{UniGrey}}l l >{\slshape} l}
                     \hline
                     \hline
                     \ttfamily
-                    (n + 0) & constd & D & \textcolor{UniBlue}{\rmfamily$register\_value$} & \textcolor{Green}{$x_i$}\_const \\
+                    (n + 0) & constd & D & \textcolor{UniBlue}{\rmfamily$registerValue$} & \textcolor{Green}{$x_i$}Const \\
                     \hline
                     \hline
                 \end{tabular}\\
@@ -34,37 +34,37 @@
     \BlankLine
     add to model:\\
 
-    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\ttfamily}l >{\itshape} l}
+    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\ttfamily}l >{\slshape} l}
         \hline
         \hline
-        (n + 0) & state & Mem &                                       & mem\_ph \\
-        (n + 1) & init  & Mem & \textcolor{UniRed}{$mem\_ph$ (n + 0)} &         \\
+        (n + 0) & state & Mem &                                     & memPH \\
+        (n + 1) & init  & Mem & \textcolor{UniRed}{$memPH$ (n + 0)} &       \\
         \hline
         \hline
     \end{tabular}\\
     \textcolor{UniRed}{n} += 2\\
 
-    $\textcolor{UniRed}{last\_ph} \leftarrow \textcolor{UniRed}{mem\_ph}$\\
-    $all\_initial\_cells \leftarrow$ all initialised memory cells in the state file\\
-    $cut\_initial\_cells \leftarrow$ remove all cells with address over max\_pc\\
-    \For{every cell \textcolor{Green}{$c$} in $cut\_initial\_cells$}{
+    $\textcolor{UniRed}{lastPH} \leftarrow \textcolor{UniRed}{memPH}$\\
+    $allInitialCells \leftarrow$ all initialised memory cells in the state file\\
+    $cutInitialCells \leftarrow$ remove all cells with address over maxPc\\
+    \For{every cell \textcolor{Green}{$c$} in $cutInitialCells$}{
         $address \leftarrow$ address of \textcolor{Green}{$c$}\\
         $value \leftarrow$ value of \textcolor{Green}{$c$}\\
         add to model:\\
-        \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\ttfamily}l >{\itshape} l}
+        \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\ttfamily}l >{\slshape} l}
             \hline
             \hline
             \ttfamily
-            (n + 0) & constd & AS  & \textcolor{UniBlue}{\rmfamily$address$}                 &                                 \\
-            (n + 1) & constd & B   & \textcolor{UniBlue}{\rmfamily$value$}                   &                                 \\
-            (n + 2) & write  & Mem & \textcolor{UniRed}{\textrm{$last\_ph$} (n + 0) (n + 1)} & ph\_after\_\textcolor{Green}{c} \\
+            (n + 0) & constd & AS  & \textcolor{UniBlue}{\rmfamily$address$}               &                             \\
+            (n + 1) & constd & B   & \textcolor{UniBlue}{\rmfamily$value$}                 &                             \\
+            (n + 2) & write  & Mem & \textcolor{UniRed}{\textrm{$lastPH$} (n + 0) (n + 1)} & PHAfter\textcolor{Green}{C} \\
             \hline
             \hline
         \end{tabular}\\
         \textcolor{UniRed}{n} += 3\\
-        $\textcolor{UniRed}{last\_ph} \leftarrow \textcolor{UniRed}{ph\_after\_\textcolor{Green}{c}}$\\
+        $\textcolor{UniRed}{lastPH} \leftarrow \textcolor{UniRed}{PHAfter\textcolor{Green}{C}}$\\
     }
-    keep  $\textcolor{UniRed}{last\_ph}$ for initialisation
+    keep  $\textcolor{UniRed}{lastPH}$ for initialisation
 
     \caption[Generating initialisation constants]{Generating initialisation constants from state file in BTOR2}\label{alg:generateconstantsfromstate}
 \end{algorithm}

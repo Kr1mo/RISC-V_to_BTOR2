@@ -1,0 +1,59 @@
+\begin{figure}
+    \centering
+    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+        \hline
+        \hline
+        (n + 0)  & sra & W & instr       & shiftToRs2                    & iTypeImm    \\
+        \\
+        (n + 1)  & and & W & iTypeImm    & \textcolor{Black}{-}5Bitmask  & s[11:5]     \\
+        (n + 2)  & add & W & s[11:5]     & rd                            & sTypeImm    \\
+        \\
+        (n + 3)  & and & W & rd          & \textcolor{Black}{-}bitPicker & b[4:0]      \\
+        (n + 4)  & and & W & funct7      & 6Bitmask                      & b[10:5]Pre  \\
+        (n + 5)  & sll & W & b{10:5}Pre  & shiftBy5                      & b[10:5]     \\
+        (n + 6)  & and & W & bitPicker   & rd                            & b[11]Pre    \\
+        (n + 7)  & sll & W & b[11]Pre    & shiftBy11                     & b[11]       \\
+        (n + 8)  & sra & W & instr       & mathI                         & b[31:12]Pre \\
+        (n + 9)  & and & W & b[31:12]Pre & 12Bitmask                     & b[31:12]    \\
+        (n + 10) & add & W & b[10:5]     & b[4:0]                        & b[10:0]     \\
+        (n + 11) & add & W & b[11]       & b[10:0]                       & b[11:0]     \\
+        (n + 12) & add & W & b[31:12]    & b[11:0]                       & bTypeImm    \\
+        \\
+        (n + 13) & and & W & instr       & \textcolor{Black}{-}12Bitmask & uTypeImm    \\
+        \\
+        (n + 14) & and & W & rs2         & \textcolor{Black}{-}bitPicker & j[4:0]      \\
+        (n + 15) & and & W & rs2         & bitPicker                     & j[11]Pre    \\
+        (n + 16) & sll & W & j[11]Pre    & shiftBy11                     & j[11]       \\
+        (n + 17) & sll & W & funct3      & shiftToFunct3                 & j[14:12]    \\
+        (n + 18) & sll & W & rs1         & shiftToRs1                    & j[19:15]    \\
+        (n + 19) & sra & W & instr       & shiftBy11                     & j[31:20]Pre \\
+        (n + 20) & and & W & j[31:20]Pre & \textcolor{Black}{-}20Bitmask & j[31:20]    \\
+        (n + 21) & add & W & b[10:5]     & j[4:0]                        & j[10:0]     \\
+        (n + 22) & add & W & j[11]       & j[10:0]                       & j[11:0]     \\
+        (n + 23) & add & W & j[14:12]    & j[11:0]                       & j[14:0]     \\
+        (n + 24) & add & W & j[19:15]    & j[14:0]                       & j[19:0]     \\
+        (n + 25) & add & W & j[31:20]    & j[19:0]                       & jTypeImm    \\
+        \hline
+        \hline
+    \end{tabular}
+    \caption[Extraction of immediate types]{Extraction of all $imm$ types from the instruction}\label{fig:extractimmbytype}
+\end{figure}
+
+% ; Basics
+% 1 sort bitvec 1 Bool
+% 2 sort bitvec %d AS
+% 3 sort bitvec 8 B
+% 4 sort bitvec 16 H
+% 5 sort bitvec 32 W
+% 6 sort bitvec 64 D
+% 7 sort array 2 3 Mem
+% 8 zero 5 empty_reg
+% 9 constd 5 31 register_bitmask
+% 10 constd 5 7 shift_rd
+% 11 constd 5 15 shift_rs1
+% 12 constd 5 20 shift_rs2
+% 13 constd 5 12 shift_funct3
+% 14 constd 5 25 shift_funct7
+% 15 one 5 bit_picker
+% 16 one 1 true
+% 17 zero 1 false

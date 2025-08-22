@@ -14,7 +14,7 @@ int btor_constants(FILE *f) { // This sadly grew as-needed
   fprintf(f, "2 sort bitvec %d AS\n",
           BTOR_MEMORY_SIZE);                   // memory representation
   fprintf(f, "3 sort bitvec 8 B\n"); // memory cell
-  fprintf(f, "4 sort bitvec 16 H")
+  fprintf(f, "4 sort bitvec 16 H\n")
   fprintf(f, "5 sort bitvec 32 W\n");    // command
   fprintf(f, "6 sort bitvec 64 D\n");   // registers
   fprintf(f, "7 sort array 2 3 Mem\n");     // Array with BTOR_MEMORY_SIZE
@@ -256,7 +256,7 @@ int btor_get_immediate(FILE *f, int next_line, int command_loc, int *codes) {
   ;
 
   fprintf(f, "%d sra 5 %d 12\n", next_line, command_loc);
-  fprintf(f, "%d and 5 %d -8\n", next_line + 1,
+  fprintf(f, "%d and 5 %d -9\n", next_line + 1,
           next_line); // mask to remove lower 5 bit to get i[11:5] of s-type
   fprintf(f, "%d add 5 %d %d s-immediate\n", next_line + 2, next_line + 1,
           codes[1]); // add rd code as rd is i[4:0]
@@ -273,7 +273,7 @@ int btor_get_immediate(FILE *f, int next_line, int command_loc, int *codes) {
           next_line + 3); // move to correct place
   fprintf(f, "%d add 5 %d %d [10:0]\n", next_line + 5, next_line + 4,
           next_line); // combine
-  fprintf(f, "%d sll 5 15 9\n", next_line + 6);
+  fprintf(f, "%d sll 5 15 10\n", next_line + 6);
   fprintf(f, "%d and 5 %d %d\n", next_line + 7, next_line + 6, command_loc);
   fprintf(f, "%d constd 5 4\n", next_line + 8);
   fprintf(f, "%d sll 5 %d %d [11]\n", next_line + 9, next_line + 7,

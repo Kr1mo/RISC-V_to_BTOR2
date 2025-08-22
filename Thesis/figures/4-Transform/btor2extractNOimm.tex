@@ -1,22 +1,20 @@
 \begin{figure}
     \centering
-    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\itshape\color{UniRed}}l >{\itshape} l}
+    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
         \hline
         \hline
-        (n + 0) & consth & W & \textcolor{UniBlue}{\ttfamily\upshape 07f} & opc\_bitmask \\
-        (n + 0) & and    & W & instr\ \ opc\_bitmask                      & opcode       \\
-        (n + 0) & srl    & W & instr\ \ shift\_rd                         & rd\_pre      \\
-        (n + 0) & and    & W & rd\_pre\ \ register\_bitmask               & rd           \\
-        (n + 0) & srl    & W & instr\ \ shift\_rs1                        & rs1\_pre     \\
-        (n + 0) & and    & W & rs1\_pre\ \ register\_bitmask              & rs1          \\
-        (n + 0) & srl    & W & instr\ \ shift\_rs2                        & rs2\_pre     \\
-        (n + 0) & and    & W & rs2\_pre\ \ register\_bitmask              & rs2          \\
-        (n + 0) & srl    & W & instr\ \ shift\_funct3                     & funct3\_pre  \\
-        (n + 0) & and    & W & funct3\_pre\ \ shift\_rd                   & funct3       \\
-        (n + 0) & srl    & W & instr\ \ shift\_funct7                     & funct7       \\
+        (n + 0) & and & W & instr     & 7Bitmask      & opcode    \\
+        (n + 1) & srl & W & instr     & shiftToRd     & rdPre     \\
+        (n + 2) & and & W & rdPre     & 5Bitmask      & rd        \\
+        (n + 3) & srl & W & instr     & shiftToRs1    & rs1Pre    \\
+        (n + 4) & and & W & rs1Pre    & 5Bitmask      & rs1       \\
+        (n + 5) & srl & W & instr     & shiftToRs2    & rs2Pre    \\
+        (n + 6) & and & W & rs2Pre    & 5Bitmask      & rs2       \\
+        (n + 7) & srl & W & instr     & shiftToFunct3 & funct3Pre \\
+        (n + 8) & and & W & funct3Pre & shiftRd       & funct3    \\
+        (n + 9) & srl & W & instr     & shiftToFunct7 & funct7    \\
         \hline
         \hline
     \end{tabular}
-    \\\todo{Maybe move consth into constants \figref{fig:constants}}
-    \caption[Extraction (without immediate)]{Extraction of $opcode$, $rd$, $rs1$, $rs2$, $funct3$, $funct7$ and $imm$ from the instruction}\label{fig:extractNOimm}
+    \caption[Extraction (without immediate)]{Extraction of values from the instruction without $imm$}\label{fig:extractNOimm}
 \end{figure}
