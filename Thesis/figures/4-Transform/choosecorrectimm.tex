@@ -8,7 +8,7 @@
         (n + 2) & eq  & Bool & opcode  & auipc    &          & uType1  \\
         (n + 3) & eq  & Bool & opcode  & lui      &          & uType2  \\
         (n + 4) & or  & Bool & uType1  & uType2   &          & isUType \\
-        (n + 5) & eq  & Bool & opcode  & jump     &          & isJType \\
+        (n + 5) & eq  & Bool & opcode  & jal      &          & isJType \\
         \\
         (n + 6) & ite & W    & isSType & sTypeImm & iTypeImm & checkS  \\
         (n + 7) & ite & W    & isBType & bTypeImm & checkS   & checkB  \\

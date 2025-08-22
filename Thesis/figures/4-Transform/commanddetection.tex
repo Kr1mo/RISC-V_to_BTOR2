@@ -1,0 +1,71 @@
+\begin{algorithm}
+    add to model:\\
+    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+        \hline
+        \hline
+        (n + 0)  & eq & Bool & opcode & load    &  & isLoad     \\
+        (n + 1)  & eq & Bool & opcode & opImm   &  & isMathImm  \\
+        (n + 2)  & eq & Bool & opcode & auipc   &  & isAuipc    \\
+        (n + 3)  & eq & Bool & opcode & opImm32 &  & isMathWImm \\
+        (n + 4)  & eq & Bool & opcode & store   &  & isStore    \\
+        (n + 5)  & eq & Bool & opcode & op      &  & isMathReg  \\
+        (n + 6)  & eq & Bool & opcode & lui     &  & isLui      \\
+        (n + 7)  & eq & Bool & opcode & op32    &  & isMathWReg \\
+        (n + 8)  & eq & Bool & opcode & branch  &  & isBranch   \\
+        (n + 9)  & eq & Bool & opcode & jalr    &  & isJalr     \\
+        (n + 10) & eq & Bool & opcode & jal     &  & isJal      \\
+        \hline
+        \hline
+    \end{tabular}\\
+    \textcolor{UniRed}{n} += 11\\
+    \For{\textcolor{Green}{i} from 0 to 7}{
+        add to model:\\
+        \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+            \hline
+            \hline
+            (n + 0) & constd & W    & \texttt{\upshape\color{Green}i} &                           &  & \textcolor{Green}{i}Const    \\
+            (n + 1) & eq     & Bool & funct3                          & \textcolor{Green}{i}Const &  & is\textcolor{Green}{i}Funct3 \\
+            \hline
+            \hline
+        \end{tabular}\\
+        \textcolor{UniRed}{n} += 2\\
+    }
+    $onlyOp \leftarrow$ [lui, auipc, jal, jalr]\\
+    $needsf7 \leftarrow$ [srl, sra, srli, srai, srlw, sraw, srlwi, srawi, add, sub, addw, subw]\\
+    $rest \leftarrow$[ all other instructions ]\\
+    \BlankLine
+    \For{ all instructions \textcolor{Green}{I} in $onlyOp$}{
+        $is\textcolor{Green}{I}$ is already defined
+    }
+    \For{all instructions  \textcolor{Green}{I} in $rest$ }{
+        $opname \leftarrow$ opcode name of \textcolor{Green}{I}\\
+        $f3val \leftarrow$ expected funct3 of \textcolor{Green}{I} as digit\\
+        add to model:\\
+        \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+            \hline
+            \hline
+            n & eq & Bool & is\textcolor{Black}{opname} & is\textcolor{Black}{f3val}Funct3 &  & is\textcolor{Green}{I} \\
+            \hline
+            \hline
+        \end{tabular}\\
+        \textcolor{UniRed}{n} += 1\\
+    }
+    \For{all instructions  \textcolor{Green}{I} in $needsf7$ }{
+        $opname \leftarrow$ opcode name of \textcolor{Green}{I}\\
+        $f3val \leftarrow$ expected funct3 of \textcolor{Green}{I} as digit\\
+        $f7hex \leftarrow$ expected funct7 of \textcolor{Green}{I} as hexadecimal number\\
+        add to model:\\
+        \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+            \hline
+            \hline
+            (n + 0) & consth & W    & \textcolor{UniBlue}{f7hex}       &                            &  & \textcolor{Green}{I}f7     \\
+            (n + 1) & eq     & Bool & funct7                           & \textcolor{Green}{I}f7     &  & fitsF7\textcolor{Green}{I} \\
+            (n + 2) & eq     & Bool & is\textcolor{Black}{f3val}Funct3 & fitsF7\textcolor{Green}{I} &  & fitsF3\textcolor{Green}{I} \\
+            (n + 3) & eq     & Bool & is\textcolor{Black}{opname}      & fitsF3\textcolor{Green}{I} &  & is\textcolor{Green}{I}     \\
+            \hline
+            \hline
+        \end{tabular}\\
+        \textcolor{UniRed}{n} += 4\\
+    }
+    \caption[Instruction detection]{Generalised approach to instruction detection}\label{alg:commanddetection}
+\end{algorithm}
