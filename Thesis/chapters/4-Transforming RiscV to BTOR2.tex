@@ -68,7 +68,7 @@ a 16bit address space as a soft minimum. With $~65kB$ and therefore programs
 with possibly $>10000$ instructions I deemed this memory sufficient for most
 use cases. Despite this, the encoding is implemented in such a way that the
 address space can be altered with. \todo{benchmark auswirkungen von memory
-    size} \input{figures/4-Transform/btor2constants.tex}
+    size} \input{figures/4-Transform/constants.tex}
 
 \subsection{State Representation}
 The next logical step is defining a representation of a RISC-V state. Tis is
@@ -76,7 +76,7 @@ straightforward as shown in \figref{fig:states}. I also introduced a flag for
 each register in my code. They track if the register was written to and makes
 it possible to shorten a state file transformed from a witness to only the
 relevant registers. As they have no impact on the operation of the BTOR2 model,
-I will not mention them again. \input{figures/4-Transform/btor2staterep.tex}
+I will not mention them again. \input{figures/4-Transform/staterep.tex}
 
 \subsection{Initialization}
 To initialize a state in BTOR2 from a RISC-V state file, the values in the
@@ -96,13 +96,13 @@ means that this initialisation process \textbf{wrappes around} the state
 representation. The generation of constants is shown in
 \algoref{alg:generateconstantsfromstate}, whereas the actual initialization is
 shown in \algoref{alg:initstate}.
-\input{figures/4-Transform/btor2loadstateconstants.tex}
-\input{figures/4-Transform/btor2initstate.tex}
+\input{figures/4-Transform/loadstateconstants.tex}
+\input{figures/4-Transform/initstate.tex}
 
 \subsection{Fetching the current instruction}
 To fetch the current instruction, i read the 4 bytes of the instruction and
 concatenate them as seen in \figref{fig:fetching}
-\input{figures/4-Transform/btor2fetching.tex}
+\input{figures/4-Transform/fetching.tex}
 
 \subsection{Deconstruction of the instruction}
 Now having the instruction, we can deconstruct it to extract the $opcode$,
@@ -124,11 +124,19 @@ Then I chained if-then-else nodes to catch instructions that are of J-type, U-Ty
 If the instruction is none of them, I can safely default to I-type as R-type does not handle with an immediate value.
 
 
-\input{figures/4-Transform/btor2extractNOimm.tex}
-\input{figures/4-Transform/btor2extractimmbytype.tex}
-\input{figures/4-Transform/btor2choosecorrectimm.tex}
+\input{figures/4-Transform/extractNOimm.tex}
+\input{figures/4-Transform/extractimmbytype.tex}
+\input{figures/4-Transform/choosecorrectimm.tex}
 
-\subsection{Command Detection}
+\subsection{Instruction Detection}
+
+For the next-state logic, the only thing left that we need to know is the actual current command.
+So I defined a check \textsl{is\textcolor{Green}{Instruction}} for each instruction. As this is quite repetetive, \algoref{alg:commanddetection}
+describes a generalised approach to reach these Bools. An example for each instruction subgroup in \algoref{alg:commanddetection} can be found in \figref{fig:detectionexample}.
+
+\input{figures/4-Transform/commanddetection.tex}
+\input{figures/4-Transform/detectionexample.tex}
+
 \subsection{Next-State Logic}
 \subsubsection{$rd$}
 \subsubsection{$pc$}
