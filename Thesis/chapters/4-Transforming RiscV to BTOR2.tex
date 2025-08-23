@@ -108,21 +108,28 @@ concatenate them as seen in \figref{fig:fetching}
 Now having the instruction, we can deconstruct it to extract the $opcode$,
 $rd$, $rs1$, $rs2$, $funct3$, $funct7$ and $imm$. For everything apart of
 $imm$, this can be done by a shift and a masking. This is shown in
-\figref{fig:extractNOimm}.
-The immediate on the other hand must be first constructed from its subfields, which can be referenced in \figref{fig:rv64i_formats}.
-In the BTOR2 model this looks like in \figref{fig:extractimmbytype}.
-\todo{Reference to same method in riscvsim}
-There are three things i want to point out:\\
-First, some of the immediate subfields overlap exactly. I made use of this fact in lines (n + 1) with the overlap of $imm[11:5]$ of I- and S-type,  and (n + 21) with J- and B-types $imm[10:5]$ overlap.
-Second, as described in \secref{sec:riscvIsa} the immediate is always sign-extended. To archive this we make arithmetic right shifts, which do sign extension for us and with this pull our highest immediate bit to its correct place.
-Third, at line (n + 8), for sign extension we must shift right by 19. As this matches the opcode for arithmetic instructions with immediates, so I used this and did not create a new constant.
+\figref{fig:extractNOimm}. The immediate on the other hand must be first
+constructed from its subfields, which can be referenced in
+\figref{fig:rv64i_formats}. In the BTOR2 model this looks like in
+\figref{fig:extractimmbytype}. \todo{Reference to same method in riscvsim}
+There are three things i want to point out:\\ First, some of the immediate
+subfields overlap exactly. I made use of this fact in lines (n + 1) with the
+overlap of $imm[11:5]$ of I- and S-type, and (n + 21) with J- and B-types
+$imm[10:5]$ overlap. Second, as described in \secref{sec:riscvIsa} the
+immediate is always sign-extended. To archive this we make arithmetic right
+shifts, which do sign extension for us and with this pull our highest immediate
+bit to its correct place. Third, at line (n + 8), for sign extension we must
+shift right by 19. As this matches the opcode for arithmetic instructions with
+immediates, so I used this and did not create a new constant.
 
-Now I have \textsl{iTypeImm}, \textsl{sTypeImm}, \textsl{bTypeImm}, \textsl{uTypeImm} and \textsl{jTypeImm}.
-But it would be easier to just have one node \textsl{imm} where we can reference the immediate value regardless of the instruction.
-This is done in \figref{fig:findingImm}, where first I defined Bools wich check all opcodes that are neither R-type nor I-type.
-Then I chained if-then-else nodes to catch instructions that are of J-type, U-Type, B-Type or S-type.
-If the instruction is none of them, I can safely default to I-type as R-type does not handle with an immediate value.
-
+Now I have \textsl{iTypeImm}, \textsl{sTypeImm}, \textsl{bTypeImm},
+\textsl{uTypeImm} and \textsl{jTypeImm}. But it would be easier to just have
+one node \textsl{imm} where we can reference the immediate value regardless of
+the instruction. This is done in \figref{fig:findingImm}, where first I defined
+Bools wich check all opcodes that are neither R-type nor I-type. Then I chained
+if-then-else nodes to catch instructions that are of J-type, U-Type, B-Type or
+S-type. If the instruction is none of them, I can safely default to I-type as
+R-type does not handle with an immediate value.
 
 \input{figures/4-Transform/extractNOimm.tex}
 \input{figures/4-Transform/extractimmbytype.tex}
@@ -130,9 +137,12 @@ If the instruction is none of them, I can safely default to I-type as R-type doe
 
 \subsection{Instruction Detection}
 
-For the next-state logic, the only thing left that we need to know is the actual current command.
-So I defined a check \textsl{is\textcolor{Green}{Instruction}} for each instruction. As this is quite repetetive, \algoref{alg:commanddetection}
-describes a generalised approach to reach these Bools. An example for each instruction subgroup in \algoref{alg:commanddetection} can be found in \figref{fig:detectionexample}.
+For the next-state logic, the only thing left that we need to know is the
+actual current command. So I defined a check
+\textsl{is\textcolor{Green}{Instruction}} for each instruction. As this is
+quite repetetive, \algoref{alg:commanddetection} describes a generalised
+approach to reach these Bools. An example for each instruction subgroup in
+\algoref{alg:commanddetection} can be found in \figref{fig:detectionexample}.
 
 \input{figures/4-Transform/commanddetection.tex}
 \input{figures/4-Transform/detectionexample.tex}
