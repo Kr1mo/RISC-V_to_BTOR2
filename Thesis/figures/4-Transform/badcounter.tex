@@ -1,0 +1,17 @@
+\begin{figure}
+    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+        \hline
+        \hline
+        (n + 0) & one    & D    &                                &               &  & counterInc    \\
+        (n + 0) & constd & D    & \textcolor{Green}{nIterations} &               &  & maxIterations \\
+        (n + 0) & state  & D    &                                &               &  & counter       \\
+        (n + 0) & init   & D    & counter                        & emptyReg                         \\
+        (n + 0) & add    & D    & counter                        & counterInc    &  & newCounter    \\
+        (n + 0) & next   & D    & counter                        & newCounter                       \\
+        (n + 0) & eq     & Bool & counter                        & maxIterations &  & isMaxIter     \\
+        (n + 0) & bad    &      & isMaxIter                                                         \\
+        \hline
+        \hline
+    \end{tabular}
+    \caption[Iterations counter constraint]{Constraining the model by iteration count}\label{fig:badcounter}
+\end{figure}

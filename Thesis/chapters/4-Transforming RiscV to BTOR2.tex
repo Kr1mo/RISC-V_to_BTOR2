@@ -196,10 +196,10 @@ With this done we can sort each change to its instruction.
 \input{figures/4-Transform/valueexample.tex}
 
 \subsubsection{The next Memory}
-As said, defining the next memory array is the simplest. I just cascade through
-all store instructions with if-then-else nodes and by setting the final 'else'
-as the current memory array, if no 'if' catches, the array is not changed. All
-this is shown in \figref{fig:nextmemory}.
+Defining the next memory array is simple. I just cascade through all store
+instructions with if-then-else nodes and by setting the final 'else' as the
+current memory array, if no 'if' catches, the array is not changed. All this is
+shown in \figref{fig:nextmemory}.
 
 \input{figures/4-Transform/nextmemory.tex}
 
@@ -224,6 +224,16 @@ the liberty to not exactly show the cascade for all relevant instructions in
 \input{figures/4-Transform/nextrd.tex}
 
 \subsection{Constraints}
+The only thing left is to define constraints to end the model checker. First is
+the intended end of reaching a set number of Iterations. It is shown in
+\figref{fig:badcounter}.
+
+After this I defined some extra constraints to check for bad instructions.
+
+Of course other constraints can be defined
+
+\input{figures/4-Transform/badcounter.tex}
+
 \todo{Iterations counter auch hier}
 \section{Testing for Correctness}\label{sec:corectness}
 
