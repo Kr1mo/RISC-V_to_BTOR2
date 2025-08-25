@@ -1,0 +1,42 @@
+\begin{algorithm}
+    \For{\textcolor{Green}{i} from 1 to 31}{
+        add to model:\\
+        \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+            \hline
+            \hline
+            n & eq & Bool & rs1 & \textcolor{Green}{i}Const &  & isRs1X\textcolor{Green}{i} \\
+            \hline
+            \hline
+        \end{tabular}\\
+    }
+    add to model:\\
+    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+        \hline
+        \hline
+        n & ite & D & isRs1X1 & x1 & x0 & checkX1 \\
+        \hline
+        \hline
+    \end{tabular}\\
+    \BlankLine
+    \For{\textcolor{Green}{i} from 2 to 30}{
+        add to model:\\
+        \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+            \hline
+            \hline
+            n & ite & D & isRs1X\textcolor{Green}{i} & x\textcolor{Green}{i} & checkX\textcolor{Green}{(i - 1)} & checkX\textcolor{Green}{i} \\
+            \hline
+            \hline
+        \end{tabular}\\
+    }
+    add to model:\\
+    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+        \hline
+        \hline
+        n & ite & D & isRs1X31 & x31 & checkX30 & rs1val \\
+        \hline
+        \hline
+    \end{tabular}\\
+
+    \caption[Value extraction from $rs1$]{Extracting the value of the register designated by $rs1$}
+    \label{alg:extractrs1val}
+\end{algorithm}

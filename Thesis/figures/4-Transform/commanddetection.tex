@@ -17,18 +17,15 @@
         \hline
         \hline
     \end{tabular}\\
-    \textcolor{UniRed}{n} += 11\\
     \For{\textcolor{Green}{i} from 0 to 7}{
         add to model:\\
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
             \hline
             \hline
-            (n + 0) & constd & W    & \texttt{\upshape\color{Green}i} &                           &  & \textcolor{Green}{i}Const    \\
-            (n + 1) & eq     & Bool & funct3                          & \textcolor{Green}{i}Const &  & is\textcolor{Green}{i}Funct3 \\
+            n & eq & Bool & funct3 & \textcolor{Green}{i}Const &  & is\textcolor{Green}{i}Funct3 \\
             \hline
             \hline
         \end{tabular}\\
-        \textcolor{UniRed}{n} += 2\\
     }
     $onlyOp \leftarrow$ [LUI, AUIPC, JAL, JALR]\\
     $needsf7 \leftarrow$ [SRL, SRA, SRLI, SRAI, SRLW, SRAW, SRLWI, SRAWI, ADD, SUB, ADDW, SUBW]\\
@@ -48,7 +45,6 @@
             \hline
             \hline
         \end{tabular}\\
-        \textcolor{UniRed}{n} += 1\\
     }
     \For{all instructions  \textcolor{Green}{I} in $needsf7$ }{
         $opname \leftarrow$ opcode name of \textcolor{Green}{I}\\
@@ -65,7 +61,6 @@
             \hline
             \hline
         \end{tabular}\\
-        \textcolor{UniRed}{n} += 4\\
     }
     \caption[Instruction detection]{Generalised approach to instruction detection}\label{alg:commanddetection}
 \end{algorithm}

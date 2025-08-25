@@ -1,5 +1,7 @@
 \chapter{Transforming RISC-V to BTOR2}\label{chap:riscv_to_btor2}
 
+\todo{explain naming conventions for the model nodes}
+
 This chapter addresses the main problem of the thesis: transforming RISC-V code
 into the BTOR2 format for benchmarking purposes. My primary reference for this
 endeavor is F. Schrögendorfer's master's thesis, \dq Bounded Model Checking in
@@ -18,7 +20,10 @@ occur in sequence:
     \item Identify the instruction
     \item Execute the instruction
 \end{itemize}
-Due to the fixed instruction length of RISC-V, as mentioned in \secref{sec:riscvIsa}, fetching the current instruction is straightforward. Ultimately, we want a node that retrieves a $word$ from memory at the location specified by $pc$.
+Due to the fixed instruction length of RISC-V, as mentioned in
+\secref{sec:riscvIsa}, fetching the current instruction is straightforward.
+Ultimately, we want a node that retrieves a $word$ from memory at the location
+specified by $pc$.
 
 For basic identification, the $opcode$ must be extracted and checked. Depending
 on the opcode, further distinctions between instructions require extracting and
@@ -53,22 +58,30 @@ non-id numbers \textcolor{UniBlue}{blue}. As described in the BTOR2 syntax
 cant be used as an alias to the line numbers, but for increased clarity, in the
 following figures I will use them as such aliases. With this I can also start
 each new figure with the relative line number \texttt{n} and it makes it
-feasible to describe processes with algorithms. In the following, i will
-describe how I construct a BTOR2 model for a RISC-V state file.
+feasible to describe processes with algorithms. It is implied that \texttt{n}
+is sufficiently incremented after adding to the model so that ids will not
+overlap. In the following, I will describe how I construct a BTOR2 model for a
+RISC-V state file.
 
 \subsection{Constants}
-First off, I added the sorts needed and some general purpose useful constants
-into the BTOR2 model as seen in \figref{fig:constants}. Of note is the
-Representation of the memory as an array of addressable memory cells of each
-1byte. Obviously, the set address space of 16bit is magnitudes away of the
-expected address space of 64bit, but representing a 64bit addressable memory
-with its resulting $2^{64}B \approx 18 Exabyte$ is not implementable.
-Therefore, as I needed a feasible amount of memory space, I artificially chose
-a 16bit address space as a soft minimum. With $~65kB$ and therefore programs
-with possibly $>10000$ instructions I deemed this memory sufficient for most
-use cases. Despite this, the encoding is implemented in such a way that the
-address space can be altered with. \todo{benchmark auswirkungen von memory
-    size} \input{figures/4-Transform/constants.tex}
+First off, I added the sorts and non-progressive constants needed into the
+BTOR2 model as seen in \figref{fig:constants}. This is extended by a set of
+progressive constants used for comparison e.g. against the register number.
+\algoref{alg:progressiveconsts} describes how they are added.
+
+Of note is the Representation of the memory as an array of addressable memory
+cells of each 1byte. Obviously, the set address space of 16bit is magnitudes
+away of the expected address space of 64bit, but representing a 64bit
+addressable memory with its resulting $2^{64}B \approx 18 Exabyte$ is not
+implementable. Therefore, as I needed a feasible amount of memory space, I
+artificially chose a 16bit address space as a soft minimum. With $~65kB$ and
+therefore programs with possibly $>10000$ instructions I deemed this memory
+sufficient for most use cases. Despite this, the encoding is implemented in
+such a way that the address space can be altered with. \todo{benchmark
+    auswirkungen von memory size}
+
+\input{figures/4-Transform/constants.tex}
+\input{figures/4-Transform/progressiveconsts.tex}
 
 \subsection{State Representation}
 The next logical step is defining a representation of a RISC-V state. Tis is
@@ -108,14 +121,15 @@ concatenate them as seen in \figref{fig:fetching}
 Now having the instruction, we can deconstruct it to extract the $opcode$,
 $rd$, $rs1$, $rs2$, $funct3$, $funct7$ and $imm$. For everything apart of
 $imm$, this can be done by a shift and a masking. This is shown in
-\figref{fig:extractNOimm}. The immediate on the other hand must be first
-constructed from its subfields, which can be referenced in
-\figref{fig:rv64i_formats}. In the BTOR2 model this looks like in
-\figref{fig:extractimmbytype}. \todo{Reference to same method in riscvsim}
-There are three things i want to point out:\\ First, some of the immediate
-subfields overlap exactly. I made use of this fact in lines (n + 1) with the
-overlap of $imm[11:5]$ of I- and S-type, and (n + 21) with J- and B-types
-$imm[10:5]$ overlap. Second, as described in \secref{sec:riscvIsa} the
+\figref{fig:extractNOimm}.
+
+The immediate on the other hand must be first constructed from its subfields,
+which can be referenced in \figref{fig:rv64i_formats}. In the BTOR2 model this
+looks like in \figref{fig:extractimmbytype}. \todo{Reference to same method in
+    riscvsim} There are three things i want to point out:\\ First, some of the
+immediate subfields overlap exactly. I made use of this fact in lines (n + 1)
+with the overlap of $imm[11:5]$ of I- and S-type, and (n + 21) with J- and
+B-types $imm[10:5]$ overlap. Second, as described in \secref{sec:riscvIsa} the
 immediate is always sign-extended. To archive this we make arithmetic right
 shifts, which do sign extension for us and with this pull our highest immediate
 bit to its correct place. Third, at line (n + 8), for sign extension we must
@@ -129,11 +143,19 @@ the instruction. This is done in \figref{fig:findingImm}, where first I defined
 Bools wich check all opcodes that are neither R-type nor I-type. Then I chained
 if-then-else nodes to catch instructions that are of J-type, U-Type, B-Type or
 S-type. If the instruction is none of them, I can safely default to I-type as
-R-type does not handle with an immediate value.
+R-type does not handle with an immediate value. At the end I extend $imm$ to
+the 64bit RV64I demands.
+
+At this point I can also extract the values of the designated $rs1$ and $rs2$
+registers. I show this for $rs1$ in \figref{alg:extractrs1val}, it is the same
+for $rs2$ except that the names must be changed to $rs2$. Also, the comparison
+constants can be left out as they are already defined for $rs1$ and can be
+referenced from there.
 
 \input{figures/4-Transform/extractNOimm.tex}
 \input{figures/4-Transform/extractimmbytype.tex}
 \input{figures/4-Transform/choosecorrectimm.tex}
+\input{figures/4-Transform/extractrs1val.tex}
 
 \subsection{Instruction Detection}
 
@@ -143,14 +165,34 @@ actual current command. So I defined a check
 quite repetetive, \algoref{alg:commanddetection} describes a generalised
 approach to reach these Bools. An example for each instruction subgroup in
 \algoref{alg:commanddetection} can be found in \figref{fig:detectionexample}.
+Of course the funct7 checks from the $needsf7$ subgroup can be reused if
+multiple instructions use the same funct7.
 
 \input{figures/4-Transform/commanddetection.tex}
 \input{figures/4-Transform/detectionexample.tex}
 
 \subsection{Next-State Logic}
-\subsubsection{$rd$}
-\subsubsection{$pc$}
-\subsubsection{Memory}
+The next state logic is basically the core of the model. Everything else works
+towards this point. The Goal is to create the changes each instruction would
+make and then only inserting the changes specific to the instruction in the
+state.
+
+\subsection{Creating all Values of Instruction execution}
+It would be too long and unnecessary to go through all instructions, as this is
+simply following the RV64I ISA, but I want to give an example for each group of
+instructions as they were divided in \tabref{tab:rv64i-instructions}. I show
+this for \texttt{AUIPC}, \texttt{JALR}, \texttt{BEQ}, \texttt{LHU},
+\texttt{SD}, \texttt{ANDI}, \texttt{SLLIW}, \texttt{SLT} and \texttt{SUBW} in
+\figref{fig:valueexample}. In this examples one can see multiple overlaps which
+can be used, e.g. the adresses for load- and store-instructions or the 32bit
+versions of the word-instructions. Also I took \texttt{SD} to show that all
+other store instructions happen as interim results of preparing \texttt{SD}.
+
+\input{figures/4-Transform/valueexample.tex}
+
+\subsubsection{The next pc}
+\subsubsection{The next Memory}
+\subsubsection{The next rd}
 \subsection{Constraints}
 \todo{Iterations counter auch hier}
 \section{Testing for Correctness}\label{sec:corectness}

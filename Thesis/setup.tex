@@ -9,7 +9,6 @@
 % between book and scrbook
 \usepackage{scrhack}
 
-
 % ------------------- layout, default -------------------
 % adjust the style of float's captions, separated from text to improve readabilty
 \usepackage[labelfont=bf, labelsep=colon, format=hang, textfont=singlespacing]{caption}
@@ -41,7 +40,7 @@
 \usepackage[dvipsnames]{xcolor}  % more colors
 \usepackage{array}  % custom format per column in table - needed on the title page
 \usepackage{graphicx}  % include graphics
-\usepackage{subfig}  % divide figure, e.g. 1(a), 1(b)...
+\usepackage[lofdepth, lotdepth]{subfig}  % divide figure, e.g. 1(a), 1(b)...
 \usepackage{amsmath}  % |
 \usepackage{amsthm}   % | math, bmatrix etc
 \usepackage{amsfonts} % |
@@ -50,7 +49,6 @@
     bookmarksopen=true,bookmarksopenlevel=1,breaklinks=false,
     pdfborder={0 0 0},backref=false,colorlinks=false]{hyperref}
 \usepackage{etoolbox} % if-else commands
-
 
 %==========================================
 % You might not need the following packages, I only included them as they
@@ -95,13 +93,10 @@
 \definecolor{UniRed}{RGB}{193, 0, 42}
 \definecolor{UniGrey}{RGB}{154, 155, 156}
 
-
 % ------------------- layout -------------------
 % prevents floating objects from being placed ahead of their section
 \let\mySection\section\renewcommand{\section}{\suppressfloats[t]\mySection}
 \let\mySubSection\subsection\renewcommand{\subsection}{\suppressfloats[t]\mySubSection}
-
-
 
 % ------------------- math formatting commands -------------------
 % define vectors to be bold instead of using an arrow
@@ -109,7 +104,6 @@
 \newcommand{\mat}[1]{\mathbf{#1}}
 % tag equation with name
 \newcommand{\eqname}[1]{\tag*{#1}}
-
 
 % ------------------- pdf settings -------------------
 % ADAPT THIS
@@ -119,14 +113,12 @@
     pdfkeywords={deep learning, awesome algorithm,  undergraduate thesis},
     pdfpagelayout=OneColumn, pdfnewwindow=true, pdfstartview=XYZ, plainpages=false}
 
-
 %==========================================
 % You might not need the following commands, I only included them as they
 % are needed for the example floats
 
 % ------------------- Tikz styles -------------------
 \tikzset{>=latex}  % arrow style
-
 
 % ------------------- algorithm ---------------------
 % Command to align comments in algorithm
@@ -137,6 +129,14 @@
 \IncMargin{5pt}
 % line spacing should be 1.5
 \renewcommand{\baselinestretch}{1.5}
+
+%-------------------- subfigs -----------------------
+\renewcommand{\thesubfigure}{\thefigure.\arabic{subfigure}}
+\captionsetup[subfigure]{labelformat=simple,labelsep=colon, listofformat=subsimple}
+\captionsetup{lofdepth=2}
+\makeatletter
+\renewcommand{\p@subfigure}{}
+\makeatother
 
 % set distance between items in a list, for more details see the
 % enumitem package: https://www.ctan.org/pkg/enumitem
