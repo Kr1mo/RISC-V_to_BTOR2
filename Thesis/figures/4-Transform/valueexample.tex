@@ -32,11 +32,11 @@
         \end{tabular}
     }
 
-    %    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
-    %\end{figure}
-    %\begin{figure}%
-    %    \ContinuedFloat
-    %    \centering
+    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
+\end{figure}
+\begin{figure}%
+    \ContinuedFloat
+    \centering
 
     \subfloat[BEQ]{
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
@@ -52,11 +52,11 @@
         \end{tabular}
     }
 
-    %    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
-    %\end{figure}
-    %\begin{figure}%
-    %    \ContinuedFloat
-    %    \centering
+    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
+\end{figure}
+\begin{figure}%
+    \ContinuedFloat
+    \centering
 
     \subfloat[LHU]{
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
@@ -69,39 +69,6 @@
             (n + 0) & read   & B  & memory     & 2ndAddr                 &                        & loadB2     \\
             (n + 0) & concat & H  & loadB2     & loadB1                  &                        & loadB2B1   \\
             (n + 0) & uext   & D  & loadB2B1   & \textcolor{UniBlue}{48} & \textcolor{UniBlue}{0} & rdLHU      \\
-            \hline
-            \hline
-        \end{tabular}
-    }
-
-    %    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
-    %\end{figure}
-    %\begin{figure}%
-    %    \ContinuedFloat
-    %    \centering
-
-    \subfloat[ANDI]{
-        \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
-            \hline
-            \hline
-            (n + 0) & and & D & rs1val & imm &  & rdANDI \\
-            \hline
-            \hline
-        \end{tabular}
-    }
-
-    %    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
-    %\end{figure}
-    %\begin{figure}%
-    %    \ContinuedFloat
-    %    \centering
-
-    \subfloat[SLT]{
-        \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
-            \hline
-            \hline
-            (n + 0) & slt  & Bool & rs1val   & rs2val                  &  & rdSLTpre \\
-            (n + 0) & uext & D    & rdSLTpre & \textcolor{UniBlue}{63} &  & rdSLT    \\
             \hline
             \hline
         \end{tabular}
@@ -149,11 +116,27 @@
         \end{tabular}
     }
 
-    %    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
-    %\end{figure}
-    %\begin{figure}%
-    %    \ContinuedFloat
-    %    \centering
+    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
+\end{figure}
+\begin{figure}%
+    \ContinuedFloat
+    \centering
+
+    \subfloat[ANDI]{
+        \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+            \hline
+            \hline
+            (n + 0) & and & D & rs1val & imm &  & rdANDI \\
+            \hline
+            \hline
+        \end{tabular}
+    }
+
+    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
+\end{figure}
+\begin{figure}%
+    \ContinuedFloat
+    \centering
 
     \subfloat[SLLIW]{
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
@@ -168,11 +151,28 @@
         \end{tabular}
     }
 
-    %    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
-    %\end{figure}
-    %\begin{figure}%
-    %    \ContinuedFloat
-    %    \centering
+    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
+\end{figure}
+\begin{figure}%
+    \ContinuedFloat
+    \centering
+
+    \subfloat[SLT]{
+        \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+            \hline
+            \hline
+            (n + 0) & slt  & Bool & rs1val   & rs2val                  &  & rdSLTpre \\
+            (n + 0) & uext & D    & rdSLTpre & \textcolor{UniBlue}{63} &  & rdSLT    \\
+            \hline
+            \hline
+        \end{tabular}
+    }
+
+    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
+\end{figure}
+\begin{figure}%
+    \ContinuedFloat
+    \centering
 
     \subfloat[SUBW]{
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}

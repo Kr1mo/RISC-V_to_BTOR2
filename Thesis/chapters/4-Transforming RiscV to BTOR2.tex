@@ -172,10 +172,11 @@ multiple instructions use the same funct7.
 \input{figures/4-Transform/detectionexample.tex}
 
 \subsection{Next-State Logic}
-The next state logic is basically the core of the model. Everything else works
-towards this point. The Goal is to create the changes each instruction would
-make and then only inserting the changes specific to the instruction in the
-state.
+The next state logic is basically the core of the model. Almost everything else
+works towards this point. The Goal is to create the changes each instruction
+would make and then only inserting the changes specific to the instruction in
+the state. Each state node in the model must have an accompanying next node to
+work as intended. But first the changed values are needed.
 
 \subsection{Creating all Values of Instruction execution}
 It would be too long and unnecessary to go through all instructions, as this is
@@ -184,14 +185,33 @@ instructions as they were divided in \tabref{tab:rv64i-instructions}. I show
 this for \texttt{AUIPC}, \texttt{JALR}, \texttt{BEQ}, \texttt{LHU},
 \texttt{SD}, \texttt{ANDI}, \texttt{SLLIW}, \texttt{SLT} and \texttt{SUBW} in
 \figref{fig:valueexample}. In this examples one can see multiple overlaps which
-can be used, e.g. the adresses for load- and store-instructions or the 32bit
-versions of the word-instructions. Also I took \texttt{SD} to show that all
-other store instructions happen as interim results of preparing \texttt{SD}.
+can be used, e.g. the adresses for load and store instructions or the 32bit
+versions of the word instructions. Also I took \texttt{SD} to show that all
+other store instructions happen as interim results of preparing \texttt{SD}. It
+is similar with load instructions, but here we only get overlapping pre-results
+which each have to be sign extended to the expected 64bit on their own.
+
+With this done we can sort each change to its instruction.
 
 \input{figures/4-Transform/valueexample.tex}
 
-\subsubsection{The next pc}
 \subsubsection{The next Memory}
+As said, defining the next memory array is the simplest. I just cascade through
+all store instructions with if-then-else nodes and by setting the final 'else'
+as the current memory array, if no 'if' catches, the array is not changed. All
+this is shown in \figref{fig:nextmemory}.
+
+\input{figures/4-Transform/nextmemory.tex}
+
+\subsubsection{The next pc}
+For the next pc it looks mostly the same as shown in \figref{fig:nextpc}. Only
+the behaivour if no 'if' catches is different as pc must point to the next
+instruction to execute. This nextPc was already computed for the JAL and JALR
+instructions so I reused it. The unconditional jumps also change the value in
+rd, but this is done in the next subsection.
+
+\input{figures/4-Transform/nextpc.tex}
+
 \subsubsection{The next rd}
 \subsection{Constraints}
 \todo{Iterations counter auch hier}
