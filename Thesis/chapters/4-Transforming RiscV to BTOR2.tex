@@ -213,10 +213,18 @@ rd, but this is done in the next subsection.
 \input{figures/4-Transform/nextpc.tex}
 
 \subsubsection{The next rd}
+At last the x registers must be updated. The procedure is defined in
+\figref{alg:nextrd}. Whith exeption of x0 this is the same for all these
+registers. Also it is similar in its procedure as defining the next memory or
+pc but instead of a hand full of instructions, I have to go over 39 of them as
+only branch and store instructions do not change rd. Because of this, I took
+the liberty to not exactly show the cascade for all relevant instructions in
+\algoref{alg:nextrd} but only indicate it.
+
+\input{figures/4-Transform/nextrd.tex}
+
 \subsection{Constraints}
 \todo{Iterations counter auch hier}
 \section{Testing for Correctness}\label{sec:corectness}
-\subsection{State Fuzzer}
-\subsection{Automated Logging}
 
 \section{Functional vs Relational Next-State Logic}\label{sec:funcVSrel}
