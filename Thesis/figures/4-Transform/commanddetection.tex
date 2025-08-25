@@ -3,17 +3,17 @@
     \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
         \hline
         \hline
-        (n + 0)  & eq & Bool & opcode & load    &  & isLoad     \\
-        (n + 1)  & eq & Bool & opcode & opImm   &  & isMathImm  \\
-        (n + 2)  & eq & Bool & opcode & auipc   &  & isAuipc    \\
-        (n + 3)  & eq & Bool & opcode & opImm32 &  & isMathWImm \\
-        (n + 4)  & eq & Bool & opcode & store   &  & isStore    \\
-        (n + 5)  & eq & Bool & opcode & op      &  & isMathReg  \\
-        (n + 6)  & eq & Bool & opcode & lui     &  & isLui      \\
-        (n + 7)  & eq & Bool & opcode & op32    &  & isMathWReg \\
-        (n + 8)  & eq & Bool & opcode & branch  &  & isBranch   \\
-        (n + 9)  & eq & Bool & opcode & jalr    &  & isJalr     \\
-        (n + 10) & eq & Bool & opcode & jal     &  & isJal      \\
+        (n + 0)  & eq & Bool & opcode & load    &  & isLoad    \\
+        (n + 1)  & eq & Bool & opcode & opImm   &  & isOpImm   \\
+        (n + 2)  & eq & Bool & opcode & auipc   &  & isAUIPC   \\
+        (n + 3)  & eq & Bool & opcode & opImm32 &  & isOpImm32 \\
+        (n + 4)  & eq & Bool & opcode & store   &  & isStore   \\
+        (n + 5)  & eq & Bool & opcode & op      &  & isOp      \\
+        (n + 6)  & eq & Bool & opcode & lui     &  & isLUI     \\
+        (n + 7)  & eq & Bool & opcode & op32    &  & isOp32    \\
+        (n + 8)  & eq & Bool & opcode & branch  &  & isBranch  \\
+        (n + 9)  & eq & Bool & opcode & jalr    &  & isJALR    \\
+        (n + 10) & eq & Bool & opcode & jal     &  & isJAL     \\
         \hline
         \hline
     \end{tabular}\\
@@ -30,8 +30,8 @@
         \end{tabular}\\
         \textcolor{UniRed}{n} += 2\\
     }
-    $onlyOp \leftarrow$ [lui, auipc, jal, jalr]\\
-    $needsf7 \leftarrow$ [srl, sra, srli, srai, srlw, sraw, srlwi, srawi, add, sub, addw, subw]\\
+    $onlyOp \leftarrow$ [LUI, AUIPC, JAL, JALR]\\
+    $needsf7 \leftarrow$ [SRL, SRA, SRLI, SRAI, SRLW, SRAW, SRLWI, SRAWI, ADD, SUB, ADDW, SUBW]\\
     $rest \leftarrow$[ all other instructions ]\\
     \BlankLine
     \For{ all instructions \textcolor{Green}{I} in $onlyOp$}{
@@ -44,7 +44,7 @@
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
             \hline
             \hline
-            n & eq & Bool & is\textcolor{Black}{opname} & is\textcolor{Black}{f3val}Funct3 &  & is\textcolor{Green}{I} \\
+            n & and & Bool & is\textcolor{Black}{opname} & is\textcolor{Black}{f3val}Funct3 &  & is\textcolor{Green}{I} \\
             \hline
             \hline
         \end{tabular}\\
@@ -60,8 +60,8 @@
             \hline
             (n + 0) & consth & W    & \textcolor{UniBlue}{f7hex}       &                            &  & \textcolor{Green}{I}f7     \\
             (n + 1) & eq     & Bool & funct7                           & \textcolor{Green}{I}f7     &  & fitsF7\textcolor{Green}{I} \\
-            (n + 2) & eq     & Bool & is\textcolor{Black}{f3val}Funct3 & fitsF7\textcolor{Green}{I} &  & fitsF3\textcolor{Green}{I} \\
-            (n + 3) & eq     & Bool & is\textcolor{Black}{opname}      & fitsF3\textcolor{Green}{I} &  & is\textcolor{Green}{I}     \\
+            (n + 2) & and    & Bool & is\textcolor{Black}{f3val}Funct3 & fitsF7\textcolor{Green}{I} &  & fitsF3\textcolor{Green}{I} \\
+            (n + 3) & and    & Bool & is\textcolor{Black}{opname}      & fitsF3\textcolor{Green}{I} &  & is\textcolor{Green}{I}     \\
             \hline
             \hline
         \end{tabular}\\
