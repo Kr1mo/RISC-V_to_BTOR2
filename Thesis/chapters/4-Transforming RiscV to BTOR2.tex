@@ -2,15 +2,16 @@
 
 \todo{explain naming conventions for the model nodes}
 
-This chapter addresses the main problem of the thesis: transforming RISC-V code
-into the BTOR2 format for benchmarking purposes. My primary reference for this
-endeavor is F. Schrögendorfer's master's thesis, \dq Bounded Model Checking in
-Lockless Programs\dq \cite{bmcOfLockless}, in which he describes, among other
-topics, an encoding concept for a minimal machine in a multiprocessor context
-\cite[Chapter 2]{bmcOfLockless} and two approaches to next-state logic: a
-functional \cite[Chapter 6]{bmcOfLockless} and a relational \cite[Chapter
-    7]{bmcOfLockless} approach. I will focus on the relational approach; a
-discussion of both approaches can be found in \secref{sec:funcVSrel}.
+This chapter addresses the main problem of the thesis: transforming a RISC-V
+state into the BTOR2 format for benchmarking purposes. My primary reference for
+this endeavor is F. Schrögendorfer's master's thesis, \dq Bounded Model
+Checking in Lockless Programs\dq \cite{bmcOfLockless}, in which he describes,
+among other topics, an encoding concept for a minimal machine in a
+multiprocessor context \cite[Chapter 2]{bmcOfLockless} and two approaches to
+next-state logic: a functional \cite[Chapter 6]{bmcOfLockless} and a relational
+\cite[Chapter 7]{bmcOfLockless} approach. I will focus on the relational
+approach; a discussion of both approaches can be found in
+\secref{sec:funcVSrel}.
 
 \section{The Concept}
 To successfully execute a RISC-V instruction, three fundamental steps must
@@ -235,13 +236,52 @@ This is shown in \figref{fig:unknownInstr}. The constraint in
 \figref{fig:badaddress} handles instruction-address-misaligned exceptions for
 jump instructions.
 
-Of course other constraints can be defined
+Of course other constraints can be defined. Options would be to stop on a
+specific pc or if a register reaches a specified value.
+
+\todo{Maybe add examples on how to do?}\\
+\todo{Maybe internal references in figures should be numbers\dots}
 
 \input{figures/4-Transform/badcounter.tex}
 \input{figures/4-Transform/badinstructions.tex}
 \input{figures/4-Transform/badaddress.tex}
 
-\todo{Iterations counter auch hier}
 \section{Testing for Correctness}\label{sec:corectness}
+To test my model, I compared its results to my RISC-V simulators
+(\secref{sec:simulation}) results.
+
+With a given state, both the simulation and the BTOR2 model are run. For both
+the iteration maximum is set to 1. The resulting BTOR2 witness can not be
+directly compared to the resulting state of the simulation. So I also
+implemented a simple converter from witness to state
+\cite[src/restate\_witness.c]{repoRV2BTOR}. These two states now can be
+compared. I have written a shell script for this at
+\cite[sh\_utils/compare\_iterations.sh]{repoRV2BTOR}
+
+To generate RISC-V states, I implemented a fuzzer
+\cite[src/state\_fuzzer.c]{repoRV2BTOR} to generate randomised states with one
+valid instruction at the address of pc. The fuzzer first chooses an instruction
+to test, on this basis it fills all variable parts of the instruction, e.g. rd
+or imm. Now all registers relevant to the instruction are filled with a random
+64bit value. Also a pc value is generated so that the instruction still fits in
+the limited address space of the BTOR2 model. At last if a jump instruction was
+chosen, a possible address misalignment is fixed and an address overflow
+prevented. The second part is for simplifying later comparison on the resulting
+states, as now a correct execution of the instruction always results in the
+exact same resulting state although the differences between simulation and the
+BTOR2 model.
+
+With this it is possible to start test series. For this I implemented a shell
+script, too \cite[sh\_utils/test\_btor2\_model.sh]{repoRV2BTOR}. Also, as with
+big amounts of tests, it becomes harder to keep an overview over failed tests.
+To counter this I also have written a script to unite all failed tests into one
+file and also add some not so easy to access information like instruction name
+or immediate value \cite[sh\_utils/diff\_logger.sh]{repoRV2BTOR}.
+
+I have run around 5.000.000 tests on this model without one failing, so I
+conclude that my implementation is correct.
 
 \section{Functional vs Relational Next-State Logic}\label{sec:funcVSrel}
+F. Schrögendorfer gives two options for the next state logic, a functional
+approach \cite[Chapter 6]{bmcOfLockless}, and a relational approach
+\cite[Chapter 7]{bmcOfLockless}.

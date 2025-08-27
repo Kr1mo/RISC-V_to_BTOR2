@@ -60,7 +60,6 @@ int main(int argc, char *argv[]) {
       fprintf(stderr, "Error opening witness file: %s\n", argv[optind]);
       return 1;
     }
-
   } else {
     fprintf(stderr, "No state file provided.\n");
     free(target_path);
@@ -120,8 +119,8 @@ int main(int argc, char *argv[]) {
   // Reset the file pointer to the last state part
   fseek(witness_file, last_state_part, SEEK_SET);
   buff_ptr = fgets(buff, sizeof(buff), witness_file); // Skip iterations counter
-  if (buff_ptr && (strncmp(buff, "0 ", 2) != 0 ||
-                   strncmp(buff + 34, " iterations_counter#", 20))) {
+  if (buff_ptr && (strncmp(buff, "0 ", 2) ||
+                   strncmp(buff + 66, " iterations_counter#", 20))) {
     fprintf(stderr,
             "Invalid state part format. Expected iterations counter, got:\n%s",
             buff);
