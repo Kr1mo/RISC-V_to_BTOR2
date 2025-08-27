@@ -4,23 +4,23 @@
         \hline
         \hline
         (n + 0)  & or  & Bool & isLoad                            & isOpImm        &  & isOpcodeValid9 \\
-        (n + 0)  & or  & Bool & isAUIPC                           & isOpcodeValid9 &  & isOpcodeValid8 \\
-        (n + 0)  & or  & Bool & isOpImm32                         & isOpcodeValid8 &  & isOpcodeValid7 \\
-        (n + 0)  & or  & Bool & isStore                           & isOpcodeValid7 &  & isOpcodeValid6 \\
-        (n + 0)  & or  & Bool & isOp                              & isOpcodeValid6 &  & isOpcodeValid5 \\
-        (n + 0)  & or  & Bool & isLUI                             & isOpcodeValid5 &  & isOpcodeValid4 \\
-        (n + 0)  & or  & Bool & isOp32                            & isOpcodeValid4 &  & isOpcodeValid3 \\
-        (n + 0)  & or  & Bool & isBranch                          & isOpcodeValid3 &  & isOpcodeValid2 \\
-        (n + 0)  & or  & Bool & isJALR                            & isOpcodeValid2 &  & isOpcodeValid1 \\
-        (n + 0)  & or  & Bool & isJAL                             & isOpcodeValid1 &  & isOpcodeValid  \\
-        (n + 0)  & bad &      & \textcolor{Black}{-}isOpcodeValid                                      \\
+        (n + 1)  & or  & Bool & isAUIPC                           & isOpcodeValid9 &  & isOpcodeValid8 \\
+        (n + 2)  & or  & Bool & isOpImm32                         & isOpcodeValid8 &  & isOpcodeValid7 \\
+        (n + 3)  & or  & Bool & isStore                           & isOpcodeValid7 &  & isOpcodeValid6 \\
+        (n + 4)  & or  & Bool & isOp                              & isOpcodeValid6 &  & isOpcodeValid5 \\
+        (n + 5)  & or  & Bool & isLUI                             & isOpcodeValid5 &  & isOpcodeValid4 \\
+        (n + 6)  & or  & Bool & isOp32                            & isOpcodeValid4 &  & isOpcodeValid3 \\
+        (n + 7)  & or  & Bool & isBranch                          & isOpcodeValid3 &  & isOpcodeValid2 \\
+        (n + 8)  & or  & Bool & isJALR                            & isOpcodeValid2 &  & isOpcodeValid1 \\
+        (n + 9)  & or  & Bool & isJAL                             & isOpcodeValid1 &  & isOpcodeValid  \\
+        (n + 10) & bad &      & \textcolor{Black}{-}isOpcodeValid                                      \\
         \\
-        (n + 0)  & or  & Bool & isLUI                             & isAUIPC        &  & isInstrValid47 \\
-        (n + 1)  & or  & Bool & isJAL                             & isInstrValid47 &  & isInstrValid46 \\
+        (n + 11) & or  & Bool & isLUI                             & isAUIPC        &  & isInstrValid47 \\
+        (n + 12) & or  & Bool & isJAL                             & isInstrValid47 &  & isInstrValid46 \\
         \vdots   & or  & Bool & \vdots                            & \vdots         &  & \vdots         \\
-        (n + 47) & or  & Bool & isSRAW                            & isInstrValid1  &  & isInstrValid   \\
-        (n + 0)  & and & Bool & \textcolor{Black}{-}isInstrValid  & isOpcodeValid  &  & unknownInstr   \\
-        (n + 0)  & bad &      & unknownInstr                                                           \\
+        (n + 58) & or  & Bool & isSRAW                            & isInstrValid1  &  & isInstrValid   \\
+        (n + 59) & and & Bool & \textcolor{Black}{-}isInstrValid  & isOpcodeValid  &  & unknownInstr   \\
+        (n + 60) & bad &      & unknownInstr                                                           \\
         \hline
         \hline
     \end{tabular}

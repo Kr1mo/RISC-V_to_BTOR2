@@ -3,25 +3,25 @@
     \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
         \hline
         \hline
-        (n + 0) & zero   & AS   &                  &                  &  & pcZero           \\
-        (n + 0) & constd & AS   & 3                &                  &  & pcBitmask        \\
-        (n + 0) & and    & AS   & pcBitmask        & pcJAL            &  & lowbitsJAL       \\
-        (n + 0) & and    & AS   & pcBitmask        & pcJALR           &  & lowbitsJALR      \\
-        (n + 0) & and    & AS   & pcBitmask        & pcBEQ            &  & lowbitsBEQ       \\
-        \vdots  & and    & AS   & pcBitmask        & \vdots           &  & \vdots           \\
-        (n + 0) & and    & AS   & pcBitmask        & pcBGEU           &  & lowbitsBGEU      \\
+        (n + 0)  & zero   & AS   &           &             &  & pcZero      \\
+        (n + 1)  & constd & AS   & 3         &             &  & pcBitmask   \\
+        (n + 2)  & and    & AS   & pcBitmask & pcJAL       &  & lowbitsJAL  \\
+        (n + 3)  & and    & AS   & pcBitmask & pcJALR      &  & lowbitsJALR \\
+        (n + 4)  & and    & AS   & pcBitmask & pcBEQ       &  & lowbitsBEQ  \\
+        \vdots   & and    & AS   & pcBitmask & \vdots      &  & \vdots      \\
+        (n + 9)  & and    & AS   & pcBitmask & pcBGEU      &  & lowbitsBGEU \\
         \\
-        (n + 0) & neq    & Bool & pcZero           & lowbitsJAL       &  & pcMisalignedJAL  \\
-        (n + 0) & neq    & Bool & pcZero           & lowbitsJALR      &  & pcMisalignedJALR \\
-        (n + 0) & neq    & Bool & pcZero           & lowbitsBEQ       &  & pcMisalignedBEQ  \\
-        \vdots  & neq    & Bool & pcZero           & \vdots           &  & \vdots           \\
-        (n + 0) & neq    & Bool & pcZero           & lowbitsBGEU      &  & pcMisalignedBGEU \\
+        (n + 10) & neq    & Bool & pcZero    & lowbitsJAL  &  & pcMsaJAL    \\
+        (n + 11) & neq    & Bool & pcZero    & lowbitsJALR &  & pcMsaJALR   \\
+        (n + 12) & neq    & Bool & pcZero    & lowbitsBEQ  &  & pcMsaBEQ    \\
+        \vdots   & neq    & Bool & pcZero    & \vdots      &  & \vdots      \\
+        (n + 17) & neq    & Bool & pcZero    & lowbitsBGEU &  & pcMsaBGEU   \\
         \\
-        (n + 0) & or     & Bool & pcMisalignedJAL  & pcMisalignedJALR &  & pcMisaligned6    \\
-        (n + 0) & or     & Bool & pcMisalignedBEQ  & pcBEQ            &  & pcMisaligned5    \\
-        (n + 0) & or     & Bool & \vdots           & \vdots           &  & \vdots           \\
-        (n + 0) & or     & Bool & pcMisalignedBGEU & pcMisaligned1    &  & pcMisaligned     \\
-        (n + 0) & bad    &      & pcMisaligned                                              \\
+        (n + 18) & or     & Bool & pcMsaJAL  & pcMsaJALR   &  & pcMsa6      \\
+        (n + 19) & or     & Bool & pcMsaBEQ  & pcBEQ       &  & pcMsa5      \\
+        \vdots   & or     & Bool & \vdots    & \vdots      &  & \vdots      \\
+        (n + 24) & or     & Bool & pcMsaBGEU & pcMsa1      &  & pcMsa       \\
+        (n + 25) & bad    &      & pcMsa                                    \\
         \hline
         \hline
     \end{tabular}

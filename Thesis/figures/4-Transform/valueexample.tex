@@ -5,7 +5,7 @@
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
             \hline
             \hline
-            (n + 0) & add & D & imm & pc &  & rdAUIPC \\
+            n & add & D & imm & pc &  & rdAUIPC \\
             \hline
             \hline
         \end{tabular}
@@ -22,10 +22,10 @@
             \hline
             \hline
             (n + 0) & add   & AS & pc                         & pcInc                   &  & nextPc      \\
-            (n + 0) & add   & D  & imm                        & rs1val                  &  & pcJALR64pre \\
-            (n + 0) & and   & D  & \textcolor{Black}{-}1Const & pcJALR64pre             &  & pcJALR64    \\
-            (n + 0) & slice & AS & pcJALR64                   & \textcolor{UniBlue}{15} &  & pcJALR      \\
-            (n + 0) & uext  & D  & nextPc                     & \textcolor{UniBlue}{48} &  & rdJALR      \\
+            (n + 1) & add   & D  & imm                        & rs1val                  &  & pcJALR64pre \\
+            (n + 2) & and   & D  & \textcolor{Black}{-}1Const & pcJALR64pre             &  & pcJALR64    \\
+            (n + 3) & slice & AS & pcJALR64                   & \textcolor{UniBlue}{15} &  & pcJALR      \\
+            (n + 4) & uext  & D  & nextPc                     & \textcolor{UniBlue}{48} &  & rdJALR      \\
             \hline
             \hline
             \multicolumn{7}{l}{\todo{pc overflow erwähnen}}
@@ -43,10 +43,10 @@
             \hline
             \hline
             (n + 0) & add   & AS   & pc        & pcInc                   &                        & nextPc    \\
-            (n + 0) & slice & AS   & imm       & \textcolor{UniBlue}{15} & \textcolor{UniBlue}{0} & ImmAS     \\
-            (n + 0) & add   & AS   & pc        & ImmAS                   &                        & pcBranch  \\
-            (n + 0) & eq    & Bool & rs1val    & rs2val                  &                        & isBEQcond \\
-            (n + 0) & ite   & AS   & isBEQcond & pcBranch                & nextPc                 & pcBEQ     \\
+            (n + 1) & slice & AS   & imm       & \textcolor{UniBlue}{15} & \textcolor{UniBlue}{0} & ImmAS     \\
+            (n + 2) & add   & AS   & pc        & ImmAS                   &                        & pcBranch  \\
+            (n + 3) & eq    & Bool & rs1val    & rs2val                  &                        & isBEQcond \\
+            (n + 4) & ite   & AS   & isBEQcond & pcBranch                & nextPc                 & pcBEQ     \\
             \hline
             \hline
         \end{tabular}
@@ -63,12 +63,12 @@
             \hline
             \hline
             (n + 0) & add    & D  & rs1val     & imm                     &                        & 1stAddrPre \\
-            (n + 0) & slice  & AS & 1stAddrPre & \textcolor{UniBlue}{15} & \textcolor{UniBlue}{0} & 1stAddr    \\
-            (n + 0) & add    & AS & 1stAddr    & addressInc              &                        & 2ndAddr    \\
-            (n + 0) & read   & B  & memory     & 1stAddr                 &                        & loadB1     \\
-            (n + 0) & read   & B  & memory     & 2ndAddr                 &                        & loadB2     \\
-            (n + 0) & concat & H  & loadB2     & loadB1                  &                        & loadB2B1   \\
-            (n + 0) & uext   & D  & loadB2B1   & \textcolor{UniBlue}{48} & \textcolor{UniBlue}{0} & rdLHU      \\
+            (n + 1) & slice  & AS & 1stAddrPre & \textcolor{UniBlue}{15} & \textcolor{UniBlue}{0} & 1stAddr    \\
+            (n + 2) & add    & AS & 1stAddr    & addressInc              &                        & 2ndAddr    \\
+            (n + 3) & read   & B  & memory     & 1stAddr                 &                        & loadB1     \\
+            (n + 4) & read   & B  & memory     & 2ndAddr                 &                        & loadB2     \\
+            (n + 5) & concat & H  & loadB2     & loadB1                  &                        & loadB2B1   \\
+            (n + 6) & uext   & D  & loadB2B1   & \textcolor{UniBlue}{48} & \textcolor{UniBlue}{0} & rdLHU      \\
             \hline
             \hline
         \end{tabular}
@@ -84,33 +84,33 @@
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
             \hline
             \hline
-            (n + 0) & add   & D   & rs1val     & imm                     &                         & 1stAddrPre \\
-            (n + 0) & slice & AS  & 1stAddrPre & \textcolor{UniBlue}{15} & \textcolor{UniBlue}{0}  & 1stAddr    \\
-            (n + 0) & add   & AS  & 1stAddr    & addressInc              &                         & 2ndAddr    \\
-            (n + 0) & add   & AS  & 2ndAddr    & addressInc              &                         & 3rdAddr    \\
-            (n + 0) & add   & AS  & 3rdAddr    & addressInc              &                         & 4thAddr    \\
-            (n + 0) & add   & AS  & 4thAddr    & addressInc              &                         & 5thAddr    \\
-            (n + 0) & add   & AS  & 5thAddr    & addressInc              &                         & 6thAddr    \\
-            (n + 0) & add   & AS  & 6thAddr    & addressInc              &                         & 7thAddr    \\
-            (n + 0) & add   & AS  & 7thAddr    & addressInc              &                         & 8thAddr    \\
+            (n + 0)  & add   & D   & rs1val     & imm                     &                         & 1stAddrPre \\
+            (n + 1)  & slice & AS  & 1stAddrPre & \textcolor{UniBlue}{15} & \textcolor{UniBlue}{0}  & 1stAddr    \\
+            (n + 2)  & add   & AS  & 1stAddr    & addressInc              &                         & 2ndAddr    \\
+            (n + 3)  & add   & AS  & 2ndAddr    & addressInc              &                         & 3rdAddr    \\
+            (n + 4)  & add   & AS  & 3rdAddr    & addressInc              &                         & 4thAddr    \\
+            (n + 5)  & add   & AS  & 4thAddr    & addressInc              &                         & 5thAddr    \\
+            (n + 6)  & add   & AS  & 5thAddr    & addressInc              &                         & 6thAddr    \\
+            (n + 7)  & add   & AS  & 6thAddr    & addressInc              &                         & 7thAddr    \\
+            (n + 8)  & add   & AS  & 7thAddr    & addressInc              &                         & 8thAddr    \\
             \\
-            (n + 0) & slice & B   & rs2val     & \textcolor{UniBlue}{7}  & \textcolor{UniBlue}{0}  & storeB1    \\
-            (n + 0) & slice & B   & rs2val     & \textcolor{UniBlue}{15} & \textcolor{UniBlue}{8}  & storeB2    \\
-            (n + 0) & slice & B   & rs2val     & \textcolor{UniBlue}{23} & \textcolor{UniBlue}{16} & storeB3    \\
-            (n + 0) & slice & B   & rs2val     & \textcolor{UniBlue}{31} & \textcolor{UniBlue}{24} & storeB4    \\
-            (n + 0) & slice & B   & rs2val     & \textcolor{UniBlue}{39} & \textcolor{UniBlue}{32} & storeB5    \\
-            (n + 0) & slice & B   & rs2val     & \textcolor{UniBlue}{47} & \textcolor{UniBlue}{40} & storeB6    \\
-            (n + 0) & slice & B   & rs2val     & \textcolor{UniBlue}{55} & \textcolor{UniBlue}{48} & storeB7    \\
-            (n + 0) & slice & B   & rs2val     & \textcolor{UniBlue}{63} & \textcolor{UniBlue}{56} & storeB8    \\
+            (n + 9)  & slice & B   & rs2val     & \textcolor{UniBlue}{7}  & \textcolor{UniBlue}{0}  & storeB1    \\
+            (n + 10) & slice & B   & rs2val     & \textcolor{UniBlue}{15} & \textcolor{UniBlue}{8}  & storeB2    \\
+            (n + 11) & slice & B   & rs2val     & \textcolor{UniBlue}{23} & \textcolor{UniBlue}{16} & storeB3    \\
+            (n + 12) & slice & B   & rs2val     & \textcolor{UniBlue}{31} & \textcolor{UniBlue}{24} & storeB4    \\
+            (n + 13) & slice & B   & rs2val     & \textcolor{UniBlue}{39} & \textcolor{UniBlue}{32} & storeB5    \\
+            (n + 14) & slice & B   & rs2val     & \textcolor{UniBlue}{47} & \textcolor{UniBlue}{40} & storeB6    \\
+            (n + 15) & slice & B   & rs2val     & \textcolor{UniBlue}{55} & \textcolor{UniBlue}{48} & storeB7    \\
+            (n + 16) & slice & B   & rs2val     & \textcolor{UniBlue}{63} & \textcolor{UniBlue}{56} & storeB8    \\
             \\
-            (n + 0) & write & Mem & memory     & 1stAddr                 & storeB1                 & memorySB   \\
-            (n + 0) & write & Mem & memorySB   & 2ndAddr                 & storeB2                 & memorySH   \\
-            (n + 0) & write & Mem & memorySH   & 3rdAddr                 & storeB3                 & memoryB3   \\
-            (n + 0) & write & Mem & memoryB3   & 4thAddr                 & storeB4                 & memorySW   \\
-            (n + 0) & write & Mem & memorySW   & 5thAddr                 & storeB5                 & memoryB5   \\
-            (n + 0) & write & Mem & memoryB5   & 6thAddr                 & storeB6                 & memoryB6   \\
-            (n + 0) & write & Mem & memoryB6   & 7thAddr                 & storeB7                 & memoryB7   \\
-            (n + 0) & write & Mem & memoryB7   & 8thAddr                 & storeB8                 & memorySD   \\
+            (n + 17) & write & Mem & memory     & 1stAddr                 & storeB1                 & memorySB   \\
+            (n + 18) & write & Mem & memorySB   & 2ndAddr                 & storeB2                 & memorySH   \\
+            (n + 19) & write & Mem & memorySH   & 3rdAddr                 & storeB3                 & memoryB3   \\
+            (n + 20) & write & Mem & memoryB3   & 4thAddr                 & storeB4                 & memorySW   \\
+            (n + 21) & write & Mem & memorySW   & 5thAddr                 & storeB5                 & memoryB5   \\
+            (n + 22) & write & Mem & memoryB5   & 6thAddr                 & storeB6                 & memoryB6   \\
+            (n + 23) & write & Mem & memoryB6   & 7thAddr                 & storeB7                 & memoryB7   \\
+            (n + 24) & write & Mem & memoryB7   & 8thAddr                 & storeB8                 & memorySD   \\
             \hline
             \hline
         \end{tabular}
@@ -126,7 +126,7 @@
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
             \hline
             \hline
-            (n + 0) & and & D & rs1val & imm &  & rdANDI \\
+            n & and & D & rs1val & imm &  & rdANDI \\
             \hline
             \hline
         \end{tabular}
@@ -143,9 +143,9 @@
             \hline
             \hline
             (n + 0) & and   & W & imm32    & 5Bitmask                &                        & shamtIW    \\
-            (n + 0) & slice & W & rs1val   & \textcolor{UniBlue}{31} & \textcolor{UniBlue}{0} & rs1val32   \\
-            (n + 0) & sll   & W & rs1val32 & shamtIW                 &                        & rdSLLIWpre \\
-            (n + 0) & sext  & D & rs1val32 & 32                      &                        & rdSLLIW    \\
+            (n + 1) & slice & W & rs1val   & \textcolor{UniBlue}{31} & \textcolor{UniBlue}{0} & rs1val32   \\
+            (n + 2) & sll   & W & rs1val32 & shamtIW                 &                        & rdSLLIWpre \\
+            (n + 3) & sext  & D & rs1val32 & 32                      &                        & rdSLLIW    \\
             \hline
             \hline
         \end{tabular}
@@ -162,7 +162,7 @@
             \hline
             \hline
             (n + 0) & slt  & Bool & rs1val   & rs2val                  &  & rdSLTpre \\
-            (n + 0) & uext & D    & rdSLTpre & \textcolor{UniBlue}{63} &  & rdSLT    \\
+            (n + 1) & uext & D    & rdSLTpre & \textcolor{UniBlue}{63} &  & rdSLT    \\
             \hline
             \hline
         \end{tabular}
@@ -179,9 +179,9 @@
             \hline
             \hline
             (n + 0) & slice & W & rs1val    & \textcolor{UniBlue}{31} & \textcolor{UniBlue}{0} & rs1val32  \\
-            (n + 0) & slice & W & rs2val    & \textcolor{UniBlue}{31} & \textcolor{UniBlue}{0} & rs2val32  \\
-            (n + 0) & sub   & W & rs1val32  & rs2val32                &                        & rdSUBWpre \\
-            (n + 0) & sext  & D & rdSUBWpre & \textcolor{UniBlue}{32} &                        & rdSUBW    \\
+            (n + 1) & slice & W & rs2val    & \textcolor{UniBlue}{31} & \textcolor{UniBlue}{0} & rs2val32  \\
+            (n + 2) & sub   & W & rs1val32  & rs2val32                &                        & rdSUBWpre \\
+            (n + 3) & sext  & D & rdSUBWpre & \textcolor{UniBlue}{32} &                        & rdSUBW    \\
             \hline
             \hline
         \end{tabular}

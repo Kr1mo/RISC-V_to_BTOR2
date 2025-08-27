@@ -4,13 +4,13 @@
         \hline
         \hline
         (n + 0) & one    & D    &                                &               &  & counterInc    \\
-        (n + 0) & constd & D    & \textcolor{Green}{nIterations} &               &  & maxIterations \\
-        (n + 0) & state  & D    &                                &               &  & counter       \\
-        (n + 0) & init   & D    & counter                        & emptyReg                         \\
-        (n + 0) & add    & D    & counter                        & counterInc    &  & newCounter    \\
-        (n + 0) & next   & D    & counter                        & newCounter                       \\
-        (n + 0) & eq     & Bool & counter                        & maxIterations &  & isMaxIter     \\
-        (n + 0) & bad    &      & isMaxIter                                                         \\
+        (n + 1) & constd & D    & \textcolor{Green}{nIterations} &               &  & maxIterations \\
+        (n + 2) & state  & D    &                                &               &  & counter       \\
+        (n + 3) & init   & D    & counter                        & emptyReg                         \\
+        (n + 4) & add    & D    & counter                        & counterInc    &  & newCounter    \\
+        (n + 5) & next   & D    & counter                        & newCounter                       \\
+        (n + 6) & eq     & Bool & counter                        & maxIterations &  & isMaxIter     \\
+        (n + 7) & bad    &      & isMaxIter                                                         \\
         \hline
         \hline
     \end{tabular}
