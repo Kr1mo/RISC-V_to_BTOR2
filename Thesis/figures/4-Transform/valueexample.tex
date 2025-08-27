@@ -43,10 +43,10 @@
             \hline
             \hline
             (n + 0) & add   & AS   & pc        & pcInc                   &                        & nextPc    \\
-            (n + 0) & slice & AS   & imm       & \textcolor{UniBlue}{15} & \textcolor{UniBlue}{0} & branchImm \\
-            (n + 0) & add   & AS   & pc        & branchImm               &                        & branchPc  \\
+            (n + 0) & slice & AS   & imm       & \textcolor{UniBlue}{15} & \textcolor{UniBlue}{0} & ImmAS     \\
+            (n + 0) & add   & AS   & pc        & ImmAS                   &                        & pcBranch  \\
             (n + 0) & eq    & Bool & rs1val    & rs2val                  &                        & isBEQcond \\
-            (n + 0) & ite   & AS   & isBEQcond & branchPc                & nextPc                 & pcBEQ     \\
+            (n + 0) & ite   & AS   & isBEQcond & pcBranch                & nextPc                 & pcBEQ     \\
             \hline
             \hline
         \end{tabular}

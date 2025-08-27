@@ -229,10 +229,17 @@ the intended end of reaching a set number of Iterations. It is shown in
 \figref{fig:badcounter}.
 
 After this I defined some extra constraints to check for bad instructions.
+First is checked if the opcode is valid for my model. The second constraint
+catches if the instruction can not be detected even whilst the opcode is valid.
+This is shown in \figref{fig:unknownInstr}. The constraint in
+\figref{fig:badaddress} handles instruction-address-misaligned exceptions for
+jump instructions.
 
 Of course other constraints can be defined
 
 \input{figures/4-Transform/badcounter.tex}
+\input{figures/4-Transform/badinstructions.tex}
+\input{figures/4-Transform/badaddress.tex}
 
 \todo{Iterations counter auch hier}
 \section{Testing for Correctness}\label{sec:corectness}
