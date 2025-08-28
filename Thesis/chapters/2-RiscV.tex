@@ -159,9 +159,27 @@ needed.
 
 \section{Simulation of RISC-V}\label{sec:simulation}
 In a previous project, I have written a simulation of this subset of
-RV64I \cite{repoSim}.
+RV64I in C \cite{repoSim}. As I will use it to later on test my BTOR2
+model, I explain the inner working of the program here.
+
+First I implemented a structure to represent a simple RISC-V
+processor
 
 \subsection{Representing the State of a RISC-V Processor}
+Of course the state needs a representation for all registers. $pc$ is
+defined as a 64bit integer, the other 32 registers are implemented as
+an array, as so each register can be referenced by its number. Also I
+implemented an array of flags, one for each register, to be able to
+differ between initialised and non initialised registers. The memory
+is build from single memory cells holding each an address and its
+byte of content. These are cumulatedin a hashtable
+\enquote{memorytable}, hashing on the address. If adding a new cell
+causes a collision, it is appended to the cells already in the bucket
+forming a linked list. These structs are shown in
+\figref{fig:structs}.
+
+\input{figures/2-RiscV/simstructs.tex}
+
 \subsection{Instruction detection}
 \subsection{Instruction execution}
 
