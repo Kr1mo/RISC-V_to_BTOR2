@@ -1,0 +1,19 @@
+\begin{table}
+    \centering
+    \begin{tabular}{>{\ttfamily}r|l}
+        \hline
+        Instr & Behavior                                               \\
+        \hline
+        ADD   & $rd := rs1 + rs2$                                      \\
+        SUB   & $rd := rs1 - rs2$                                      \\
+        SLT   & $rd := 1$ if $rs1 < rs2$ else $rd := 0$                \\
+        XOR   & $rd := rs1 \oplus rs2$, bitwise                        \\
+        OR    & $rd := rs1 \vee rs2$, bitwise                          \\
+        AND   & $rd := rs1 \wedge rs2$, bitwise                        \\
+        SLL   & $rd := rs1$ shifted left by $rs2$, new bits are zeros  \\
+        SRL   & $rd := rs1$ shifted right by $rs2$, new bits are zeros \\
+        SRA   & $rd := rs1$ shifted right by $rs2$, sign extend        \\
+    \end{tabular}
+    \caption[Behavior of RV64I operations]{All suffix free
+        operations in RV64I and their behavior. All values are handled either bitwise or as signed twos complement integers}\label{tab:operations}
+\end{table}

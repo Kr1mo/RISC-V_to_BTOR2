@@ -104,7 +104,7 @@ $rs2$ and if the comparison holds, $imm$ is added onto $pc$. The
 comparison are $=$ for \texttt{BEQ}, $\neq$ for \texttt{BNE}, $<$ for
 \texttt{BLT} and $\ge$ for \texttt{BGE}. In these instructions, the
 values in $rs1$ and $rs2$ are handled as twos complement integers.
-The suffix \texttt{*U} in an instruction generally designates an
+The suffix \texttt{$^*$U} in an instruction generally designates an
 unsigned operation. In this case the values in $rs1$ and $rs2$ are
 handled as unsigned integers. Apart from this, they work as their
 counterpart without the suffix.
@@ -112,21 +112,54 @@ counterpart without the suffix.
 $load$ instructions load values from memory at address $(rs1+imm)$
 into $rd$, either at \texttt{B}yte, \texttt{H}alfword, \texttt{W}ord,
 or \texttt{D}oubleword length. Again the standard is a sign-extended
-value and the suffix \texttt{*U} designates the loading of a non sign
-extended value.
+value and the suffix \texttt{$^*$U} designates the loading of a non
+sign extended value.
 
 Conversely, $store$ instructions write values from $rs2$ at the
 address $(rs1+imm)$ to memory. Here also the distinction between the
 different lengths is made and the lowest byte, halfword, word or the
 whole doubleword is stored at the address.
 
-I left out \texttt{FENCE}, \texttt{ECALL} and \texttt{EBREAK}
-instructions as without I/O interaction or an environment like an OS
-or a debugger, these are not needed.
+All further instructions can be seen as generic operations,
+differentiated by their suffixes. To simplify the explanation
+process, all operations without any suffix and their behaviour are
+listed in \tabref{tab:operations}. This is almost exactly the group
+with opcode $op$, except the \texttt{SLTU} instruction, which is not
+suffix free. But as all other instructions with the unsigned suffix
+it behaves as its signed counterpart except from handling both $rs1$
+and $rs2$ as unsigned integers.
+
+\input{figures/2-RiscV/operations.tex}
+
+These operations can be extended by the \texttt{$^*$I} suffix which
+is designated by the opcode $op-imm$. This exchanges $rs2$ with $imm$
+in the behavior. Again, \texttt{SLTI} can be extended to an unsigned
+version \texttt{SLTIU}, which behaves as expected. A \texttt{SUBI}
+instruction does not exist as it is redundand. Its behavior can be
+reached by using \texttt{ADDI} with a negative immediate.
+
+Also, the operations \texttt{ADD}, \texttt{SUB}, \texttt{SLL},
+\texttt{SRL} and \texttt{SRA} can be extended with the \texttt{$^*$W}
+suffix. This forms the group with the opcode $op-32$. In contrast to
+the base instructions these new ones behave as if the registers are
+only 32bit. The result is placed in the low 32 bits of $rd$ and sign
+extended to full 64bit. Overflows are ignored.
+
+The last group left is the combination of both suffixes
+\texttt{$^*$IW} with the opcode $op-imm-32$. The behavior differs
+from the base instructions, as expected, by a replacement of $rs2$
+with $imm$ and only operating on 32bit. Again, a \texttt{SUBIW}
+instruction is redundand as a negative immediate with \texttt{ADDIW}
+archives the same.
+
+Compared to the full RV64I ISA, I left out \texttt{FENCE},
+\texttt{ECALL} and \texttt{EBREAK} instructions as without I/O
+interaction or an environment like an OS or a debugger, these are not
+needed.
 
 \section{Simulation of RISC-V}\label{sec:simulation}
-\todo{This may be better placed in Chapter 4, but the state file is
-      relevant here.} \cite{repoSim}
+In a previous project, I have written a simulation of this subset of
+RV64I \cite{repoSim}.
 
 \subsection{Representing the State of a RISC-V Processor}
 \subsection{Instruction detection}

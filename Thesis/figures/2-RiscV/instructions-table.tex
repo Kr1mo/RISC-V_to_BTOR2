@@ -1,6 +1,6 @@
 \begin{table}
     \centering
-    \begin{tabular}[t]{r|l|l}
+    \begin{tabular}[t]{r|>{\itshape}l|l}
         \hline
         Instr          & $opcode$                & Type               \\
         \hline
@@ -26,34 +26,34 @@
         \texttt{LWU}   &                                              \\
         \hline
     \end{tabular}
-    \begin{tabular}[t]{r|l|l}
+    \begin{tabular}[t]{r|>{\itshape}l|l}
         \hline
-        Instr          & $opcode$                   & Type                 \\
+        Instr          & $opcode$                   & Type                      \\
         \hline
-        \texttt{SB}    & \multirow{4}{*}{store}     & \multirow{4}{*}{S}   \\
-        \texttt{SH}    &                                                   \\
-        \texttt{SW}    &                                                   \\
-        \texttt{SD}    &                                                   \\
+        \texttt{SB}    & \multirow{4}{*}{store}     & \multirow{4}{*}{S}        \\
+        \texttt{SH}    &                                                        \\
+        \texttt{SW}    &                                                        \\
+        \texttt{SD}    &                                                        \\
         \hline
-        \texttt{ADDI}  & \multirow{9}{*}{op-imm}    & \multirow{6}{*}{I}   \\
-        \texttt{SLTI}  &                                                   \\
-        \texttt{SLTIU} &                                                   \\
-        \texttt{XORI}  &                                                   \\
-        \texttt{ORI}   &                                                   \\
-        \texttt{ANDI}  &                                                   \\
+        \texttt{ADDI}  & \multirow{9}{*}{op-imm}    & \multirow{6}{*}{I}        \\
+        \texttt{SLTI}  &                                                        \\
+        \texttt{SLTIU} &                                                        \\
+        \texttt{XORI}  &                                                        \\
+        \texttt{ORI}   &                                                        \\
+        \texttt{ANDI}  &                                                        \\
         \cline{3-3}
-        \texttt{SLLI}  &                            & \multirow{3}{*}{I*}  \\
-        \texttt{SRLI}  &                                                   \\
-        \texttt{SRAI}  &                                                   \\
+        \texttt{SLLI}  &                            & \multirow{3}{*}{I$^*$}    \\
+        \texttt{SRLI}  &                                                        \\
+        \texttt{SRAI}  &                                                        \\
         \hline
-        \texttt{ADDIW} & \multirow{4}{*}{op-imm-32} & I                    \\
+        \texttt{ADDIW} & \multirow{4}{*}{op-imm-32} & I                         \\
         \cline{3-3}
-        \texttt{SLLIW} &                            & \multirow{3}{*}{I**} \\
-        \texttt{SRLIW} &                                                   \\
-        \texttt{SRAIW} &                                                   \\
+        \texttt{SLLIW} &                            & \multirow{3}{*}{I$^{**}$} \\
+        \texttt{SRLIW} &                                                        \\
+        \texttt{SRAIW} &                                                        \\
         \hline
     \end{tabular}
-    \begin{tabular}[t]{r|l|l}
+    \begin{tabular}[t]{r|>{\itshape}l|l}
         \hline
         Instr         & $opcode$               & Type               \\
         \hline
