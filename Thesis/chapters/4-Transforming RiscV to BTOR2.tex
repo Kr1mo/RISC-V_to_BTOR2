@@ -89,7 +89,7 @@ needed a feasible amount of memory space, I artificially chose a
 programs with possibly $>10000$ instructions I deemed this memory
 sufficient for most use cases. Despite this, the encoding is
 implemented in such a way that the address space can be altered with.
-\todo{benchmark auswirkungen von memory size}
+\todo{Benchmark auswirkungen von memory size}
 
 \input{figures/4-Transform/constants.tex}
 \input{figures/4-Transform/progressiveconsts.tex}
@@ -140,7 +140,7 @@ masking. This is shown in \figref{fig:extractNOimm}.
 The immediate on the other hand must be first constructed from its
 subfields, which can be referenced in \figref{fig:rv64i_formats}. In
 the BTOR2 model this looks like in \figref{fig:extractimmbytype}.
-\todo{Reference to same method in riscvsim} There are three things i
+\todo{Reference to same method in riscvsim} There are three things I
 want to point out:\\ First, some immediate subfields overlap exactly.
 I made use of this fact in lines (n + 1) with the overlap of
 $imm[11:5]$ of I- and S-type, and (n + 21) with J- and B-types
@@ -237,7 +237,7 @@ this is done in the next subsection.
 
 \subsubsection{The next rd}
 At last the x registers must be updated. The procedure is defined in
-\figref{alg:nextrd}. With exception of x0 this is the same for all
+\figref{alg:nextrd}. With exception to x0 this is the same for all
 these registers. Also, it is similar in its procedure as defining the
 next memory or pc but instead of a handful of instructions, I have to
 go over 39 of them as only branch and store instructions do not
