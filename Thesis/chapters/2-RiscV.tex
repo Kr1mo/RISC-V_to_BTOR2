@@ -37,7 +37,7 @@ RV64I features 32 64-bit registers, labeled $x0$–$x31$, where $x0$ is
 hardwired to zero across all bits. Registers $x1$–$x31$ are
 general-purpose and may be interpreted by various instructions as
 collections of booleans, two's complement signed binary integers, or
-unsigned integers. Additionally, there is a non accessible register
+unsigned integers. Additionally, there is a non-accessible register
 called $pc$, which serves as the program counter and holds the
 address of the current instruction \cite[Chapters 4.1,
       2.1]{riscv-isa}.
@@ -122,7 +122,7 @@ whole doubleword is stored at the address.
 
 All further instructions can be seen as generic operations,
 differentiated by their suffixes. To simplify the explanation
-process, all operations without any suffix and their behaviour are
+process, all operations without any suffix and their behavior are
 listed in \tabref{tab:operations}. This is almost exactly the group
 with opcode $op$, except the \texttt{SLTU} instruction, which is not
 suffix free. But as all other instructions with the unsigned suffix
@@ -135,7 +135,7 @@ These operations can be extended by the \texttt{$^*$I} suffix which
 is designated by the opcode $op-imm$. This exchanges $rs2$ with $imm$
 in the behavior. Again, \texttt{SLTI} can be extended to an unsigned
 version \texttt{SLTIU}, which behaves as expected. A \texttt{SUBI}
-instruction does not exist as it is redundand. Its behavior can be
+instruction does not exist as it is redundant. Its behavior can be
 reached by using \texttt{ADDI} with a negative immediate.
 
 Also, the operations \texttt{ADD}, \texttt{SUB}, \texttt{SLL},
@@ -149,7 +149,7 @@ The last group left is the combination of both suffixes
 \texttt{$^*$IW} with the opcode $op-imm-32$. The behavior differs
 from the base instructions, as expected, by a replacement of $rs2$
 with $imm$ and only operating on 32bit. Again, a \texttt{SUBIW}
-instruction is redundand as a negative immediate with \texttt{ADDIW}
+instruction is redundant as a negative immediate with \texttt{ADDIW}
 archives the same.
 
 Compared to the full RV64I ISA, I left out \texttt{FENCE},
@@ -168,11 +168,11 @@ processor
 \subsection{Representing the State of a RISC-V Processor}
 Of course the state needs a representation for all registers. $pc$ is
 defined as a 64bit integer, the other 32 registers are implemented as
-an array, as so each register can be referenced by its number. Also I
-implemented an array of flags, one for each register, to be able to
-differ between initialised and non initialised registers. The memory
+an array, as so each register can be referenced by its number. Also,
+I implemented an array of flags, one for each register, to be able to
+differ between initialized and non initialized registers. The memory
 is build from single memory cells holding each an address and its
-byte of content. These are cumulatedin a hashtable
+byte of content. These are cumulated in a hash table
 \enquote{memorytable}, hashing on the address. If adding a new cell
 causes a collision, it is appended to the cells already in the bucket
 forming a linked list. These structs are shown in
@@ -181,6 +181,9 @@ forming a linked list. These structs are shown in
 \input{figures/2-RiscV/simstructs.tex}
 
 \subsection{Instruction detection}
+After fetching the current instruction from the hash table, it must
+be analyzed to detect the current instruction.
+
 \subsection{Instruction execution}
 
 \subsection{Saving the State of a RISC-V
