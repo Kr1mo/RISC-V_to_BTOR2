@@ -22,8 +22,7 @@ Currently, RISC-V comprises four base ISAs: RV32I, RV64I, RV32E, and
 RV64E, which can be extended with one or more of the 47 ratified
 extension ISAs \cite[Preface]{riscv-isa}.
 
-\extend{Additional content may be required here} \todo{Mention little
-      endian?}
+\extend{Additional content may be required here}
 
 For the purposes of this work, I will focus on a subset of the RV64I
 ISA.
@@ -44,7 +43,9 @@ address of the current instruction \cite[Chapters 4.1,
 
 In RV64I, memory addresses are 64 bits in size. As the memory model
 is defined to be single-byte addressable, the address space of RV64I
-encompasses $2^{64}$ bytes \cite[Chapter 1.4]{riscv-isa}.
+encompasses $2^{64}$ bytes \cite[Chapter 1.4]{riscv-isa}. The format
+of the memory is little endian, so the lower bits of number are
+placed on lower addresses.
 
 Like nearly all standard ISAs of RISC-V, RV64I employs a standard
 instruction encoding length of 32 bits, or one \emph{word}. Only the
@@ -182,17 +183,30 @@ forming a linked list. These structs are shown in
 
 \subsection{Running an instruction}
 After fetching the current instruction from the hash table, it must
-be decoded. The easiest way to do this is using a decision tree. First I mask out the opcode and match it over all implemented opcodes.
-From there, either this is an endpoint and the instruction is identified, or $funct3$ must be masked and matched. A final differentiation over $funct7$ might be needed,
-but after this every Leaf in the tree coincides with an instruction. So, at every leaf the state can be changed in regard to the corresponding instruction.
+be decoded. The easiest way to do this is using a decision tree.
+First I mask out the opcode and match it over all implemented
+opcodes. From there, either this is an endpoint and the instruction
+is identified, or $funct3$ must be masked and matched. A final
+differentiation over $funct7$ might be needed, but after this every
+Leaf in the tree coincides with an instruction. So, at every leaf the
+state can be changed in regard to the corresponding instruction.
+\todo{Graph of the decision tree?}
 
 \subsection{Saving the State of a RISC-V
       Processor}\label{sub:statefile}
 
 To preserve the current state of a RISC-V processor, both the
 registers and memory must be stored. For this purpose, I have devised
-the format shown in \figref{statefileform}. The minimal file consists
-only of the two designators \enquote{REGISTERS:} and
-\enquote{MEMORY:}, the current $pc$, and one empty line.
+the format shown in \figref{statefileform}. The RISC-V simulation
+uses this format as input and output. The minimal file consists only
+of the two designators \enquote{REGISTERS:} and \enquote{MEMORY:} and
+one empty line between them. Under \enquote{REGISTERS:}, all
+registers can be listed with their corresponding value. Of course, x0
+can not be different from 0. I included the option to reference it
+nonetheless to have the complete state included. Under
+\enquote{MEMORY:}, after giving an address, the memory can be filled
+with 1-, 2-, 4- or 8-byte sized memory content. The given address is
+the starting address of the content, of course with every byte after
+the first, the next higher address is filled.
 
 \input{figures/2-RiscV/statefile.tex}
