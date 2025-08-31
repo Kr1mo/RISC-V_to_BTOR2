@@ -180,11 +180,11 @@ forming a linked list. These structs are shown in
 
 \input{figures/2-RiscV/simstructs.tex}
 
-\subsection{Instruction detection}
+\subsection{Running an instruction}
 After fetching the current instruction from the hash table, it must
-be analyzed to detect the current instruction.
-
-\subsection{Instruction execution}
+be decoded. The easiest way to do this is using a decision tree. First I mask out the opcode and match it over all implemented opcodes.
+From there, either this is an endpoint and the instruction is identified, or $funct3$ must be masked and matched. A final differentiation over $funct7$ might be needed,
+but after this every Leaf in the tree coincides with an instruction. So, at every leaf the state can be changed in regard to the corresponding instruction.
 
 \subsection{Saving the State of a RISC-V
       Processor}\label{sub:statefile}
