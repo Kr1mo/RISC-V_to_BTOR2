@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Directory containing benchmark files
-BENCHMARK_DIR="benchmark_files"
+BENCHMARK_DIR="benchmark_files/base_16"
 TEMP_DIR="benchmark_files/temp_files"
 # Log file to store timing results
 LOG_FILE="bench_add.log"
@@ -26,7 +26,7 @@ for file in "$BENCHMARK_DIR"/*.state; do
         ./bin/riscv_to_btor2 -p -n -1 "$file" > "$btor2_file"
         
         # Run btormc and measure the time
-        { time "$BTORMC_EXECUTABLE" -kmax 5000 "$btor2_file"; } 2>> "$LOG_FILE"
+        { time "$BTORMC_EXECUTABLE" -kmax 10000 "$btor2_file"; } 2>> "$LOG_FILE"
         
         echo "Finished processing $file" >> "$LOG_FILE"
     fi

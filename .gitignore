@@ -32,7 +32,7 @@ sh_utils/generated_states/
 sh_utils/witness/
 
 # Do not exclude benchmark state files
-!benchmark_files/*.state
+!benchmark_files/**
 
 # Latex files
 *.aux
