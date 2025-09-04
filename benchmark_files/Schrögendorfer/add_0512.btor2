@@ -1,0 +1,218 @@
+1 sort bitvec 1 bool
+2 sort bitvec 8 memcell
+3 sort bitvec 16 addressspace
+4 sort bitvec 64 register
+5 sort array 3 2 Memory
+;
+6 zero 1 false
+7 one 1 true
+8 zero 2 ; for initializing empty memory
+9 zero 4 ; for initializing empty register
+10 zero 3 pcinit
+11 consth 3 4 pcinc
+12 consth 3 10 instr1pcmod
+13 consth 4 200
+;
+99 state 3 pc
+100 state 4 x0
+101 state 4 x1
+102 state 4 x2
+103 state 4 x3
+104 state 4 x4
+105 state 4 x5
+106 state 4 x6
+107 state 4 x7
+108 state 4 x8
+109 state 4 x09
+110 state 4 x10
+111 state 4 x11
+112 state 4 x12
+113 state 4 x13
+114 state 4 x14
+115 state 4 x15
+116 state 4 x16
+117 state 4 x17
+118 state 4 x18
+119 state 4 x19
+120 state 4 x20
+121 state 4 x21
+122 state 4 x22
+123 state 4 x23
+124 state 4 x24
+125 state 4 x25
+126 state 4 x26
+127 state 4 x27
+128 state 4 x28
+129 state 4 x29
+130 state 4 x30
+131 state 4 x31
+;
+144 state 5 meminit
+145 init 5 144 8
+146 consth 3 0
+147 consth 2 e3
+148 write 5 144 146 147
+149 consth 3 1
+150 consth 2 58
+151 write 5 148 149 150
+152 consth 3 2
+153 consth 2 11
+154 write 5 151 152 153
+155 consth 3 3
+156 consth 2 00
+157 write 5 154 155 156
+158 consth 3 4
+159 consth 2 b3
+160 write 5 157 158 159
+161 consth 3 5
+162 consth 2 81
+163 write 5 160 161 162
+164 consth 3 6
+165 consth 2 21
+166 write 5 163 164 165
+167 consth 3 7
+168 consth 2 00
+169 write 5 166 167 168
+170 consth 3 8
+171 consth 2 13
+172 write 5 169 170 171
+173 consth 3 9
+174 consth 2 01
+175 write 5 172 173 174
+176 consth 3 a
+177 consth 2 11
+178 write 5 175 176 177
+179 consth 3 b
+180 consth 2 00
+181 write 5 178 179 180
+182 consth 3 c
+183 consth 2 67
+184 write 5 181 182 183
+185 consth 3 d
+186 consth 2 00
+187 write 5 184 185 186
+188 consth 3 e
+189 consth 2 00
+190 write 5 187 188 189
+191 consth 3 f
+192 consth 2 00
+193 write 5 190 191 192 initialmem ; prepared inital memory
+194 state 5 memory
+;
+;
+201 state 1 instr1
+202 state 1 instr2
+203 state 1 instr3
+204 state 1 instr4 ; exec not needed as only one thread
+205 state 1 endflag ; execution is managed by these flags instead of pc. pc is just for show
+;
+;
+300 init 3 99 10 ; zero initialised
+301 add 3 99 11 ; normal pc operation
+302 add 3 99 12 ; instr1 branches
+303 eq 1 101 102 ; instr1 branch condition
+304 ite 3 303 302 301 ; if branch make jump else increment
+305 ite 3 201 304 99 ; if instr1 check else leave pc as is
+306 or 1 202 203 ; instr2-3
+307 ite 3 306 301 305 ; if instr2-3 increment else try instr1
+308 ite 3 204 10 307 ; if instr4 jump0 else try instr2-3
+309 next 3 99 308
+;
+;
+310 init 4 100 9
+311 next 4 100 100 ; x0 stays 0
+;
+312 init 4 101 13
+313 next 4 101 101 ; x1 stays as comparator
+;
+314 init 4 102 9
+315 one 4
+316 add 4 102 315
+317 ite 4 203 316 102 ; if instr3 add 1 else keep
+318 next 4 102 317 ; x2 increments in instr3
+;
+319 init 4 103 9
+320 add 4 102 103
+321 ite 4 202 320 103
+322 next 4 103 321 ; x3 adds x2 in instr2
+;
+323 init 4 104 9
+324 next 4 104 104
+325 init 4 105 9
+326 next 4 105 105
+327 init 4 106 9
+328 next 4 106 106
+329 init 4 107 9
+330 next 4 107 107
+331 init 4 108 9
+332 next 4 108 108
+333 init 4 109 9
+334 next 4 109 109
+335 init 4 110 9
+336 next 4 110 110
+337 init 4 111 9
+338 next 4 111 111
+339 init 4 112 9
+340 next 4 112 112
+341 init 4 113 9
+342 next 4 113 113
+343 init 4 114 9
+344 next 4 114 114
+345 init 4 115 9
+346 next 4 115 115
+347 init 4 116 9
+348 next 4 116 116
+349 init 4 117 9
+350 next 4 117 117
+351 init 4 118 9
+352 next 4 118 118
+353 init 4 119 9
+354 next 4 119 119
+355 init 4 120 9
+356 next 4 120 120
+357 init 4 121 9
+358 next 4 121 121
+359 init 4 122 9
+360 next 4 122 122
+361 init 4 123 9
+362 next 4 123 123
+363 init 4 124 9
+364 next 4 124 124
+365 init 4 125 9
+366 next 4 125 125
+367 init 4 126 9
+368 next 4 126 126
+369 init 4 127 9
+370 next 4 127 127
+371 init 4 128 9
+372 next 4 128 128
+373 init 4 129 9
+374 next 4 129 129
+375 init 4 130 9
+376 next 4 130 130
+377 init 4 131 9
+378 next 4 131 131 ; x4-31 are not used
+;
+379 init 5 194 193
+380 next 5 194 194 ; mem does not change
+;
+;
+381 init 1 201 7
+382 next 1 201 204 ; instr1 only executes initally or after instr4
+;
+383 init 1 202 6
+384 and 1 201 -303 ; instr1 and no branch
+385 next 1 202 384
+;
+386 init 1 203 6
+387 next 1 203 202 ; instr3 only after instr2
+;
+388 init 1 204 6
+389 next 1 204 203 ; instr4 only after instr3
+;
+390 init 1 205 6
+391 and 1 201 303
+392 next 1 205 391 ; endflag if instr1 branches -> instruction free memory is reached
+;
+;
+400 bad 205
