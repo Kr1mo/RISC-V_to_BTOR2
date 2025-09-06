@@ -1,6 +1,6 @@
 ; Basics
 1 sort bitvec 1 Bool
-2 sort bitvec 16 AS
+2 sort bitvec 17 AS
 3 sort bitvec 8 B
 4 sort bitvec 16 H
 5 sort bitvec 32 W
@@ -570,16 +570,16 @@
 ; Calculating values for commands
 ;
 ; Flow Control
-522 uext 6 58 48 pc_val_64bit
+522 uext 6 58 47 pc_val_64bit
 523 sext 6 289 32 immediate_64bit
 524 add 6 522 523 auipc_rd
-525 slice 2 524 15 0 jal_pc
+525 slice 2 524 16 0 jal_pc
 526 constd 6 4
 527 add 6 522 526
 528 add 6 490 523
 529 and 6 528 -363
-530 slice 2 529 15 0
-531 slice 2 527 15 0
+530 slice 2 529 16 0
+531 slice 2 527 16 0
 ;
 ; Branch Comparisons
 532 eq 1 490 521
@@ -599,14 +599,14 @@
 544 add 6 538 367
 545 add 6 538 368
 546 add 6 538 369
-547 slice 2 539 15 0
-548 slice 2 540 15 0
-549 slice 2 541 15 0
-550 slice 2 542 15 0
-551 slice 2 543 15 0
-552 slice 2 544 15 0
-553 slice 2 545 15 0
-554 slice 2 546 15 0
+547 slice 2 539 16 0
+548 slice 2 540 16 0
+549 slice 2 541 16 0
+550 slice 2 542 16 0
+551 slice 2 543 16 0
+552 slice 2 544 16 0
+553 slice 2 545 16 0
+554 slice 2 546 16 0
 555 read 3 201 547
 556 read 3 201 548
 557 read 3 201 549
@@ -640,7 +640,7 @@
 583 slice 3 521 63 56
 584 one 2
 585 add 6 490 523 mem_adress_uncut
-586 slice 2 585 15 0 mem_address
+586 slice 2 585 16 0 mem_address
 587 add 2 586 584 mem_address+0
 588 add 2 587 584 mem_address+1
 589 add 2 588 584 mem_address+2
