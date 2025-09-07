@@ -40,7 +40,7 @@ for file in "$BENCHMARK_DIR"/*.state; do
         echo "" >> "$LOG_FILE"
 
         # Clean up temporary BTOR2 file
-        rm "$btor2_file"
+#        rm "$btor2_file"
     fi
 done
 
