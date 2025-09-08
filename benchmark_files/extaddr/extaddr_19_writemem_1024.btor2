@@ -1,0 +1,2351 @@
+; Basics
+1 sort bitvec 1 Bool
+2 sort bitvec 19 AS
+3 sort bitvec 8 B
+4 sort bitvec 16 H
+5 sort bitvec 32 W
+6 sort bitvec 64 D
+7 sort array 2 3 Mem
+8 zero 6 empty_reg
+9 constd 5 31 register_bitmask
+10 constd 5 7 shift_rd
+11 constd 5 15 shift_rs1
+12 constd 5 20 shift_rs2
+13 constd 5 12 shift_funct3
+14 constd 5 25 shift_funct7
+15 one 5 bit_picker
+16 one 1 true
+17 zero 1 false
+;
+; Counter for executed commands
+18 zero 6
+19 one 6
+20 state 6 iterations_counter
+21 init 6 20 18
+22 add 6 19 20
+23 next 6 20 22 /n;
+; Define Register Constants
+24 constd 6 1024
+25 constd 6 505253147178128895
+26 constd 2 0
+;
+; Define Registers
+27 state 6 x0
+28 state 6 x1
+29 state 6 x2
+30 state 6 x3
+31 state 6 x4
+32 state 6 x5
+33 state 6 x6
+34 state 6 x7
+35 state 6 x8
+36 state 6 x9
+37 state 6 x10
+38 state 6 x11
+39 state 6 x12
+40 state 6 x13
+41 state 6 x14
+42 state 6 x15
+43 state 6 x16
+44 state 6 x17
+45 state 6 x18
+46 state 6 x19
+47 state 6 x20
+48 state 6 x21
+49 state 6 x22
+50 state 6 x23
+51 state 6 x24
+52 state 6 x25
+53 state 6 x26
+54 state 6 x27
+55 state 6 x28
+56 state 6 x29
+57 state 6 x30
+58 state 6 x31
+59 state 2 pc
+60 init 6 27 8
+61 init 6 28 24
+62 init 6 29 8
+63 init 6 30 25
+64 init 6 31 8
+65 init 6 32 8
+66 init 6 33 8
+67 init 6 34 8
+68 init 6 35 8
+69 init 6 36 8
+70 init 6 37 8
+71 init 6 38 8
+72 init 6 39 8
+73 init 6 40 8
+74 init 6 41 8
+75 init 6 42 8
+76 init 6 43 8
+77 init 6 44 8
+78 init 6 45 8
+79 init 6 46 8
+80 init 6 47 8
+81 init 6 48 8
+82 init 6 49 8
+83 init 6 50 8
+84 init 6 51 8
+85 init 6 52 8
+86 init 6 53 8
+87 init 6 54 8
+88 init 6 55 8
+89 init 6 56 8
+90 init 6 57 8
+91 init 6 58 8
+92 init 2 59 26
+;
+; Define Register Initialisation flags
+93 state 1 flag_x0
+94 state 1 flag_x1
+95 state 1 flag_x2
+96 state 1 flag_x3
+97 state 1 flag_x4
+98 state 1 flag_x5
+99 state 1 flag_x6
+100 state 1 flag_x7
+101 state 1 flag_x8
+102 state 1 flag_x9
+103 state 1 flag_x10
+104 state 1 flag_x11
+105 state 1 flag_x12
+106 state 1 flag_x13
+107 state 1 flag_x14
+108 state 1 flag_x15
+109 state 1 flag_x16
+110 state 1 flag_x17
+111 state 1 flag_x18
+112 state 1 flag_x19
+113 state 1 flag_x20
+114 state 1 flag_x21
+115 state 1 flag_x22
+116 state 1 flag_x23
+117 state 1 flag_x24
+118 state 1 flag_x25
+119 state 1 flag_x26
+120 state 1 flag_x27
+121 state 1 flag_x28
+122 state 1 flag_x29
+123 state 1 flag_x30
+124 state 1 flag_x31
+125 init 1 93 16
+126 init 1 94 16
+127 init 1 95 16
+128 init 1 96 16
+129 init 1 97 17
+130 init 1 98 17
+131 init 1 99 17
+132 init 1 100 17
+133 init 1 101 17
+134 init 1 102 17
+135 init 1 103 17
+136 init 1 104 17
+137 init 1 105 17
+138 init 1 106 17
+139 init 1 107 17
+140 init 1 108 17
+141 init 1 109 17
+142 init 1 110 17
+143 init 1 111 17
+144 init 1 112 17
+145 init 1 113 17
+146 init 1 114 17
+147 init 1 115 17
+148 init 1 116 17
+149 init 1 117 17
+150 init 1 118 17
+151 init 1 119 17
+152 init 1 120 17
+153 init 1 121 17
+154 init 1 122 17
+155 init 1 123 17
+156 init 1 124 17
+;
+; Define memory
+157 zero 3 empty_cell
+158 state 7 memory_initialzer
+159 init 7 158 157
+160 consth 3 e3
+161 constd 2 0
+162 write 7 158 161 160
+163 consth 3 58
+164 constd 2 1
+165 write 7 162 164 163
+166 consth 3 11
+167 constd 2 2
+168 write 7 165 167 166
+169 constd 2 3
+170 write 7 168 169 157
+171 consth 3 23
+172 constd 2 4
+173 write 7 170 172 171
+174 consth 3 a
+175 constd 2 5
+176 write 7 173 175 174
+177 consth 3 31
+178 constd 2 6
+179 write 7 176 178 177
+180 constd 2 7
+181 write 7 179 180 157
+182 consth 3 13
+183 constd 2 8
+184 write 7 181 183 182
+185 consth 3 1
+186 constd 2 9
+187 write 7 184 186 185
+188 consth 3 11
+189 constd 2 10
+190 write 7 187 189 188
+191 constd 2 11
+192 write 7 190 191 157
+193 consth 3 67
+194 constd 2 12
+195 write 7 192 194 193
+196 constd 2 13
+197 write 7 195 196 157
+198 constd 2 14
+199 write 7 197 198 157
+200 constd 2 15
+201 write 7 199 200 157
+202 state 7 memory
+203 init 7 202 201
+;
+; Get the current command
+204 one 2
+205 read 3 202 59
+206 add 2 59 204
+207 read 3 202 206
+208 add 2 206 204
+209 read 3 202 208
+210 add 2 208 204
+211 read 3 202 210
+212 concat 4 207 205
+213 concat 4 211 209
+214 concat 5 213 212
+;
+; Get the opcode
+215 consth 5 07f
+216 and 5 215 214
+;
+; Get rd
+217 srl 5 214 10
+218 and 5 9 217
+;
+; Get rs1
+219 srl 5 214 11
+220 and 5 9 219
+;
+; Get rs2
+221 srl 5 214 12
+222 and 5 9 221
+;
+; Get funct3
+223 srl 5 214 13
+224 and 5 223 10
+;
+; Get funct7
+225 srl 5 214 14
+;
+; Get immediate
+;
+; Set valid opcodes as constants
+226 constd 5 3 load
+227 constd 5 19 math_i
+228 constd 5 23 auipc
+229 constd 5 27 math_wi
+230 constd 5 35 store
+231 constd 5 51 math_reg
+232 constd 5 55 lui
+233 constd 5 59 math_w
+234 constd 5 99 branch
+235 constd 5 103 jump_r
+236 constd 5 111 jump
+;
+; Get possible immediate values
+237 sra 5 214 12 i-immediate
+238 sra 5 214 12
+239 and 5 238 -9
+240 add 5 239 218 s-immediate
+241 and 5 218 -15 [4:0]
+242 consth 5 3f
+243 and 5 242 225
+244 constd 5 5
+245 sll 5 243 244 [10:5]
+246 add 5 245 241 [10:0]
+247 sll 5 15 10
+248 and 5 247 214
+249 constd 5 4
+250 sll 5 248 249 [11]
+251 add 5 246 250 [11:0]
+252 sra 5 214 227
+253 consth 5 fff
+254 and 5 252 -253 [31:12]
+255 add 5 254 251 b-immediate
+256 and 5 214 -253 u-immediate
+257 and 5 222 -15 [4:0]
+258 add 5 257 245 [10:0]
+259 and 5 222 15
+260 constd 5 11
+261 sll 5 259 260 [11]
+262 add 5 258 261 [11:0]
+263 sll 5 224 13 [14:12]
+264 add 5 262 263 [14:0]
+265 sll 5 220 11 [19:15]
+266 add 5 264 265 [19:0]
+267 consth 5 fffff
+268 sra 5 214 267
+269 and 5 268 -267 [31:20]
+270 add 5 266 269 j-immediate
+;
+; sort opcodes to immediates
+271 eq 1 226 216
+272 eq 1 227 216
+273 eq 1 228 216
+274 eq 1 229 216
+275 eq 1 230 216
+276 eq 1 231 216
+277 eq 1 232 216
+278 eq 1 233 216
+279 eq 1 234 216
+280 eq 1 235 216
+281 eq 1 236 216
+282 or 1 271 272
+283 or 1 282 274
+284 or 1 283 280
+285 or 1 273 277
+286 ite 5 284 237 15 i/r
+287 ite 5 275 240 286 s
+288 ite 5 279 255 287 b
+289 ite 5 285 256 288 u
+290 ite 5 281 270 289 j
+;
+; constants for funct3
+291 constd 5 0
+292 constd 5 1
+293 constd 5 2
+294 constd 5 3
+295 constd 5 4
+296 constd 5 5
+297 constd 5 6
+298 constd 5 7
+;
+; Constant for funct7
+299 constd 5 32
+;
+; Compare current funct3
+300 eq 1 224 291
+301 eq 1 224 292
+302 eq 1 224 293
+303 eq 1 224 294
+304 eq 1 224 295
+305 eq 1 224 296
+306 eq 1 224 297
+307 eq 1 224 298
+;
+; Compare current funct7
+308 and 5 225 299
+309 eq 1 299 308 funct7bit_set
+;
+; Some commands check against funct7, funct3 & opcode. They are pre-checked so we get an orderly list in the next step
+310 and 1 -309 305 SRL(I)(W)_pre
+311 and 1 309 305 SRA(I)(W)_pre
+312 and 1 -309 300 ADD(W)_pre
+313 and 1 309 300 SUB(W)_pre
+;
+; Check all commands
+314 and 1 16 277
+315 and 1 16 273
+316 and 1 16 281
+317 and 1 300 280
+318 and 1 300 279
+319 and 1 301 279
+320 and 1 304 279
+321 and 1 305 279
+322 and 1 306 279
+323 and 1 307 279
+324 and 1 300 271
+325 and 1 301 271
+326 and 1 302 271
+327 and 1 304 271
+328 and 1 305 271
+329 and 1 300 275
+330 and 1 301 275
+331 and 1 302 275
+332 and 1 300 272
+333 and 1 302 272
+334 and 1 303 272
+335 and 1 304 272
+336 and 1 306 272
+337 and 1 307 272
+338 and 1 312 276
+339 and 1 313 276
+340 and 1 301 276
+341 and 1 302 276
+342 and 1 303 276
+343 and 1 304 276
+344 and 1 310 276
+345 and 1 311 276
+346 and 1 306 276
+347 and 1 307 276
+348 and 1 306 271
+349 and 1 303 271
+350 and 1 303 275
+351 and 1 301 272
+352 and 1 310 272
+353 and 1 311 272
+354 and 1 300 274
+355 and 1 301 274
+356 and 1 310 274
+357 and 1 311 274
+358 and 1 312 278
+359 and 1 313 278
+360 and 1 301 278
+361 and 1 310 278
+362 and 1 311 278
+;
+; Next Functions for Registers and Memory
+; Get rs1, rs2 values
+363 constd 6 0
+364 constd 6 1
+365 constd 6 2
+366 constd 6 3
+367 constd 6 4
+368 constd 6 5
+369 constd 6 6
+370 constd 6 7
+371 constd 6 8
+372 constd 6 9
+373 constd 6 10
+374 constd 6 11
+375 constd 6 12
+376 constd 6 13
+377 constd 6 14
+378 constd 6 15
+379 constd 6 16
+380 constd 6 17
+381 constd 6 18
+382 constd 6 19
+383 constd 6 20
+384 constd 6 21
+385 constd 6 22
+386 constd 6 23
+387 constd 6 24
+388 constd 6 25
+389 constd 6 26
+390 constd 6 27
+391 constd 6 28
+392 constd 6 29
+393 constd 6 30
+394 constd 6 31
+395 constd 6 32
+396 uext 6 220 32 rs1_code_ext
+397 uext 6 222 32 rs2_code_ext
+398 uext 6 218 32 rd_code_ext
+399 eq 1 364 396
+400 eq 1 365 396
+401 eq 1 366 396
+402 eq 1 367 396
+403 eq 1 368 396
+404 eq 1 369 396
+405 eq 1 370 396
+406 eq 1 371 396
+407 eq 1 372 396
+408 eq 1 373 396
+409 eq 1 374 396
+410 eq 1 375 396
+411 eq 1 376 396
+412 eq 1 377 396
+413 eq 1 378 396
+414 eq 1 379 396
+415 eq 1 380 396
+416 eq 1 381 396
+417 eq 1 382 396
+418 eq 1 383 396
+419 eq 1 384 396
+420 eq 1 385 396
+421 eq 1 386 396
+422 eq 1 387 396
+423 eq 1 388 396
+424 eq 1 389 396
+425 eq 1 390 396
+426 eq 1 391 396
+427 eq 1 392 396
+428 eq 1 393 396
+429 eq 1 394 396
+430 eq 1 364 397
+431 eq 1 365 397
+432 eq 1 366 397
+433 eq 1 367 397
+434 eq 1 368 397
+435 eq 1 369 397
+436 eq 1 370 397
+437 eq 1 371 397
+438 eq 1 372 397
+439 eq 1 373 397
+440 eq 1 374 397
+441 eq 1 375 397
+442 eq 1 376 397
+443 eq 1 377 397
+444 eq 1 378 397
+445 eq 1 379 397
+446 eq 1 380 397
+447 eq 1 381 397
+448 eq 1 382 397
+449 eq 1 383 397
+450 eq 1 384 397
+451 eq 1 385 397
+452 eq 1 386 397
+453 eq 1 387 397
+454 eq 1 388 397
+455 eq 1 389 397
+456 eq 1 390 397
+457 eq 1 391 397
+458 eq 1 392 397
+459 eq 1 393 397
+460 eq 1 394 397
+461 ite 6 399 28 27 rs1_x1_x0
+462 ite 6 400 29 461 rs1_x2
+463 ite 6 401 30 462 rs1_x3
+464 ite 6 402 31 463 rs1_x4
+465 ite 6 403 32 464 rs1_x5
+466 ite 6 404 33 465 rs1_x6
+467 ite 6 405 34 466 rs1_x7
+468 ite 6 406 35 467 rs1_x8
+469 ite 6 407 36 468 rs1_x9
+470 ite 6 408 37 469 rs1_x10
+471 ite 6 409 38 470 rs1_x11
+472 ite 6 410 39 471 rs1_x12
+473 ite 6 411 40 472 rs1_x13
+474 ite 6 412 41 473 rs1_x14
+475 ite 6 413 42 474 rs1_x15
+476 ite 6 414 43 475 rs1_x16
+477 ite 6 415 44 476 rs1_x17
+478 ite 6 416 45 477 rs1_x18
+479 ite 6 417 46 478 rs1_x19
+480 ite 6 418 47 479 rs1_x20
+481 ite 6 419 48 480 rs1_x21
+482 ite 6 420 49 481 rs1_x22
+483 ite 6 421 50 482 rs1_x23
+484 ite 6 422 51 483 rs1_x24
+485 ite 6 423 52 484 rs1_x25
+486 ite 6 424 53 485 rs1_x26
+487 ite 6 425 54 486 rs1_x27
+488 ite 6 426 55 487 rs1_x28
+489 ite 6 427 56 488 rs1_x29
+490 ite 6 428 57 489 rs1_x30
+491 ite 6 429 58 490 rs1_x31
+492 ite 6 430 28 27 rs2_x1_x0
+493 ite 6 431 29 492 rs2_x2
+494 ite 6 432 30 493 rs2_x3
+495 ite 6 433 31 494 rs2_x4
+496 ite 6 434 32 495 rs2_x5
+497 ite 6 435 33 496 rs2_x6
+498 ite 6 436 34 497 rs2_x7
+499 ite 6 437 35 498 rs2_x8
+500 ite 6 438 36 499 rs2_x9
+501 ite 6 439 37 500 rs2_x10
+502 ite 6 440 38 501 rs2_x11
+503 ite 6 441 39 502 rs2_x12
+504 ite 6 442 40 503 rs2_x13
+505 ite 6 443 41 504 rs2_x14
+506 ite 6 444 42 505 rs2_x15
+507 ite 6 445 43 506 rs2_x16
+508 ite 6 446 44 507 rs2_x17
+509 ite 6 447 45 508 rs2_x18
+510 ite 6 448 46 509 rs2_x19
+511 ite 6 449 47 510 rs2_x20
+512 ite 6 450 48 511 rs2_x21
+513 ite 6 451 49 512 rs2_x22
+514 ite 6 452 50 513 rs2_x23
+515 ite 6 453 51 514 rs2_x24
+516 ite 6 454 52 515 rs2_x25
+517 ite 6 455 53 516 rs2_x26
+518 ite 6 456 54 517 rs2_x27
+519 ite 6 457 55 518 rs2_x28
+520 ite 6 458 56 519 rs2_x29
+521 ite 6 459 57 520 rs2_x30
+522 ite 6 460 58 521 rs2_x31
+;
+; Calculating values for commands
+;
+; Flow Control
+523 uext 6 59 45 pc_val_64bit
+524 sext 6 290 32 immediate_64bit
+525 add 6 523 524 auipc_rd
+526 slice 2 525 18 0 jal_pc
+527 constd 6 4
+528 add 6 523 527
+529 add 6 491 524
+530 and 6 529 -364
+531 slice 2 530 18 0
+532 slice 2 528 18 0
+;
+; Branch Comparisons
+533 eq 1 491 522
+534 neq 1 491 522
+535 slt 1 491 522
+536 sgte 1 491 522
+537 ult 1 491 522
+538 ugte 1 491 522
+;
+; LOAD
+539 add 6 491 524
+540 add 6 539 363
+541 add 6 539 364
+542 add 6 539 365
+543 add 6 539 366
+544 add 6 539 367
+545 add 6 539 368
+546 add 6 539 369
+547 add 6 539 370
+548 slice 2 540 18 0
+549 slice 2 541 18 0
+550 slice 2 542 18 0
+551 slice 2 543 18 0
+552 slice 2 544 18 0
+553 slice 2 545 18 0
+554 slice 2 546 18 0
+555 slice 2 547 18 0
+556 read 3 202 548
+557 read 3 202 549
+558 read 3 202 550
+559 read 3 202 551
+560 read 3 202 552
+561 read 3 202 553
+562 read 3 202 554
+563 read 3 202 555
+564 sext 6 556 56 lb_rd
+565 concat 4 557 556
+566 sext 6 565 48 lh_rd
+567 concat 4 559 558
+568 concat 5 567 565
+569 sext 6 568 32 lw_rd
+570 concat 4 561 560
+571 concat 4 563 562
+572 concat 5 571 570
+573 concat 6 572 568 ld_rd
+574 uext 6 556 56 lbu
+575 uext 6 565 48 lhu
+576 uext 6 568 32 lwu_rd
+;
+; STORE
+577 slice 3 522 7 0
+578 slice 3 522 15 8
+579 slice 3 522 23 16
+580 slice 3 522 31 24
+581 slice 3 522 39 32
+582 slice 3 522 47 40
+583 slice 3 522 55 48
+584 slice 3 522 63 56
+585 one 2
+586 add 6 491 524 mem_adress_uncut
+587 slice 2 586 18 0 mem_address
+588 add 2 587 585 mem_address+0
+589 add 2 588 585 mem_address+1
+590 add 2 589 585 mem_address+2
+591 add 2 590 585 mem_address+3
+592 add 2 591 585 mem_address+4
+593 add 2 592 585 mem_address+5
+594 add 2 593 585 mem_address+6
+595 add 2 594 585 mem_address+7
+596 write 7 202 587 577 sb
+597 write 7 596 588 578 sh
+598 write 7 597 589 579
+599 write 7 598 590 580 sw
+600 write 7 599 591 581
+601 write 7 600 592 582
+602 write 7 601 593 583
+603 write 7 602 594 584 sd
+;
+; MATH immediate
+604 add 6 491 524 addi_rd
+605 consth 6 3f
+606 and 6 524 605
+607 sll 6 491 606 slli_rd
+608 slt 1 491 524 slti_rd
+609 uext 6 608 63 slti_rd
+610 ult 1 491 524 sltiu_rd
+611 uext 6 610 63 sltiu_rd
+612 xor 6 491 524 xori_rd
+613 srl 6 491 606 srli_rd
+614 sub 6 524 395 srai_rd
+615 sra 6 491 606 srai_rd
+616 or 6 491 524 ori_rd
+617 and 6 491 524 andi_rd
+;
+; MATH Register based
+618 add 6 491 522 add_rd
+619 sub 6 491 522 sub_rd
+620 consth 6 3f
+621 and 6 522 620
+622 sll 6 491 621 sll_rd
+623 slt 1 491 522 slt_rd
+624 uext 6 623 63 slt_rd
+625 ult 1 491 522 sltu_rd
+626 uext 6 625 63 sltu_rd
+627 xor 6 491 522 xor_rd
+628 srl 6 491 621 srl_rd
+629 sra 6 491 621 sra_rd
+630 or 6 491 522 or_rd
+631 and 6 491 522 and_rd
+;
+; MATH Word Immediate
+632 slice 5 491 31 0
+633 add 5 632 290
+634 sext 6 633 32 addiw_rd
+635 sll 5 632 222
+636 sext 6 635 32 slliw_rd
+637 srl 5 632 222
+638 sext 6 637 32 srliw_rd
+639 sra 5 632 222
+640 sext 6 639 32 sraiw_rd
+;
+; MATH Word
+641 slice 5 522 31 0
+642 add 5 632 641
+643 sext 6 642 32 addw_rd
+644 sub 5 632 641
+645 sext 6 644 32 subw_rd
+646 consth 5 1f
+647 and 5 641 646
+648 sll 5 632 647
+649 sext 6 648 32 sllw_rd
+650 srl 5 632 647
+651 sext 6 650 32 srlw_rd
+652 sra 5 632 647
+653 sext 6 652 32 sraw_rd
+;
+; Update register x0
+654 next 6 27 27 x0_new
+; Update x0 flag
+655 next 1 93 16 x0_always_initialised
+;
+; Update register x1
+656 eq 1 364 398 x1_is_rd
+657 ite 6 314 524 28 x1_lui
+658 ite 6 315 525 657 x1_auipc
+659 ite 6 316 528 658 x1_jal
+660 ite 6 317 528 659 x1_jalr
+661 ite 6 324 564 660 x1_lb
+662 ite 6 325 566 661 x1_lh
+663 ite 6 326 569 662 x1_lw
+664 ite 6 349 573 663 x1_ld
+665 ite 6 327 574 664 x1_lbu
+666 ite 6 328 575 665 x1_lhu
+667 ite 6 348 576 666 x1_lwu
+668 ite 6 332 604 667 x1_addi
+669 ite 6 351 607 668 x1_slli
+670 ite 6 333 609 669 x1_slti
+671 ite 6 334 611 670 x1_sltiu
+672 ite 6 335 612 671 x1_xori
+673 ite 6 352 613 672 x1_srli
+674 ite 6 353 615 673 x1_srai
+675 ite 6 336 616 674 x1_ori
+676 ite 6 337 617 675 x1_andi
+677 ite 6 338 618 676 x1_add
+678 ite 6 339 619 677 x1_sub
+679 ite 6 340 622 678 x1_sll
+680 ite 6 341 624 679 x1_slt
+681 ite 6 342 626 680 x1_sltu
+682 ite 6 343 627 681 x1_xor
+683 ite 6 344 628 682 x1_srl
+684 ite 6 345 629 683 x1_sra
+685 ite 6 346 630 684 x1_or
+686 ite 6 347 631 685 x1_and
+687 ite 6 354 634 686 x1_addiw
+688 ite 6 355 636 687 x1_slliw
+689 ite 6 356 638 688 x1_srliw
+690 ite 6 357 640 689 x1_sraiw
+691 ite 6 358 643 690 x1_addw
+692 ite 6 359 645 691 x1_subw
+693 ite 6 360 649 692 x1_sllw
+694 ite 6 361 651 693 x1_srlw
+695 ite 6 362 653 694 x1_sraw
+696 ite 6 656 695 28 x1_new
+697 next 6 28 696 x1_new
+;Also update init-flag
+698 or 1 275 279 opcode_is_branch_store
+699 ite 1 -698 16 94 command_check
+700 ite 1 656 699 94 rd_check
+701 next 1 94 700 reg_init_flag_new
+;
+; Update register x2
+702 eq 1 365 398 x2_is_rd
+703 ite 6 314 524 29 x2_lui
+704 ite 6 315 525 703 x2_auipc
+705 ite 6 316 528 704 x2_jal
+706 ite 6 317 528 705 x2_jalr
+707 ite 6 324 564 706 x2_lb
+708 ite 6 325 566 707 x2_lh
+709 ite 6 326 569 708 x2_lw
+710 ite 6 349 573 709 x2_ld
+711 ite 6 327 574 710 x2_lbu
+712 ite 6 328 575 711 x2_lhu
+713 ite 6 348 576 712 x2_lwu
+714 ite 6 332 604 713 x2_addi
+715 ite 6 351 607 714 x2_slli
+716 ite 6 333 609 715 x2_slti
+717 ite 6 334 611 716 x2_sltiu
+718 ite 6 335 612 717 x2_xori
+719 ite 6 352 613 718 x2_srli
+720 ite 6 353 615 719 x2_srai
+721 ite 6 336 616 720 x2_ori
+722 ite 6 337 617 721 x2_andi
+723 ite 6 338 618 722 x2_add
+724 ite 6 339 619 723 x2_sub
+725 ite 6 340 622 724 x2_sll
+726 ite 6 341 624 725 x2_slt
+727 ite 6 342 626 726 x2_sltu
+728 ite 6 343 627 727 x2_xor
+729 ite 6 344 628 728 x2_srl
+730 ite 6 345 629 729 x2_sra
+731 ite 6 346 630 730 x2_or
+732 ite 6 347 631 731 x2_and
+733 ite 6 354 634 732 x2_addiw
+734 ite 6 355 636 733 x2_slliw
+735 ite 6 356 638 734 x2_srliw
+736 ite 6 357 640 735 x2_sraiw
+737 ite 6 358 643 736 x2_addw
+738 ite 6 359 645 737 x2_subw
+739 ite 6 360 649 738 x2_sllw
+740 ite 6 361 651 739 x2_srlw
+741 ite 6 362 653 740 x2_sraw
+742 ite 6 702 741 29 x2_new
+743 next 6 29 742 x2_new
+;Also update init-flag
+744 or 1 275 279 opcode_is_branch_store
+745 ite 1 -744 16 95 command_check
+746 ite 1 702 745 95 rd_check
+747 next 1 95 746 reg_init_flag_new
+;
+; Update register x3
+748 eq 1 366 398 x3_is_rd
+749 ite 6 314 524 30 x3_lui
+750 ite 6 315 525 749 x3_auipc
+751 ite 6 316 528 750 x3_jal
+752 ite 6 317 528 751 x3_jalr
+753 ite 6 324 564 752 x3_lb
+754 ite 6 325 566 753 x3_lh
+755 ite 6 326 569 754 x3_lw
+756 ite 6 349 573 755 x3_ld
+757 ite 6 327 574 756 x3_lbu
+758 ite 6 328 575 757 x3_lhu
+759 ite 6 348 576 758 x3_lwu
+760 ite 6 332 604 759 x3_addi
+761 ite 6 351 607 760 x3_slli
+762 ite 6 333 609 761 x3_slti
+763 ite 6 334 611 762 x3_sltiu
+764 ite 6 335 612 763 x3_xori
+765 ite 6 352 613 764 x3_srli
+766 ite 6 353 615 765 x3_srai
+767 ite 6 336 616 766 x3_ori
+768 ite 6 337 617 767 x3_andi
+769 ite 6 338 618 768 x3_add
+770 ite 6 339 619 769 x3_sub
+771 ite 6 340 622 770 x3_sll
+772 ite 6 341 624 771 x3_slt
+773 ite 6 342 626 772 x3_sltu
+774 ite 6 343 627 773 x3_xor
+775 ite 6 344 628 774 x3_srl
+776 ite 6 345 629 775 x3_sra
+777 ite 6 346 630 776 x3_or
+778 ite 6 347 631 777 x3_and
+779 ite 6 354 634 778 x3_addiw
+780 ite 6 355 636 779 x3_slliw
+781 ite 6 356 638 780 x3_srliw
+782 ite 6 357 640 781 x3_sraiw
+783 ite 6 358 643 782 x3_addw
+784 ite 6 359 645 783 x3_subw
+785 ite 6 360 649 784 x3_sllw
+786 ite 6 361 651 785 x3_srlw
+787 ite 6 362 653 786 x3_sraw
+788 ite 6 748 787 30 x3_new
+789 next 6 30 788 x3_new
+;Also update init-flag
+790 or 1 275 279 opcode_is_branch_store
+791 ite 1 -790 16 96 command_check
+792 ite 1 748 791 96 rd_check
+793 next 1 96 792 reg_init_flag_new
+;
+; Update register x4
+794 eq 1 367 398 x4_is_rd
+795 ite 6 314 524 31 x4_lui
+796 ite 6 315 525 795 x4_auipc
+797 ite 6 316 528 796 x4_jal
+798 ite 6 317 528 797 x4_jalr
+799 ite 6 324 564 798 x4_lb
+800 ite 6 325 566 799 x4_lh
+801 ite 6 326 569 800 x4_lw
+802 ite 6 349 573 801 x4_ld
+803 ite 6 327 574 802 x4_lbu
+804 ite 6 328 575 803 x4_lhu
+805 ite 6 348 576 804 x4_lwu
+806 ite 6 332 604 805 x4_addi
+807 ite 6 351 607 806 x4_slli
+808 ite 6 333 609 807 x4_slti
+809 ite 6 334 611 808 x4_sltiu
+810 ite 6 335 612 809 x4_xori
+811 ite 6 352 613 810 x4_srli
+812 ite 6 353 615 811 x4_srai
+813 ite 6 336 616 812 x4_ori
+814 ite 6 337 617 813 x4_andi
+815 ite 6 338 618 814 x4_add
+816 ite 6 339 619 815 x4_sub
+817 ite 6 340 622 816 x4_sll
+818 ite 6 341 624 817 x4_slt
+819 ite 6 342 626 818 x4_sltu
+820 ite 6 343 627 819 x4_xor
+821 ite 6 344 628 820 x4_srl
+822 ite 6 345 629 821 x4_sra
+823 ite 6 346 630 822 x4_or
+824 ite 6 347 631 823 x4_and
+825 ite 6 354 634 824 x4_addiw
+826 ite 6 355 636 825 x4_slliw
+827 ite 6 356 638 826 x4_srliw
+828 ite 6 357 640 827 x4_sraiw
+829 ite 6 358 643 828 x4_addw
+830 ite 6 359 645 829 x4_subw
+831 ite 6 360 649 830 x4_sllw
+832 ite 6 361 651 831 x4_srlw
+833 ite 6 362 653 832 x4_sraw
+834 ite 6 794 833 31 x4_new
+835 next 6 31 834 x4_new
+;Also update init-flag
+836 or 1 275 279 opcode_is_branch_store
+837 ite 1 -836 16 97 command_check
+838 ite 1 794 837 97 rd_check
+839 next 1 97 838 reg_init_flag_new
+;
+; Update register x5
+840 eq 1 368 398 x5_is_rd
+841 ite 6 314 524 32 x5_lui
+842 ite 6 315 525 841 x5_auipc
+843 ite 6 316 528 842 x5_jal
+844 ite 6 317 528 843 x5_jalr
+845 ite 6 324 564 844 x5_lb
+846 ite 6 325 566 845 x5_lh
+847 ite 6 326 569 846 x5_lw
+848 ite 6 349 573 847 x5_ld
+849 ite 6 327 574 848 x5_lbu
+850 ite 6 328 575 849 x5_lhu
+851 ite 6 348 576 850 x5_lwu
+852 ite 6 332 604 851 x5_addi
+853 ite 6 351 607 852 x5_slli
+854 ite 6 333 609 853 x5_slti
+855 ite 6 334 611 854 x5_sltiu
+856 ite 6 335 612 855 x5_xori
+857 ite 6 352 613 856 x5_srli
+858 ite 6 353 615 857 x5_srai
+859 ite 6 336 616 858 x5_ori
+860 ite 6 337 617 859 x5_andi
+861 ite 6 338 618 860 x5_add
+862 ite 6 339 619 861 x5_sub
+863 ite 6 340 622 862 x5_sll
+864 ite 6 341 624 863 x5_slt
+865 ite 6 342 626 864 x5_sltu
+866 ite 6 343 627 865 x5_xor
+867 ite 6 344 628 866 x5_srl
+868 ite 6 345 629 867 x5_sra
+869 ite 6 346 630 868 x5_or
+870 ite 6 347 631 869 x5_and
+871 ite 6 354 634 870 x5_addiw
+872 ite 6 355 636 871 x5_slliw
+873 ite 6 356 638 872 x5_srliw
+874 ite 6 357 640 873 x5_sraiw
+875 ite 6 358 643 874 x5_addw
+876 ite 6 359 645 875 x5_subw
+877 ite 6 360 649 876 x5_sllw
+878 ite 6 361 651 877 x5_srlw
+879 ite 6 362 653 878 x5_sraw
+880 ite 6 840 879 32 x5_new
+881 next 6 32 880 x5_new
+;Also update init-flag
+882 or 1 275 279 opcode_is_branch_store
+883 ite 1 -882 16 98 command_check
+884 ite 1 840 883 98 rd_check
+885 next 1 98 884 reg_init_flag_new
+;
+; Update register x6
+886 eq 1 369 398 x6_is_rd
+887 ite 6 314 524 33 x6_lui
+888 ite 6 315 525 887 x6_auipc
+889 ite 6 316 528 888 x6_jal
+890 ite 6 317 528 889 x6_jalr
+891 ite 6 324 564 890 x6_lb
+892 ite 6 325 566 891 x6_lh
+893 ite 6 326 569 892 x6_lw
+894 ite 6 349 573 893 x6_ld
+895 ite 6 327 574 894 x6_lbu
+896 ite 6 328 575 895 x6_lhu
+897 ite 6 348 576 896 x6_lwu
+898 ite 6 332 604 897 x6_addi
+899 ite 6 351 607 898 x6_slli
+900 ite 6 333 609 899 x6_slti
+901 ite 6 334 611 900 x6_sltiu
+902 ite 6 335 612 901 x6_xori
+903 ite 6 352 613 902 x6_srli
+904 ite 6 353 615 903 x6_srai
+905 ite 6 336 616 904 x6_ori
+906 ite 6 337 617 905 x6_andi
+907 ite 6 338 618 906 x6_add
+908 ite 6 339 619 907 x6_sub
+909 ite 6 340 622 908 x6_sll
+910 ite 6 341 624 909 x6_slt
+911 ite 6 342 626 910 x6_sltu
+912 ite 6 343 627 911 x6_xor
+913 ite 6 344 628 912 x6_srl
+914 ite 6 345 629 913 x6_sra
+915 ite 6 346 630 914 x6_or
+916 ite 6 347 631 915 x6_and
+917 ite 6 354 634 916 x6_addiw
+918 ite 6 355 636 917 x6_slliw
+919 ite 6 356 638 918 x6_srliw
+920 ite 6 357 640 919 x6_sraiw
+921 ite 6 358 643 920 x6_addw
+922 ite 6 359 645 921 x6_subw
+923 ite 6 360 649 922 x6_sllw
+924 ite 6 361 651 923 x6_srlw
+925 ite 6 362 653 924 x6_sraw
+926 ite 6 886 925 33 x6_new
+927 next 6 33 926 x6_new
+;Also update init-flag
+928 or 1 275 279 opcode_is_branch_store
+929 ite 1 -928 16 99 command_check
+930 ite 1 886 929 99 rd_check
+931 next 1 99 930 reg_init_flag_new
+;
+; Update register x7
+932 eq 1 370 398 x7_is_rd
+933 ite 6 314 524 34 x7_lui
+934 ite 6 315 525 933 x7_auipc
+935 ite 6 316 528 934 x7_jal
+936 ite 6 317 528 935 x7_jalr
+937 ite 6 324 564 936 x7_lb
+938 ite 6 325 566 937 x7_lh
+939 ite 6 326 569 938 x7_lw
+940 ite 6 349 573 939 x7_ld
+941 ite 6 327 574 940 x7_lbu
+942 ite 6 328 575 941 x7_lhu
+943 ite 6 348 576 942 x7_lwu
+944 ite 6 332 604 943 x7_addi
+945 ite 6 351 607 944 x7_slli
+946 ite 6 333 609 945 x7_slti
+947 ite 6 334 611 946 x7_sltiu
+948 ite 6 335 612 947 x7_xori
+949 ite 6 352 613 948 x7_srli
+950 ite 6 353 615 949 x7_srai
+951 ite 6 336 616 950 x7_ori
+952 ite 6 337 617 951 x7_andi
+953 ite 6 338 618 952 x7_add
+954 ite 6 339 619 953 x7_sub
+955 ite 6 340 622 954 x7_sll
+956 ite 6 341 624 955 x7_slt
+957 ite 6 342 626 956 x7_sltu
+958 ite 6 343 627 957 x7_xor
+959 ite 6 344 628 958 x7_srl
+960 ite 6 345 629 959 x7_sra
+961 ite 6 346 630 960 x7_or
+962 ite 6 347 631 961 x7_and
+963 ite 6 354 634 962 x7_addiw
+964 ite 6 355 636 963 x7_slliw
+965 ite 6 356 638 964 x7_srliw
+966 ite 6 357 640 965 x7_sraiw
+967 ite 6 358 643 966 x7_addw
+968 ite 6 359 645 967 x7_subw
+969 ite 6 360 649 968 x7_sllw
+970 ite 6 361 651 969 x7_srlw
+971 ite 6 362 653 970 x7_sraw
+972 ite 6 932 971 34 x7_new
+973 next 6 34 972 x7_new
+;Also update init-flag
+974 or 1 275 279 opcode_is_branch_store
+975 ite 1 -974 16 100 command_check
+976 ite 1 932 975 100 rd_check
+977 next 1 100 976 reg_init_flag_new
+;
+; Update register x8
+978 eq 1 371 398 x8_is_rd
+979 ite 6 314 524 35 x8_lui
+980 ite 6 315 525 979 x8_auipc
+981 ite 6 316 528 980 x8_jal
+982 ite 6 317 528 981 x8_jalr
+983 ite 6 324 564 982 x8_lb
+984 ite 6 325 566 983 x8_lh
+985 ite 6 326 569 984 x8_lw
+986 ite 6 349 573 985 x8_ld
+987 ite 6 327 574 986 x8_lbu
+988 ite 6 328 575 987 x8_lhu
+989 ite 6 348 576 988 x8_lwu
+990 ite 6 332 604 989 x8_addi
+991 ite 6 351 607 990 x8_slli
+992 ite 6 333 609 991 x8_slti
+993 ite 6 334 611 992 x8_sltiu
+994 ite 6 335 612 993 x8_xori
+995 ite 6 352 613 994 x8_srli
+996 ite 6 353 615 995 x8_srai
+997 ite 6 336 616 996 x8_ori
+998 ite 6 337 617 997 x8_andi
+999 ite 6 338 618 998 x8_add
+1000 ite 6 339 619 999 x8_sub
+1001 ite 6 340 622 1000 x8_sll
+1002 ite 6 341 624 1001 x8_slt
+1003 ite 6 342 626 1002 x8_sltu
+1004 ite 6 343 627 1003 x8_xor
+1005 ite 6 344 628 1004 x8_srl
+1006 ite 6 345 629 1005 x8_sra
+1007 ite 6 346 630 1006 x8_or
+1008 ite 6 347 631 1007 x8_and
+1009 ite 6 354 634 1008 x8_addiw
+1010 ite 6 355 636 1009 x8_slliw
+1011 ite 6 356 638 1010 x8_srliw
+1012 ite 6 357 640 1011 x8_sraiw
+1013 ite 6 358 643 1012 x8_addw
+1014 ite 6 359 645 1013 x8_subw
+1015 ite 6 360 649 1014 x8_sllw
+1016 ite 6 361 651 1015 x8_srlw
+1017 ite 6 362 653 1016 x8_sraw
+1018 ite 6 978 1017 35 x8_new
+1019 next 6 35 1018 x8_new
+;Also update init-flag
+1020 or 1 275 279 opcode_is_branch_store
+1021 ite 1 -1020 16 101 command_check
+1022 ite 1 978 1021 101 rd_check
+1023 next 1 101 1022 reg_init_flag_new
+;
+; Update register x9
+1024 eq 1 372 398 x9_is_rd
+1025 ite 6 314 524 36 x9_lui
+1026 ite 6 315 525 1025 x9_auipc
+1027 ite 6 316 528 1026 x9_jal
+1028 ite 6 317 528 1027 x9_jalr
+1029 ite 6 324 564 1028 x9_lb
+1030 ite 6 325 566 1029 x9_lh
+1031 ite 6 326 569 1030 x9_lw
+1032 ite 6 349 573 1031 x9_ld
+1033 ite 6 327 574 1032 x9_lbu
+1034 ite 6 328 575 1033 x9_lhu
+1035 ite 6 348 576 1034 x9_lwu
+1036 ite 6 332 604 1035 x9_addi
+1037 ite 6 351 607 1036 x9_slli
+1038 ite 6 333 609 1037 x9_slti
+1039 ite 6 334 611 1038 x9_sltiu
+1040 ite 6 335 612 1039 x9_xori
+1041 ite 6 352 613 1040 x9_srli
+1042 ite 6 353 615 1041 x9_srai
+1043 ite 6 336 616 1042 x9_ori
+1044 ite 6 337 617 1043 x9_andi
+1045 ite 6 338 618 1044 x9_add
+1046 ite 6 339 619 1045 x9_sub
+1047 ite 6 340 622 1046 x9_sll
+1048 ite 6 341 624 1047 x9_slt
+1049 ite 6 342 626 1048 x9_sltu
+1050 ite 6 343 627 1049 x9_xor
+1051 ite 6 344 628 1050 x9_srl
+1052 ite 6 345 629 1051 x9_sra
+1053 ite 6 346 630 1052 x9_or
+1054 ite 6 347 631 1053 x9_and
+1055 ite 6 354 634 1054 x9_addiw
+1056 ite 6 355 636 1055 x9_slliw
+1057 ite 6 356 638 1056 x9_srliw
+1058 ite 6 357 640 1057 x9_sraiw
+1059 ite 6 358 643 1058 x9_addw
+1060 ite 6 359 645 1059 x9_subw
+1061 ite 6 360 649 1060 x9_sllw
+1062 ite 6 361 651 1061 x9_srlw
+1063 ite 6 362 653 1062 x9_sraw
+1064 ite 6 1024 1063 36 x9_new
+1065 next 6 36 1064 x9_new
+;Also update init-flag
+1066 or 1 275 279 opcode_is_branch_store
+1067 ite 1 -1066 16 102 command_check
+1068 ite 1 1024 1067 102 rd_check
+1069 next 1 102 1068 reg_init_flag_new
+;
+; Update register x10
+1070 eq 1 373 398 x10_is_rd
+1071 ite 6 314 524 37 x10_lui
+1072 ite 6 315 525 1071 x10_auipc
+1073 ite 6 316 528 1072 x10_jal
+1074 ite 6 317 528 1073 x10_jalr
+1075 ite 6 324 564 1074 x10_lb
+1076 ite 6 325 566 1075 x10_lh
+1077 ite 6 326 569 1076 x10_lw
+1078 ite 6 349 573 1077 x10_ld
+1079 ite 6 327 574 1078 x10_lbu
+1080 ite 6 328 575 1079 x10_lhu
+1081 ite 6 348 576 1080 x10_lwu
+1082 ite 6 332 604 1081 x10_addi
+1083 ite 6 351 607 1082 x10_slli
+1084 ite 6 333 609 1083 x10_slti
+1085 ite 6 334 611 1084 x10_sltiu
+1086 ite 6 335 612 1085 x10_xori
+1087 ite 6 352 613 1086 x10_srli
+1088 ite 6 353 615 1087 x10_srai
+1089 ite 6 336 616 1088 x10_ori
+1090 ite 6 337 617 1089 x10_andi
+1091 ite 6 338 618 1090 x10_add
+1092 ite 6 339 619 1091 x10_sub
+1093 ite 6 340 622 1092 x10_sll
+1094 ite 6 341 624 1093 x10_slt
+1095 ite 6 342 626 1094 x10_sltu
+1096 ite 6 343 627 1095 x10_xor
+1097 ite 6 344 628 1096 x10_srl
+1098 ite 6 345 629 1097 x10_sra
+1099 ite 6 346 630 1098 x10_or
+1100 ite 6 347 631 1099 x10_and
+1101 ite 6 354 634 1100 x10_addiw
+1102 ite 6 355 636 1101 x10_slliw
+1103 ite 6 356 638 1102 x10_srliw
+1104 ite 6 357 640 1103 x10_sraiw
+1105 ite 6 358 643 1104 x10_addw
+1106 ite 6 359 645 1105 x10_subw
+1107 ite 6 360 649 1106 x10_sllw
+1108 ite 6 361 651 1107 x10_srlw
+1109 ite 6 362 653 1108 x10_sraw
+1110 ite 6 1070 1109 37 x10_new
+1111 next 6 37 1110 x10_new
+;Also update init-flag
+1112 or 1 275 279 opcode_is_branch_store
+1113 ite 1 -1112 16 103 command_check
+1114 ite 1 1070 1113 103 rd_check
+1115 next 1 103 1114 reg_init_flag_new
+;
+; Update register x11
+1116 eq 1 374 398 x11_is_rd
+1117 ite 6 314 524 38 x11_lui
+1118 ite 6 315 525 1117 x11_auipc
+1119 ite 6 316 528 1118 x11_jal
+1120 ite 6 317 528 1119 x11_jalr
+1121 ite 6 324 564 1120 x11_lb
+1122 ite 6 325 566 1121 x11_lh
+1123 ite 6 326 569 1122 x11_lw
+1124 ite 6 349 573 1123 x11_ld
+1125 ite 6 327 574 1124 x11_lbu
+1126 ite 6 328 575 1125 x11_lhu
+1127 ite 6 348 576 1126 x11_lwu
+1128 ite 6 332 604 1127 x11_addi
+1129 ite 6 351 607 1128 x11_slli
+1130 ite 6 333 609 1129 x11_slti
+1131 ite 6 334 611 1130 x11_sltiu
+1132 ite 6 335 612 1131 x11_xori
+1133 ite 6 352 613 1132 x11_srli
+1134 ite 6 353 615 1133 x11_srai
+1135 ite 6 336 616 1134 x11_ori
+1136 ite 6 337 617 1135 x11_andi
+1137 ite 6 338 618 1136 x11_add
+1138 ite 6 339 619 1137 x11_sub
+1139 ite 6 340 622 1138 x11_sll
+1140 ite 6 341 624 1139 x11_slt
+1141 ite 6 342 626 1140 x11_sltu
+1142 ite 6 343 627 1141 x11_xor
+1143 ite 6 344 628 1142 x11_srl
+1144 ite 6 345 629 1143 x11_sra
+1145 ite 6 346 630 1144 x11_or
+1146 ite 6 347 631 1145 x11_and
+1147 ite 6 354 634 1146 x11_addiw
+1148 ite 6 355 636 1147 x11_slliw
+1149 ite 6 356 638 1148 x11_srliw
+1150 ite 6 357 640 1149 x11_sraiw
+1151 ite 6 358 643 1150 x11_addw
+1152 ite 6 359 645 1151 x11_subw
+1153 ite 6 360 649 1152 x11_sllw
+1154 ite 6 361 651 1153 x11_srlw
+1155 ite 6 362 653 1154 x11_sraw
+1156 ite 6 1116 1155 38 x11_new
+1157 next 6 38 1156 x11_new
+;Also update init-flag
+1158 or 1 275 279 opcode_is_branch_store
+1159 ite 1 -1158 16 104 command_check
+1160 ite 1 1116 1159 104 rd_check
+1161 next 1 104 1160 reg_init_flag_new
+;
+; Update register x12
+1162 eq 1 375 398 x12_is_rd
+1163 ite 6 314 524 39 x12_lui
+1164 ite 6 315 525 1163 x12_auipc
+1165 ite 6 316 528 1164 x12_jal
+1166 ite 6 317 528 1165 x12_jalr
+1167 ite 6 324 564 1166 x12_lb
+1168 ite 6 325 566 1167 x12_lh
+1169 ite 6 326 569 1168 x12_lw
+1170 ite 6 349 573 1169 x12_ld
+1171 ite 6 327 574 1170 x12_lbu
+1172 ite 6 328 575 1171 x12_lhu
+1173 ite 6 348 576 1172 x12_lwu
+1174 ite 6 332 604 1173 x12_addi
+1175 ite 6 351 607 1174 x12_slli
+1176 ite 6 333 609 1175 x12_slti
+1177 ite 6 334 611 1176 x12_sltiu
+1178 ite 6 335 612 1177 x12_xori
+1179 ite 6 352 613 1178 x12_srli
+1180 ite 6 353 615 1179 x12_srai
+1181 ite 6 336 616 1180 x12_ori
+1182 ite 6 337 617 1181 x12_andi
+1183 ite 6 338 618 1182 x12_add
+1184 ite 6 339 619 1183 x12_sub
+1185 ite 6 340 622 1184 x12_sll
+1186 ite 6 341 624 1185 x12_slt
+1187 ite 6 342 626 1186 x12_sltu
+1188 ite 6 343 627 1187 x12_xor
+1189 ite 6 344 628 1188 x12_srl
+1190 ite 6 345 629 1189 x12_sra
+1191 ite 6 346 630 1190 x12_or
+1192 ite 6 347 631 1191 x12_and
+1193 ite 6 354 634 1192 x12_addiw
+1194 ite 6 355 636 1193 x12_slliw
+1195 ite 6 356 638 1194 x12_srliw
+1196 ite 6 357 640 1195 x12_sraiw
+1197 ite 6 358 643 1196 x12_addw
+1198 ite 6 359 645 1197 x12_subw
+1199 ite 6 360 649 1198 x12_sllw
+1200 ite 6 361 651 1199 x12_srlw
+1201 ite 6 362 653 1200 x12_sraw
+1202 ite 6 1162 1201 39 x12_new
+1203 next 6 39 1202 x12_new
+;Also update init-flag
+1204 or 1 275 279 opcode_is_branch_store
+1205 ite 1 -1204 16 105 command_check
+1206 ite 1 1162 1205 105 rd_check
+1207 next 1 105 1206 reg_init_flag_new
+;
+; Update register x13
+1208 eq 1 376 398 x13_is_rd
+1209 ite 6 314 524 40 x13_lui
+1210 ite 6 315 525 1209 x13_auipc
+1211 ite 6 316 528 1210 x13_jal
+1212 ite 6 317 528 1211 x13_jalr
+1213 ite 6 324 564 1212 x13_lb
+1214 ite 6 325 566 1213 x13_lh
+1215 ite 6 326 569 1214 x13_lw
+1216 ite 6 349 573 1215 x13_ld
+1217 ite 6 327 574 1216 x13_lbu
+1218 ite 6 328 575 1217 x13_lhu
+1219 ite 6 348 576 1218 x13_lwu
+1220 ite 6 332 604 1219 x13_addi
+1221 ite 6 351 607 1220 x13_slli
+1222 ite 6 333 609 1221 x13_slti
+1223 ite 6 334 611 1222 x13_sltiu
+1224 ite 6 335 612 1223 x13_xori
+1225 ite 6 352 613 1224 x13_srli
+1226 ite 6 353 615 1225 x13_srai
+1227 ite 6 336 616 1226 x13_ori
+1228 ite 6 337 617 1227 x13_andi
+1229 ite 6 338 618 1228 x13_add
+1230 ite 6 339 619 1229 x13_sub
+1231 ite 6 340 622 1230 x13_sll
+1232 ite 6 341 624 1231 x13_slt
+1233 ite 6 342 626 1232 x13_sltu
+1234 ite 6 343 627 1233 x13_xor
+1235 ite 6 344 628 1234 x13_srl
+1236 ite 6 345 629 1235 x13_sra
+1237 ite 6 346 630 1236 x13_or
+1238 ite 6 347 631 1237 x13_and
+1239 ite 6 354 634 1238 x13_addiw
+1240 ite 6 355 636 1239 x13_slliw
+1241 ite 6 356 638 1240 x13_srliw
+1242 ite 6 357 640 1241 x13_sraiw
+1243 ite 6 358 643 1242 x13_addw
+1244 ite 6 359 645 1243 x13_subw
+1245 ite 6 360 649 1244 x13_sllw
+1246 ite 6 361 651 1245 x13_srlw
+1247 ite 6 362 653 1246 x13_sraw
+1248 ite 6 1208 1247 40 x13_new
+1249 next 6 40 1248 x13_new
+;Also update init-flag
+1250 or 1 275 279 opcode_is_branch_store
+1251 ite 1 -1250 16 106 command_check
+1252 ite 1 1208 1251 106 rd_check
+1253 next 1 106 1252 reg_init_flag_new
+;
+; Update register x14
+1254 eq 1 377 398 x14_is_rd
+1255 ite 6 314 524 41 x14_lui
+1256 ite 6 315 525 1255 x14_auipc
+1257 ite 6 316 528 1256 x14_jal
+1258 ite 6 317 528 1257 x14_jalr
+1259 ite 6 324 564 1258 x14_lb
+1260 ite 6 325 566 1259 x14_lh
+1261 ite 6 326 569 1260 x14_lw
+1262 ite 6 349 573 1261 x14_ld
+1263 ite 6 327 574 1262 x14_lbu
+1264 ite 6 328 575 1263 x14_lhu
+1265 ite 6 348 576 1264 x14_lwu
+1266 ite 6 332 604 1265 x14_addi
+1267 ite 6 351 607 1266 x14_slli
+1268 ite 6 333 609 1267 x14_slti
+1269 ite 6 334 611 1268 x14_sltiu
+1270 ite 6 335 612 1269 x14_xori
+1271 ite 6 352 613 1270 x14_srli
+1272 ite 6 353 615 1271 x14_srai
+1273 ite 6 336 616 1272 x14_ori
+1274 ite 6 337 617 1273 x14_andi
+1275 ite 6 338 618 1274 x14_add
+1276 ite 6 339 619 1275 x14_sub
+1277 ite 6 340 622 1276 x14_sll
+1278 ite 6 341 624 1277 x14_slt
+1279 ite 6 342 626 1278 x14_sltu
+1280 ite 6 343 627 1279 x14_xor
+1281 ite 6 344 628 1280 x14_srl
+1282 ite 6 345 629 1281 x14_sra
+1283 ite 6 346 630 1282 x14_or
+1284 ite 6 347 631 1283 x14_and
+1285 ite 6 354 634 1284 x14_addiw
+1286 ite 6 355 636 1285 x14_slliw
+1287 ite 6 356 638 1286 x14_srliw
+1288 ite 6 357 640 1287 x14_sraiw
+1289 ite 6 358 643 1288 x14_addw
+1290 ite 6 359 645 1289 x14_subw
+1291 ite 6 360 649 1290 x14_sllw
+1292 ite 6 361 651 1291 x14_srlw
+1293 ite 6 362 653 1292 x14_sraw
+1294 ite 6 1254 1293 41 x14_new
+1295 next 6 41 1294 x14_new
+;Also update init-flag
+1296 or 1 275 279 opcode_is_branch_store
+1297 ite 1 -1296 16 107 command_check
+1298 ite 1 1254 1297 107 rd_check
+1299 next 1 107 1298 reg_init_flag_new
+;
+; Update register x15
+1300 eq 1 378 398 x15_is_rd
+1301 ite 6 314 524 42 x15_lui
+1302 ite 6 315 525 1301 x15_auipc
+1303 ite 6 316 528 1302 x15_jal
+1304 ite 6 317 528 1303 x15_jalr
+1305 ite 6 324 564 1304 x15_lb
+1306 ite 6 325 566 1305 x15_lh
+1307 ite 6 326 569 1306 x15_lw
+1308 ite 6 349 573 1307 x15_ld
+1309 ite 6 327 574 1308 x15_lbu
+1310 ite 6 328 575 1309 x15_lhu
+1311 ite 6 348 576 1310 x15_lwu
+1312 ite 6 332 604 1311 x15_addi
+1313 ite 6 351 607 1312 x15_slli
+1314 ite 6 333 609 1313 x15_slti
+1315 ite 6 334 611 1314 x15_sltiu
+1316 ite 6 335 612 1315 x15_xori
+1317 ite 6 352 613 1316 x15_srli
+1318 ite 6 353 615 1317 x15_srai
+1319 ite 6 336 616 1318 x15_ori
+1320 ite 6 337 617 1319 x15_andi
+1321 ite 6 338 618 1320 x15_add
+1322 ite 6 339 619 1321 x15_sub
+1323 ite 6 340 622 1322 x15_sll
+1324 ite 6 341 624 1323 x15_slt
+1325 ite 6 342 626 1324 x15_sltu
+1326 ite 6 343 627 1325 x15_xor
+1327 ite 6 344 628 1326 x15_srl
+1328 ite 6 345 629 1327 x15_sra
+1329 ite 6 346 630 1328 x15_or
+1330 ite 6 347 631 1329 x15_and
+1331 ite 6 354 634 1330 x15_addiw
+1332 ite 6 355 636 1331 x15_slliw
+1333 ite 6 356 638 1332 x15_srliw
+1334 ite 6 357 640 1333 x15_sraiw
+1335 ite 6 358 643 1334 x15_addw
+1336 ite 6 359 645 1335 x15_subw
+1337 ite 6 360 649 1336 x15_sllw
+1338 ite 6 361 651 1337 x15_srlw
+1339 ite 6 362 653 1338 x15_sraw
+1340 ite 6 1300 1339 42 x15_new
+1341 next 6 42 1340 x15_new
+;Also update init-flag
+1342 or 1 275 279 opcode_is_branch_store
+1343 ite 1 -1342 16 108 command_check
+1344 ite 1 1300 1343 108 rd_check
+1345 next 1 108 1344 reg_init_flag_new
+;
+; Update register x16
+1346 eq 1 379 398 x16_is_rd
+1347 ite 6 314 524 43 x16_lui
+1348 ite 6 315 525 1347 x16_auipc
+1349 ite 6 316 528 1348 x16_jal
+1350 ite 6 317 528 1349 x16_jalr
+1351 ite 6 324 564 1350 x16_lb
+1352 ite 6 325 566 1351 x16_lh
+1353 ite 6 326 569 1352 x16_lw
+1354 ite 6 349 573 1353 x16_ld
+1355 ite 6 327 574 1354 x16_lbu
+1356 ite 6 328 575 1355 x16_lhu
+1357 ite 6 348 576 1356 x16_lwu
+1358 ite 6 332 604 1357 x16_addi
+1359 ite 6 351 607 1358 x16_slli
+1360 ite 6 333 609 1359 x16_slti
+1361 ite 6 334 611 1360 x16_sltiu
+1362 ite 6 335 612 1361 x16_xori
+1363 ite 6 352 613 1362 x16_srli
+1364 ite 6 353 615 1363 x16_srai
+1365 ite 6 336 616 1364 x16_ori
+1366 ite 6 337 617 1365 x16_andi
+1367 ite 6 338 618 1366 x16_add
+1368 ite 6 339 619 1367 x16_sub
+1369 ite 6 340 622 1368 x16_sll
+1370 ite 6 341 624 1369 x16_slt
+1371 ite 6 342 626 1370 x16_sltu
+1372 ite 6 343 627 1371 x16_xor
+1373 ite 6 344 628 1372 x16_srl
+1374 ite 6 345 629 1373 x16_sra
+1375 ite 6 346 630 1374 x16_or
+1376 ite 6 347 631 1375 x16_and
+1377 ite 6 354 634 1376 x16_addiw
+1378 ite 6 355 636 1377 x16_slliw
+1379 ite 6 356 638 1378 x16_srliw
+1380 ite 6 357 640 1379 x16_sraiw
+1381 ite 6 358 643 1380 x16_addw
+1382 ite 6 359 645 1381 x16_subw
+1383 ite 6 360 649 1382 x16_sllw
+1384 ite 6 361 651 1383 x16_srlw
+1385 ite 6 362 653 1384 x16_sraw
+1386 ite 6 1346 1385 43 x16_new
+1387 next 6 43 1386 x16_new
+;Also update init-flag
+1388 or 1 275 279 opcode_is_branch_store
+1389 ite 1 -1388 16 109 command_check
+1390 ite 1 1346 1389 109 rd_check
+1391 next 1 109 1390 reg_init_flag_new
+;
+; Update register x17
+1392 eq 1 380 398 x17_is_rd
+1393 ite 6 314 524 44 x17_lui
+1394 ite 6 315 525 1393 x17_auipc
+1395 ite 6 316 528 1394 x17_jal
+1396 ite 6 317 528 1395 x17_jalr
+1397 ite 6 324 564 1396 x17_lb
+1398 ite 6 325 566 1397 x17_lh
+1399 ite 6 326 569 1398 x17_lw
+1400 ite 6 349 573 1399 x17_ld
+1401 ite 6 327 574 1400 x17_lbu
+1402 ite 6 328 575 1401 x17_lhu
+1403 ite 6 348 576 1402 x17_lwu
+1404 ite 6 332 604 1403 x17_addi
+1405 ite 6 351 607 1404 x17_slli
+1406 ite 6 333 609 1405 x17_slti
+1407 ite 6 334 611 1406 x17_sltiu
+1408 ite 6 335 612 1407 x17_xori
+1409 ite 6 352 613 1408 x17_srli
+1410 ite 6 353 615 1409 x17_srai
+1411 ite 6 336 616 1410 x17_ori
+1412 ite 6 337 617 1411 x17_andi
+1413 ite 6 338 618 1412 x17_add
+1414 ite 6 339 619 1413 x17_sub
+1415 ite 6 340 622 1414 x17_sll
+1416 ite 6 341 624 1415 x17_slt
+1417 ite 6 342 626 1416 x17_sltu
+1418 ite 6 343 627 1417 x17_xor
+1419 ite 6 344 628 1418 x17_srl
+1420 ite 6 345 629 1419 x17_sra
+1421 ite 6 346 630 1420 x17_or
+1422 ite 6 347 631 1421 x17_and
+1423 ite 6 354 634 1422 x17_addiw
+1424 ite 6 355 636 1423 x17_slliw
+1425 ite 6 356 638 1424 x17_srliw
+1426 ite 6 357 640 1425 x17_sraiw
+1427 ite 6 358 643 1426 x17_addw
+1428 ite 6 359 645 1427 x17_subw
+1429 ite 6 360 649 1428 x17_sllw
+1430 ite 6 361 651 1429 x17_srlw
+1431 ite 6 362 653 1430 x17_sraw
+1432 ite 6 1392 1431 44 x17_new
+1433 next 6 44 1432 x17_new
+;Also update init-flag
+1434 or 1 275 279 opcode_is_branch_store
+1435 ite 1 -1434 16 110 command_check
+1436 ite 1 1392 1435 110 rd_check
+1437 next 1 110 1436 reg_init_flag_new
+;
+; Update register x18
+1438 eq 1 381 398 x18_is_rd
+1439 ite 6 314 524 45 x18_lui
+1440 ite 6 315 525 1439 x18_auipc
+1441 ite 6 316 528 1440 x18_jal
+1442 ite 6 317 528 1441 x18_jalr
+1443 ite 6 324 564 1442 x18_lb
+1444 ite 6 325 566 1443 x18_lh
+1445 ite 6 326 569 1444 x18_lw
+1446 ite 6 349 573 1445 x18_ld
+1447 ite 6 327 574 1446 x18_lbu
+1448 ite 6 328 575 1447 x18_lhu
+1449 ite 6 348 576 1448 x18_lwu
+1450 ite 6 332 604 1449 x18_addi
+1451 ite 6 351 607 1450 x18_slli
+1452 ite 6 333 609 1451 x18_slti
+1453 ite 6 334 611 1452 x18_sltiu
+1454 ite 6 335 612 1453 x18_xori
+1455 ite 6 352 613 1454 x18_srli
+1456 ite 6 353 615 1455 x18_srai
+1457 ite 6 336 616 1456 x18_ori
+1458 ite 6 337 617 1457 x18_andi
+1459 ite 6 338 618 1458 x18_add
+1460 ite 6 339 619 1459 x18_sub
+1461 ite 6 340 622 1460 x18_sll
+1462 ite 6 341 624 1461 x18_slt
+1463 ite 6 342 626 1462 x18_sltu
+1464 ite 6 343 627 1463 x18_xor
+1465 ite 6 344 628 1464 x18_srl
+1466 ite 6 345 629 1465 x18_sra
+1467 ite 6 346 630 1466 x18_or
+1468 ite 6 347 631 1467 x18_and
+1469 ite 6 354 634 1468 x18_addiw
+1470 ite 6 355 636 1469 x18_slliw
+1471 ite 6 356 638 1470 x18_srliw
+1472 ite 6 357 640 1471 x18_sraiw
+1473 ite 6 358 643 1472 x18_addw
+1474 ite 6 359 645 1473 x18_subw
+1475 ite 6 360 649 1474 x18_sllw
+1476 ite 6 361 651 1475 x18_srlw
+1477 ite 6 362 653 1476 x18_sraw
+1478 ite 6 1438 1477 45 x18_new
+1479 next 6 45 1478 x18_new
+;Also update init-flag
+1480 or 1 275 279 opcode_is_branch_store
+1481 ite 1 -1480 16 111 command_check
+1482 ite 1 1438 1481 111 rd_check
+1483 next 1 111 1482 reg_init_flag_new
+;
+; Update register x19
+1484 eq 1 382 398 x19_is_rd
+1485 ite 6 314 524 46 x19_lui
+1486 ite 6 315 525 1485 x19_auipc
+1487 ite 6 316 528 1486 x19_jal
+1488 ite 6 317 528 1487 x19_jalr
+1489 ite 6 324 564 1488 x19_lb
+1490 ite 6 325 566 1489 x19_lh
+1491 ite 6 326 569 1490 x19_lw
+1492 ite 6 349 573 1491 x19_ld
+1493 ite 6 327 574 1492 x19_lbu
+1494 ite 6 328 575 1493 x19_lhu
+1495 ite 6 348 576 1494 x19_lwu
+1496 ite 6 332 604 1495 x19_addi
+1497 ite 6 351 607 1496 x19_slli
+1498 ite 6 333 609 1497 x19_slti
+1499 ite 6 334 611 1498 x19_sltiu
+1500 ite 6 335 612 1499 x19_xori
+1501 ite 6 352 613 1500 x19_srli
+1502 ite 6 353 615 1501 x19_srai
+1503 ite 6 336 616 1502 x19_ori
+1504 ite 6 337 617 1503 x19_andi
+1505 ite 6 338 618 1504 x19_add
+1506 ite 6 339 619 1505 x19_sub
+1507 ite 6 340 622 1506 x19_sll
+1508 ite 6 341 624 1507 x19_slt
+1509 ite 6 342 626 1508 x19_sltu
+1510 ite 6 343 627 1509 x19_xor
+1511 ite 6 344 628 1510 x19_srl
+1512 ite 6 345 629 1511 x19_sra
+1513 ite 6 346 630 1512 x19_or
+1514 ite 6 347 631 1513 x19_and
+1515 ite 6 354 634 1514 x19_addiw
+1516 ite 6 355 636 1515 x19_slliw
+1517 ite 6 356 638 1516 x19_srliw
+1518 ite 6 357 640 1517 x19_sraiw
+1519 ite 6 358 643 1518 x19_addw
+1520 ite 6 359 645 1519 x19_subw
+1521 ite 6 360 649 1520 x19_sllw
+1522 ite 6 361 651 1521 x19_srlw
+1523 ite 6 362 653 1522 x19_sraw
+1524 ite 6 1484 1523 46 x19_new
+1525 next 6 46 1524 x19_new
+;Also update init-flag
+1526 or 1 275 279 opcode_is_branch_store
+1527 ite 1 -1526 16 112 command_check
+1528 ite 1 1484 1527 112 rd_check
+1529 next 1 112 1528 reg_init_flag_new
+;
+; Update register x20
+1530 eq 1 383 398 x20_is_rd
+1531 ite 6 314 524 47 x20_lui
+1532 ite 6 315 525 1531 x20_auipc
+1533 ite 6 316 528 1532 x20_jal
+1534 ite 6 317 528 1533 x20_jalr
+1535 ite 6 324 564 1534 x20_lb
+1536 ite 6 325 566 1535 x20_lh
+1537 ite 6 326 569 1536 x20_lw
+1538 ite 6 349 573 1537 x20_ld
+1539 ite 6 327 574 1538 x20_lbu
+1540 ite 6 328 575 1539 x20_lhu
+1541 ite 6 348 576 1540 x20_lwu
+1542 ite 6 332 604 1541 x20_addi
+1543 ite 6 351 607 1542 x20_slli
+1544 ite 6 333 609 1543 x20_slti
+1545 ite 6 334 611 1544 x20_sltiu
+1546 ite 6 335 612 1545 x20_xori
+1547 ite 6 352 613 1546 x20_srli
+1548 ite 6 353 615 1547 x20_srai
+1549 ite 6 336 616 1548 x20_ori
+1550 ite 6 337 617 1549 x20_andi
+1551 ite 6 338 618 1550 x20_add
+1552 ite 6 339 619 1551 x20_sub
+1553 ite 6 340 622 1552 x20_sll
+1554 ite 6 341 624 1553 x20_slt
+1555 ite 6 342 626 1554 x20_sltu
+1556 ite 6 343 627 1555 x20_xor
+1557 ite 6 344 628 1556 x20_srl
+1558 ite 6 345 629 1557 x20_sra
+1559 ite 6 346 630 1558 x20_or
+1560 ite 6 347 631 1559 x20_and
+1561 ite 6 354 634 1560 x20_addiw
+1562 ite 6 355 636 1561 x20_slliw
+1563 ite 6 356 638 1562 x20_srliw
+1564 ite 6 357 640 1563 x20_sraiw
+1565 ite 6 358 643 1564 x20_addw
+1566 ite 6 359 645 1565 x20_subw
+1567 ite 6 360 649 1566 x20_sllw
+1568 ite 6 361 651 1567 x20_srlw
+1569 ite 6 362 653 1568 x20_sraw
+1570 ite 6 1530 1569 47 x20_new
+1571 next 6 47 1570 x20_new
+;Also update init-flag
+1572 or 1 275 279 opcode_is_branch_store
+1573 ite 1 -1572 16 113 command_check
+1574 ite 1 1530 1573 113 rd_check
+1575 next 1 113 1574 reg_init_flag_new
+;
+; Update register x21
+1576 eq 1 384 398 x21_is_rd
+1577 ite 6 314 524 48 x21_lui
+1578 ite 6 315 525 1577 x21_auipc
+1579 ite 6 316 528 1578 x21_jal
+1580 ite 6 317 528 1579 x21_jalr
+1581 ite 6 324 564 1580 x21_lb
+1582 ite 6 325 566 1581 x21_lh
+1583 ite 6 326 569 1582 x21_lw
+1584 ite 6 349 573 1583 x21_ld
+1585 ite 6 327 574 1584 x21_lbu
+1586 ite 6 328 575 1585 x21_lhu
+1587 ite 6 348 576 1586 x21_lwu
+1588 ite 6 332 604 1587 x21_addi
+1589 ite 6 351 607 1588 x21_slli
+1590 ite 6 333 609 1589 x21_slti
+1591 ite 6 334 611 1590 x21_sltiu
+1592 ite 6 335 612 1591 x21_xori
+1593 ite 6 352 613 1592 x21_srli
+1594 ite 6 353 615 1593 x21_srai
+1595 ite 6 336 616 1594 x21_ori
+1596 ite 6 337 617 1595 x21_andi
+1597 ite 6 338 618 1596 x21_add
+1598 ite 6 339 619 1597 x21_sub
+1599 ite 6 340 622 1598 x21_sll
+1600 ite 6 341 624 1599 x21_slt
+1601 ite 6 342 626 1600 x21_sltu
+1602 ite 6 343 627 1601 x21_xor
+1603 ite 6 344 628 1602 x21_srl
+1604 ite 6 345 629 1603 x21_sra
+1605 ite 6 346 630 1604 x21_or
+1606 ite 6 347 631 1605 x21_and
+1607 ite 6 354 634 1606 x21_addiw
+1608 ite 6 355 636 1607 x21_slliw
+1609 ite 6 356 638 1608 x21_srliw
+1610 ite 6 357 640 1609 x21_sraiw
+1611 ite 6 358 643 1610 x21_addw
+1612 ite 6 359 645 1611 x21_subw
+1613 ite 6 360 649 1612 x21_sllw
+1614 ite 6 361 651 1613 x21_srlw
+1615 ite 6 362 653 1614 x21_sraw
+1616 ite 6 1576 1615 48 x21_new
+1617 next 6 48 1616 x21_new
+;Also update init-flag
+1618 or 1 275 279 opcode_is_branch_store
+1619 ite 1 -1618 16 114 command_check
+1620 ite 1 1576 1619 114 rd_check
+1621 next 1 114 1620 reg_init_flag_new
+;
+; Update register x22
+1622 eq 1 385 398 x22_is_rd
+1623 ite 6 314 524 49 x22_lui
+1624 ite 6 315 525 1623 x22_auipc
+1625 ite 6 316 528 1624 x22_jal
+1626 ite 6 317 528 1625 x22_jalr
+1627 ite 6 324 564 1626 x22_lb
+1628 ite 6 325 566 1627 x22_lh
+1629 ite 6 326 569 1628 x22_lw
+1630 ite 6 349 573 1629 x22_ld
+1631 ite 6 327 574 1630 x22_lbu
+1632 ite 6 328 575 1631 x22_lhu
+1633 ite 6 348 576 1632 x22_lwu
+1634 ite 6 332 604 1633 x22_addi
+1635 ite 6 351 607 1634 x22_slli
+1636 ite 6 333 609 1635 x22_slti
+1637 ite 6 334 611 1636 x22_sltiu
+1638 ite 6 335 612 1637 x22_xori
+1639 ite 6 352 613 1638 x22_srli
+1640 ite 6 353 615 1639 x22_srai
+1641 ite 6 336 616 1640 x22_ori
+1642 ite 6 337 617 1641 x22_andi
+1643 ite 6 338 618 1642 x22_add
+1644 ite 6 339 619 1643 x22_sub
+1645 ite 6 340 622 1644 x22_sll
+1646 ite 6 341 624 1645 x22_slt
+1647 ite 6 342 626 1646 x22_sltu
+1648 ite 6 343 627 1647 x22_xor
+1649 ite 6 344 628 1648 x22_srl
+1650 ite 6 345 629 1649 x22_sra
+1651 ite 6 346 630 1650 x22_or
+1652 ite 6 347 631 1651 x22_and
+1653 ite 6 354 634 1652 x22_addiw
+1654 ite 6 355 636 1653 x22_slliw
+1655 ite 6 356 638 1654 x22_srliw
+1656 ite 6 357 640 1655 x22_sraiw
+1657 ite 6 358 643 1656 x22_addw
+1658 ite 6 359 645 1657 x22_subw
+1659 ite 6 360 649 1658 x22_sllw
+1660 ite 6 361 651 1659 x22_srlw
+1661 ite 6 362 653 1660 x22_sraw
+1662 ite 6 1622 1661 49 x22_new
+1663 next 6 49 1662 x22_new
+;Also update init-flag
+1664 or 1 275 279 opcode_is_branch_store
+1665 ite 1 -1664 16 115 command_check
+1666 ite 1 1622 1665 115 rd_check
+1667 next 1 115 1666 reg_init_flag_new
+;
+; Update register x23
+1668 eq 1 386 398 x23_is_rd
+1669 ite 6 314 524 50 x23_lui
+1670 ite 6 315 525 1669 x23_auipc
+1671 ite 6 316 528 1670 x23_jal
+1672 ite 6 317 528 1671 x23_jalr
+1673 ite 6 324 564 1672 x23_lb
+1674 ite 6 325 566 1673 x23_lh
+1675 ite 6 326 569 1674 x23_lw
+1676 ite 6 349 573 1675 x23_ld
+1677 ite 6 327 574 1676 x23_lbu
+1678 ite 6 328 575 1677 x23_lhu
+1679 ite 6 348 576 1678 x23_lwu
+1680 ite 6 332 604 1679 x23_addi
+1681 ite 6 351 607 1680 x23_slli
+1682 ite 6 333 609 1681 x23_slti
+1683 ite 6 334 611 1682 x23_sltiu
+1684 ite 6 335 612 1683 x23_xori
+1685 ite 6 352 613 1684 x23_srli
+1686 ite 6 353 615 1685 x23_srai
+1687 ite 6 336 616 1686 x23_ori
+1688 ite 6 337 617 1687 x23_andi
+1689 ite 6 338 618 1688 x23_add
+1690 ite 6 339 619 1689 x23_sub
+1691 ite 6 340 622 1690 x23_sll
+1692 ite 6 341 624 1691 x23_slt
+1693 ite 6 342 626 1692 x23_sltu
+1694 ite 6 343 627 1693 x23_xor
+1695 ite 6 344 628 1694 x23_srl
+1696 ite 6 345 629 1695 x23_sra
+1697 ite 6 346 630 1696 x23_or
+1698 ite 6 347 631 1697 x23_and
+1699 ite 6 354 634 1698 x23_addiw
+1700 ite 6 355 636 1699 x23_slliw
+1701 ite 6 356 638 1700 x23_srliw
+1702 ite 6 357 640 1701 x23_sraiw
+1703 ite 6 358 643 1702 x23_addw
+1704 ite 6 359 645 1703 x23_subw
+1705 ite 6 360 649 1704 x23_sllw
+1706 ite 6 361 651 1705 x23_srlw
+1707 ite 6 362 653 1706 x23_sraw
+1708 ite 6 1668 1707 50 x23_new
+1709 next 6 50 1708 x23_new
+;Also update init-flag
+1710 or 1 275 279 opcode_is_branch_store
+1711 ite 1 -1710 16 116 command_check
+1712 ite 1 1668 1711 116 rd_check
+1713 next 1 116 1712 reg_init_flag_new
+;
+; Update register x24
+1714 eq 1 387 398 x24_is_rd
+1715 ite 6 314 524 51 x24_lui
+1716 ite 6 315 525 1715 x24_auipc
+1717 ite 6 316 528 1716 x24_jal
+1718 ite 6 317 528 1717 x24_jalr
+1719 ite 6 324 564 1718 x24_lb
+1720 ite 6 325 566 1719 x24_lh
+1721 ite 6 326 569 1720 x24_lw
+1722 ite 6 349 573 1721 x24_ld
+1723 ite 6 327 574 1722 x24_lbu
+1724 ite 6 328 575 1723 x24_lhu
+1725 ite 6 348 576 1724 x24_lwu
+1726 ite 6 332 604 1725 x24_addi
+1727 ite 6 351 607 1726 x24_slli
+1728 ite 6 333 609 1727 x24_slti
+1729 ite 6 334 611 1728 x24_sltiu
+1730 ite 6 335 612 1729 x24_xori
+1731 ite 6 352 613 1730 x24_srli
+1732 ite 6 353 615 1731 x24_srai
+1733 ite 6 336 616 1732 x24_ori
+1734 ite 6 337 617 1733 x24_andi
+1735 ite 6 338 618 1734 x24_add
+1736 ite 6 339 619 1735 x24_sub
+1737 ite 6 340 622 1736 x24_sll
+1738 ite 6 341 624 1737 x24_slt
+1739 ite 6 342 626 1738 x24_sltu
+1740 ite 6 343 627 1739 x24_xor
+1741 ite 6 344 628 1740 x24_srl
+1742 ite 6 345 629 1741 x24_sra
+1743 ite 6 346 630 1742 x24_or
+1744 ite 6 347 631 1743 x24_and
+1745 ite 6 354 634 1744 x24_addiw
+1746 ite 6 355 636 1745 x24_slliw
+1747 ite 6 356 638 1746 x24_srliw
+1748 ite 6 357 640 1747 x24_sraiw
+1749 ite 6 358 643 1748 x24_addw
+1750 ite 6 359 645 1749 x24_subw
+1751 ite 6 360 649 1750 x24_sllw
+1752 ite 6 361 651 1751 x24_srlw
+1753 ite 6 362 653 1752 x24_sraw
+1754 ite 6 1714 1753 51 x24_new
+1755 next 6 51 1754 x24_new
+;Also update init-flag
+1756 or 1 275 279 opcode_is_branch_store
+1757 ite 1 -1756 16 117 command_check
+1758 ite 1 1714 1757 117 rd_check
+1759 next 1 117 1758 reg_init_flag_new
+;
+; Update register x25
+1760 eq 1 388 398 x25_is_rd
+1761 ite 6 314 524 52 x25_lui
+1762 ite 6 315 525 1761 x25_auipc
+1763 ite 6 316 528 1762 x25_jal
+1764 ite 6 317 528 1763 x25_jalr
+1765 ite 6 324 564 1764 x25_lb
+1766 ite 6 325 566 1765 x25_lh
+1767 ite 6 326 569 1766 x25_lw
+1768 ite 6 349 573 1767 x25_ld
+1769 ite 6 327 574 1768 x25_lbu
+1770 ite 6 328 575 1769 x25_lhu
+1771 ite 6 348 576 1770 x25_lwu
+1772 ite 6 332 604 1771 x25_addi
+1773 ite 6 351 607 1772 x25_slli
+1774 ite 6 333 609 1773 x25_slti
+1775 ite 6 334 611 1774 x25_sltiu
+1776 ite 6 335 612 1775 x25_xori
+1777 ite 6 352 613 1776 x25_srli
+1778 ite 6 353 615 1777 x25_srai
+1779 ite 6 336 616 1778 x25_ori
+1780 ite 6 337 617 1779 x25_andi
+1781 ite 6 338 618 1780 x25_add
+1782 ite 6 339 619 1781 x25_sub
+1783 ite 6 340 622 1782 x25_sll
+1784 ite 6 341 624 1783 x25_slt
+1785 ite 6 342 626 1784 x25_sltu
+1786 ite 6 343 627 1785 x25_xor
+1787 ite 6 344 628 1786 x25_srl
+1788 ite 6 345 629 1787 x25_sra
+1789 ite 6 346 630 1788 x25_or
+1790 ite 6 347 631 1789 x25_and
+1791 ite 6 354 634 1790 x25_addiw
+1792 ite 6 355 636 1791 x25_slliw
+1793 ite 6 356 638 1792 x25_srliw
+1794 ite 6 357 640 1793 x25_sraiw
+1795 ite 6 358 643 1794 x25_addw
+1796 ite 6 359 645 1795 x25_subw
+1797 ite 6 360 649 1796 x25_sllw
+1798 ite 6 361 651 1797 x25_srlw
+1799 ite 6 362 653 1798 x25_sraw
+1800 ite 6 1760 1799 52 x25_new
+1801 next 6 52 1800 x25_new
+;Also update init-flag
+1802 or 1 275 279 opcode_is_branch_store
+1803 ite 1 -1802 16 118 command_check
+1804 ite 1 1760 1803 118 rd_check
+1805 next 1 118 1804 reg_init_flag_new
+;
+; Update register x26
+1806 eq 1 389 398 x26_is_rd
+1807 ite 6 314 524 53 x26_lui
+1808 ite 6 315 525 1807 x26_auipc
+1809 ite 6 316 528 1808 x26_jal
+1810 ite 6 317 528 1809 x26_jalr
+1811 ite 6 324 564 1810 x26_lb
+1812 ite 6 325 566 1811 x26_lh
+1813 ite 6 326 569 1812 x26_lw
+1814 ite 6 349 573 1813 x26_ld
+1815 ite 6 327 574 1814 x26_lbu
+1816 ite 6 328 575 1815 x26_lhu
+1817 ite 6 348 576 1816 x26_lwu
+1818 ite 6 332 604 1817 x26_addi
+1819 ite 6 351 607 1818 x26_slli
+1820 ite 6 333 609 1819 x26_slti
+1821 ite 6 334 611 1820 x26_sltiu
+1822 ite 6 335 612 1821 x26_xori
+1823 ite 6 352 613 1822 x26_srli
+1824 ite 6 353 615 1823 x26_srai
+1825 ite 6 336 616 1824 x26_ori
+1826 ite 6 337 617 1825 x26_andi
+1827 ite 6 338 618 1826 x26_add
+1828 ite 6 339 619 1827 x26_sub
+1829 ite 6 340 622 1828 x26_sll
+1830 ite 6 341 624 1829 x26_slt
+1831 ite 6 342 626 1830 x26_sltu
+1832 ite 6 343 627 1831 x26_xor
+1833 ite 6 344 628 1832 x26_srl
+1834 ite 6 345 629 1833 x26_sra
+1835 ite 6 346 630 1834 x26_or
+1836 ite 6 347 631 1835 x26_and
+1837 ite 6 354 634 1836 x26_addiw
+1838 ite 6 355 636 1837 x26_slliw
+1839 ite 6 356 638 1838 x26_srliw
+1840 ite 6 357 640 1839 x26_sraiw
+1841 ite 6 358 643 1840 x26_addw
+1842 ite 6 359 645 1841 x26_subw
+1843 ite 6 360 649 1842 x26_sllw
+1844 ite 6 361 651 1843 x26_srlw
+1845 ite 6 362 653 1844 x26_sraw
+1846 ite 6 1806 1845 53 x26_new
+1847 next 6 53 1846 x26_new
+;Also update init-flag
+1848 or 1 275 279 opcode_is_branch_store
+1849 ite 1 -1848 16 119 command_check
+1850 ite 1 1806 1849 119 rd_check
+1851 next 1 119 1850 reg_init_flag_new
+;
+; Update register x27
+1852 eq 1 390 398 x27_is_rd
+1853 ite 6 314 524 54 x27_lui
+1854 ite 6 315 525 1853 x27_auipc
+1855 ite 6 316 528 1854 x27_jal
+1856 ite 6 317 528 1855 x27_jalr
+1857 ite 6 324 564 1856 x27_lb
+1858 ite 6 325 566 1857 x27_lh
+1859 ite 6 326 569 1858 x27_lw
+1860 ite 6 349 573 1859 x27_ld
+1861 ite 6 327 574 1860 x27_lbu
+1862 ite 6 328 575 1861 x27_lhu
+1863 ite 6 348 576 1862 x27_lwu
+1864 ite 6 332 604 1863 x27_addi
+1865 ite 6 351 607 1864 x27_slli
+1866 ite 6 333 609 1865 x27_slti
+1867 ite 6 334 611 1866 x27_sltiu
+1868 ite 6 335 612 1867 x27_xori
+1869 ite 6 352 613 1868 x27_srli
+1870 ite 6 353 615 1869 x27_srai
+1871 ite 6 336 616 1870 x27_ori
+1872 ite 6 337 617 1871 x27_andi
+1873 ite 6 338 618 1872 x27_add
+1874 ite 6 339 619 1873 x27_sub
+1875 ite 6 340 622 1874 x27_sll
+1876 ite 6 341 624 1875 x27_slt
+1877 ite 6 342 626 1876 x27_sltu
+1878 ite 6 343 627 1877 x27_xor
+1879 ite 6 344 628 1878 x27_srl
+1880 ite 6 345 629 1879 x27_sra
+1881 ite 6 346 630 1880 x27_or
+1882 ite 6 347 631 1881 x27_and
+1883 ite 6 354 634 1882 x27_addiw
+1884 ite 6 355 636 1883 x27_slliw
+1885 ite 6 356 638 1884 x27_srliw
+1886 ite 6 357 640 1885 x27_sraiw
+1887 ite 6 358 643 1886 x27_addw
+1888 ite 6 359 645 1887 x27_subw
+1889 ite 6 360 649 1888 x27_sllw
+1890 ite 6 361 651 1889 x27_srlw
+1891 ite 6 362 653 1890 x27_sraw
+1892 ite 6 1852 1891 54 x27_new
+1893 next 6 54 1892 x27_new
+;Also update init-flag
+1894 or 1 275 279 opcode_is_branch_store
+1895 ite 1 -1894 16 120 command_check
+1896 ite 1 1852 1895 120 rd_check
+1897 next 1 120 1896 reg_init_flag_new
+;
+; Update register x28
+1898 eq 1 391 398 x28_is_rd
+1899 ite 6 314 524 55 x28_lui
+1900 ite 6 315 525 1899 x28_auipc
+1901 ite 6 316 528 1900 x28_jal
+1902 ite 6 317 528 1901 x28_jalr
+1903 ite 6 324 564 1902 x28_lb
+1904 ite 6 325 566 1903 x28_lh
+1905 ite 6 326 569 1904 x28_lw
+1906 ite 6 349 573 1905 x28_ld
+1907 ite 6 327 574 1906 x28_lbu
+1908 ite 6 328 575 1907 x28_lhu
+1909 ite 6 348 576 1908 x28_lwu
+1910 ite 6 332 604 1909 x28_addi
+1911 ite 6 351 607 1910 x28_slli
+1912 ite 6 333 609 1911 x28_slti
+1913 ite 6 334 611 1912 x28_sltiu
+1914 ite 6 335 612 1913 x28_xori
+1915 ite 6 352 613 1914 x28_srli
+1916 ite 6 353 615 1915 x28_srai
+1917 ite 6 336 616 1916 x28_ori
+1918 ite 6 337 617 1917 x28_andi
+1919 ite 6 338 618 1918 x28_add
+1920 ite 6 339 619 1919 x28_sub
+1921 ite 6 340 622 1920 x28_sll
+1922 ite 6 341 624 1921 x28_slt
+1923 ite 6 342 626 1922 x28_sltu
+1924 ite 6 343 627 1923 x28_xor
+1925 ite 6 344 628 1924 x28_srl
+1926 ite 6 345 629 1925 x28_sra
+1927 ite 6 346 630 1926 x28_or
+1928 ite 6 347 631 1927 x28_and
+1929 ite 6 354 634 1928 x28_addiw
+1930 ite 6 355 636 1929 x28_slliw
+1931 ite 6 356 638 1930 x28_srliw
+1932 ite 6 357 640 1931 x28_sraiw
+1933 ite 6 358 643 1932 x28_addw
+1934 ite 6 359 645 1933 x28_subw
+1935 ite 6 360 649 1934 x28_sllw
+1936 ite 6 361 651 1935 x28_srlw
+1937 ite 6 362 653 1936 x28_sraw
+1938 ite 6 1898 1937 55 x28_new
+1939 next 6 55 1938 x28_new
+;Also update init-flag
+1940 or 1 275 279 opcode_is_branch_store
+1941 ite 1 -1940 16 121 command_check
+1942 ite 1 1898 1941 121 rd_check
+1943 next 1 121 1942 reg_init_flag_new
+;
+; Update register x29
+1944 eq 1 392 398 x29_is_rd
+1945 ite 6 314 524 56 x29_lui
+1946 ite 6 315 525 1945 x29_auipc
+1947 ite 6 316 528 1946 x29_jal
+1948 ite 6 317 528 1947 x29_jalr
+1949 ite 6 324 564 1948 x29_lb
+1950 ite 6 325 566 1949 x29_lh
+1951 ite 6 326 569 1950 x29_lw
+1952 ite 6 349 573 1951 x29_ld
+1953 ite 6 327 574 1952 x29_lbu
+1954 ite 6 328 575 1953 x29_lhu
+1955 ite 6 348 576 1954 x29_lwu
+1956 ite 6 332 604 1955 x29_addi
+1957 ite 6 351 607 1956 x29_slli
+1958 ite 6 333 609 1957 x29_slti
+1959 ite 6 334 611 1958 x29_sltiu
+1960 ite 6 335 612 1959 x29_xori
+1961 ite 6 352 613 1960 x29_srli
+1962 ite 6 353 615 1961 x29_srai
+1963 ite 6 336 616 1962 x29_ori
+1964 ite 6 337 617 1963 x29_andi
+1965 ite 6 338 618 1964 x29_add
+1966 ite 6 339 619 1965 x29_sub
+1967 ite 6 340 622 1966 x29_sll
+1968 ite 6 341 624 1967 x29_slt
+1969 ite 6 342 626 1968 x29_sltu
+1970 ite 6 343 627 1969 x29_xor
+1971 ite 6 344 628 1970 x29_srl
+1972 ite 6 345 629 1971 x29_sra
+1973 ite 6 346 630 1972 x29_or
+1974 ite 6 347 631 1973 x29_and
+1975 ite 6 354 634 1974 x29_addiw
+1976 ite 6 355 636 1975 x29_slliw
+1977 ite 6 356 638 1976 x29_srliw
+1978 ite 6 357 640 1977 x29_sraiw
+1979 ite 6 358 643 1978 x29_addw
+1980 ite 6 359 645 1979 x29_subw
+1981 ite 6 360 649 1980 x29_sllw
+1982 ite 6 361 651 1981 x29_srlw
+1983 ite 6 362 653 1982 x29_sraw
+1984 ite 6 1944 1983 56 x29_new
+1985 next 6 56 1984 x29_new
+;Also update init-flag
+1986 or 1 275 279 opcode_is_branch_store
+1987 ite 1 -1986 16 122 command_check
+1988 ite 1 1944 1987 122 rd_check
+1989 next 1 122 1988 reg_init_flag_new
+;
+; Update register x30
+1990 eq 1 393 398 x30_is_rd
+1991 ite 6 314 524 57 x30_lui
+1992 ite 6 315 525 1991 x30_auipc
+1993 ite 6 316 528 1992 x30_jal
+1994 ite 6 317 528 1993 x30_jalr
+1995 ite 6 324 564 1994 x30_lb
+1996 ite 6 325 566 1995 x30_lh
+1997 ite 6 326 569 1996 x30_lw
+1998 ite 6 349 573 1997 x30_ld
+1999 ite 6 327 574 1998 x30_lbu
+2000 ite 6 328 575 1999 x30_lhu
+2001 ite 6 348 576 2000 x30_lwu
+2002 ite 6 332 604 2001 x30_addi
+2003 ite 6 351 607 2002 x30_slli
+2004 ite 6 333 609 2003 x30_slti
+2005 ite 6 334 611 2004 x30_sltiu
+2006 ite 6 335 612 2005 x30_xori
+2007 ite 6 352 613 2006 x30_srli
+2008 ite 6 353 615 2007 x30_srai
+2009 ite 6 336 616 2008 x30_ori
+2010 ite 6 337 617 2009 x30_andi
+2011 ite 6 338 618 2010 x30_add
+2012 ite 6 339 619 2011 x30_sub
+2013 ite 6 340 622 2012 x30_sll
+2014 ite 6 341 624 2013 x30_slt
+2015 ite 6 342 626 2014 x30_sltu
+2016 ite 6 343 627 2015 x30_xor
+2017 ite 6 344 628 2016 x30_srl
+2018 ite 6 345 629 2017 x30_sra
+2019 ite 6 346 630 2018 x30_or
+2020 ite 6 347 631 2019 x30_and
+2021 ite 6 354 634 2020 x30_addiw
+2022 ite 6 355 636 2021 x30_slliw
+2023 ite 6 356 638 2022 x30_srliw
+2024 ite 6 357 640 2023 x30_sraiw
+2025 ite 6 358 643 2024 x30_addw
+2026 ite 6 359 645 2025 x30_subw
+2027 ite 6 360 649 2026 x30_sllw
+2028 ite 6 361 651 2027 x30_srlw
+2029 ite 6 362 653 2028 x30_sraw
+2030 ite 6 1990 2029 57 x30_new
+2031 next 6 57 2030 x30_new
+;Also update init-flag
+2032 or 1 275 279 opcode_is_branch_store
+2033 ite 1 -2032 16 123 command_check
+2034 ite 1 1990 2033 123 rd_check
+2035 next 1 123 2034 reg_init_flag_new
+;
+; Update register x31
+2036 eq 1 394 398 x31_is_rd
+2037 ite 6 314 524 58 x31_lui
+2038 ite 6 315 525 2037 x31_auipc
+2039 ite 6 316 528 2038 x31_jal
+2040 ite 6 317 528 2039 x31_jalr
+2041 ite 6 324 564 2040 x31_lb
+2042 ite 6 325 566 2041 x31_lh
+2043 ite 6 326 569 2042 x31_lw
+2044 ite 6 349 573 2043 x31_ld
+2045 ite 6 327 574 2044 x31_lbu
+2046 ite 6 328 575 2045 x31_lhu
+2047 ite 6 348 576 2046 x31_lwu
+2048 ite 6 332 604 2047 x31_addi
+2049 ite 6 351 607 2048 x31_slli
+2050 ite 6 333 609 2049 x31_slti
+2051 ite 6 334 611 2050 x31_sltiu
+2052 ite 6 335 612 2051 x31_xori
+2053 ite 6 352 613 2052 x31_srli
+2054 ite 6 353 615 2053 x31_srai
+2055 ite 6 336 616 2054 x31_ori
+2056 ite 6 337 617 2055 x31_andi
+2057 ite 6 338 618 2056 x31_add
+2058 ite 6 339 619 2057 x31_sub
+2059 ite 6 340 622 2058 x31_sll
+2060 ite 6 341 624 2059 x31_slt
+2061 ite 6 342 626 2060 x31_sltu
+2062 ite 6 343 627 2061 x31_xor
+2063 ite 6 344 628 2062 x31_srl
+2064 ite 6 345 629 2063 x31_sra
+2065 ite 6 346 630 2064 x31_or
+2066 ite 6 347 631 2065 x31_and
+2067 ite 6 354 634 2066 x31_addiw
+2068 ite 6 355 636 2067 x31_slliw
+2069 ite 6 356 638 2068 x31_srliw
+2070 ite 6 357 640 2069 x31_sraiw
+2071 ite 6 358 643 2070 x31_addw
+2072 ite 6 359 645 2071 x31_subw
+2073 ite 6 360 649 2072 x31_sllw
+2074 ite 6 361 651 2073 x31_srlw
+2075 ite 6 362 653 2074 x31_sraw
+2076 ite 6 2036 2075 58 x31_new
+2077 next 6 58 2076 x31_new
+;Also update init-flag
+2078 or 1 275 279 opcode_is_branch_store
+2079 ite 1 -2078 16 124 command_check
+2080 ite 1 2036 2079 124 rd_check
+2081 next 1 124 2080 reg_init_flag_new
+;
+; Update PC
+2082 ite 2 533 526 532 pc_beq_decider
+2083 ite 2 534 526 532 pc_bne_decider
+2084 ite 2 535 526 532 pc_blt_decider
+2085 ite 2 536 526 532 pc_bge_decider
+2086 ite 2 537 526 532 pc_bltu_decider
+2087 ite 2 538 526 532 pc_bgeu_decider
+2088 ite 2 316 526 532 pc_jal
+2089 ite 2 317 531 2088 pc_jalr
+2090 ite 2 318 2082 2089 pc_beq
+2091 ite 2 319 2083 2090 pc_bne
+2092 ite 2 320 2084 2091 pc_blt
+2093 ite 2 321 2085 2092 pc_bge
+2094 ite 2 322 2086 2093 pc_bltu
+2095 ite 2 323 2087 2094 pc_bgeu
+2096 next 2 59 2095 pc_new
+;
+; Update memory
+2097 ite 7 329 596 202 mem_sb
+2098 ite 7 330 597 2097 mem_sh
+2099 ite 7 331 599 2098 mem_sw
+2100 ite 7 350 603 2099 mem_sd
+2101 next 7 202 2100 memory_new
+;
+; Some little helpers for bad command detection
+; misaligned instruction fetch error
+2102 consth 2 3
+2103 zero 2
+2104 and 2 2102 526
+2105 and 2 2102 531
+2106 neq 1 2104 2103 misaligned_jal_pc
+2107 neq 1 2105 2103 misaligned_jalr_pc
+2108 and 1 316 2106 mis_and_jal
+2109 and 1 317 2107 mis_and_jalr
+2110 or 1 2108 2109
+;
+; Bad counter
+2111 constd 6 -1
+2112 eq 1 20 2111
+2113 bad 2112 counter_maxed
+;
+; Bad opcode
+2114 or 1 271 272
+2115 or 1 273 2114
+2116 or 1 274 2115
+2117 or 1 275 2116
+2118 or 1 276 2117
+2119 or 1 277 2118
+2120 or 1 278 2119
+2121 or 1 279 2120
+2122 or 1 280 2121
+2123 or 1 281 2122
+2124 bad -2123 unknown_opcode
+;
+; Bad command
+2125 or 1 314 315
+2126 or 1 316 2125
+2127 or 1 317 2126
+2128 or 1 318 2127
+2129 or 1 319 2128
+2130 or 1 320 2129
+2131 or 1 321 2130
+2132 or 1 322 2131
+2133 or 1 323 2132
+2134 or 1 324 2133
+2135 or 1 325 2134
+2136 or 1 326 2135
+2137 or 1 327 2136
+2138 or 1 328 2137
+2139 or 1 329 2138
+2140 or 1 330 2139
+2141 or 1 331 2140
+2142 or 1 332 2141
+2143 or 1 333 2142
+2144 or 1 334 2143
+2145 or 1 335 2144
+2146 or 1 336 2145
+2147 or 1 337 2146
+2148 or 1 338 2147
+2149 or 1 339 2148
+2150 or 1 340 2149
+2151 or 1 341 2150
+2152 or 1 342 2151
+2153 or 1 343 2152
+2154 or 1 344 2153
+2155 or 1 345 2154
+2156 or 1 346 2155
+2157 or 1 347 2156
+2158 or 1 348 2157
+2159 or 1 349 2158
+2160 or 1 350 2159
+2161 or 1 351 2160
+2162 or 1 352 2161
+2163 or 1 353 2162
+2164 or 1 354 2163
+2165 or 1 355 2164
+2166 or 1 356 2165
+2167 or 1 357 2166
+2168 or 1 358 2167
+2169 or 1 359 2168
+2170 or 1 360 2169
+2171 or 1 361 2170
+2172 or 1 362 2171
+2173 and 1 2172 -2123
+2174 bad 2173 error_in_command(guess_funct3)
+;
+; Bad jump alignment
+2175 bad 2110 misaligned_instruction_fetch_ERROR

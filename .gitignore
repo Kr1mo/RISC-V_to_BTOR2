@@ -64,3 +64,4 @@ _minted/
 *.minted
 
 benchmark_files/temp_files/*
+benchmark_files/*.csv*
