@@ -1,0 +1,30 @@
+\begin{table}
+    \centering
+    \begin{tabular}{r|rr|rr|r}
+        loops & \multicolumn{2}{c|}{base} & \multicolumn{2}{c|}{fullmem} & nopc                      \\
+              & add                       & writemem                     & add    & writemem & add   \\ \hline
+        0256  & 2.635                     & 2.877                        & 9.759  & 13.344   & 0.136 \\
+        0512  & 6.195                     & 7.306                        & 16.402 & 24.209   & 0.268 \\
+        0768  & 10.802                    & 13.283                       & 24.093 & 36.388   & 0.414 \\
+        1024  & 16.306                    & 21.004                       & 32.732 & 50.376   & 0.569 \\
+        1280  & 23.032                    & 30.200                       & 42.410 & 65.746   & 0.728 \\
+        1536  & 30.669                    & 41.262                       & 52.961 & 83.036   & 0.898 \\
+        1792  & 39.463                    & 53.940                       & 64.598 & 101.475  & 1.075 \\
+        2048  & 48.944                    & 68.521                       & 77.084 & 122.189  & 1.276 \\
+    \end{tabular}
+    \caption{Times of iterations based benchmarks}\label{tab:time_iter}
+\end{table}
+
+\begin{table}
+    \centering
+    \begin{tabular}{r|rrrrr}
+        bits of address space & 16     & 17            & 18     & 19     & 20     \\\hline
+        add\_0256             & 2.635  & 2.632         & 2.626  & 2.626  & 2.624  \\
+        add\_1024             & 16.306 & 16.464        & 16.511 & 16.452 & 16.460 \\
+
+        writemem\_0256        & 2.877  & 2.88          & 2.890  & 2.889  & 2.890  \\
+        writemem\_1024        & 21.004 & 21.131 21.215 & 21.181 & 21.163          \\
+
+    \end{tabular}
+    \caption{Times of extended address space benchmarks}\label{tab:time_extaddr}
+\end{table}

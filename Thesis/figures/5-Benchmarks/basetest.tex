@@ -1,0 +1,11 @@
+\begin{figure}
+    \centering
+    \begin{tabular}{c | c >{\slshape}l}
+        \multicolumn{2}{c}{\ttfamily bge x2 x1 0x10} & jump out of program if x1 = x2                                                     \\
+        \ttfamily add x3 x3 x2                       &                                & either (add counter onto x3)                      \\
+                                                     & \ttfamily sb x3 0x14(x2)       & or (store the first byte of x3 at counter + 0x14) \\
+        \multicolumn{2}{c}{\ttfamily addi x2 x2 0x1} & increment counter in x2                                                            \\
+        \multicolumn{2}{c}{\ttfamily jalr x0 x0 0x0} & jump back to address 0                                                             \\
+    \end{tabular}
+    \caption[Base test cases]{Base test cases for the benchmarks}\label{fig:base_test_risc}
+\end{figure}

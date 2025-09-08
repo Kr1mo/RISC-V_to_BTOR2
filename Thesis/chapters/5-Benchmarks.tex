@@ -1,4 +1,15 @@
 \chapter{Benchmarks}\label{chap:benchmarks}
-\section{MultiAdd in Functional and Relational Next-State-Logic}
-\section{Memory Operations}
+With a model implemented, I can test how good it runs. I run my
+benchmarks on an Intel Core i5-6200U. Each test was run five times
+and the resulting times averaged. I devised two base tests formed
+from four RISC-V instructions as shown in
+\figref{fig:base_test_risc}. Both have three instructions forming a
+loop and one instruction as a \enquote{workhorse}. This program is
+set into a state like shown in \figref{fig:bench_example}. In this,
+x1 acts as a loop limiter, x2 as a loop counter and x3 as an
+accumulator.
+
+\input{figures/5-Benchmarks/basetest.tex}
+\input{figures/5-Benchmarks/add_0256_state.tex}
 \section{Results}
+\input{figures/5-Benchmarks/timetables.tex}
