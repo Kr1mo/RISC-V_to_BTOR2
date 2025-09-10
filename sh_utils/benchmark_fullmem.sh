@@ -2,7 +2,8 @@
 
 # Check if an identifier is provided
 if [ $# -ne 1 ]; then
-    echo "Usage: $0 <identifier>\nRun from base directory!"
+    echo "Usage: $0 <identifier>"
+    echo "Run from main directory!"
     exit 1
 fi
 

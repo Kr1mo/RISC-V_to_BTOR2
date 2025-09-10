@@ -10,13 +10,14 @@ fi
 identifier=$1
 
 # Directory containing benchmark files
-BENCHMARK_DIR="benchmark_files/extaddr"
+BENCHMARK_DIR1="benchmark_files/base"
+BENCHMARK_DIR2="benchmark_files/fullmem"
 TEMP_DIR="benchmark_files/temp_files"
 # Log file to store timing results
-LOG_FILE="benchmark_files/bench_extaddr_${identifier}.log"
+LOG_FILE="benchmark_files/bench_sim_${identifier}.log"
 
 # btormc executable path
-BTORMC_EXECUTABLE="/home/moell/Documents/Bachelor-Thesis/boolector/build/bin/btormc"
+RISCV_EXECUTABLE="/home/moell/Documents/Risc-V-Simulator/risc_v_sim"
 
 # Clear the log file if it exists
 > "$LOG_FILE"
@@ -25,18 +26,18 @@ if [[ ! -d "$TEMP_DIR" ]]; then
 fi
 
 # Iterate over all files in the benchmark directory
-for file in "$BENCHMARK_DIR"/*.btor2; do
+for file in "$BENCHMARK_DIR1"/*.state; do
     if [[ -f "$file" ]]; then
         echo "Processing $file..."
-    BASE_NAME=$(basename "$file" .btor2)
+    BASE_NAME=$(basename "$file" .state)
         
         
         # Append the benchmark name to the log file
         echo -n "Benchmark: $BASE_NAME" >> "$LOG_FILE"
         # Run btormc and measure the time
-        { time "$BTORMC_EXECUTABLE" -kmax 10000 --trace-gen 0 "$file"; } 2>> "$LOG_FILE"
+        { time "$RISCV_EXECUTABLE" -n -1 "$file"; } 2>> "$LOG_FILE"
         echo "" >> "$LOG_FILE"
     fi
 done
 
-echo "Benchmarking extaddr completed. Results saved in $LOG_FILE."
+echo "Benchmarking nopc completed. Results saved in $LOG_FILE."

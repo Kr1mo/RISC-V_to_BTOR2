@@ -33,6 +33,8 @@ sh_utils/witness/
 
 # Do not exclude benchmark state files
 !benchmark_files/**
+benchmark_files/temp_files/*
+benchmark_files/*.csv*
 
 # Latex files
 *.aux
@@ -47,6 +49,10 @@ sh_utils/witness/
 *.out
 *.toc
 *.gz
+*.md5
+*.auxlock
+_minted/
+*.minted
 
 # OS generated files #
 ######################
@@ -57,11 +63,3 @@ sh_utils/witness/
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-
-
-_minted/
-*.minted
-
-benchmark_files/temp_files/*
-benchmark_files/*.csv*
