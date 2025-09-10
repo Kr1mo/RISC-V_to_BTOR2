@@ -3,11 +3,16 @@ With a model implemented, I can test how good it runs. I run my
 benchmarks on an Intel Core i5-6200U. Each test was run five times
 and the resulting times averaged. I devised two base tests formed
 from four RISC-V instructions as shown in
-\figref{fig:base_test_risc}. Both have three instructions forming a
-loop and one instruction as a \enquote{workhorse}. This program is
-set into a state like shown in \figref{fig:bench_example}. In this,
-x1 acts as a loop limiter, x2 as a loop counter and x3 as an
-accumulator.
+\figref{fig:base_test_risc}. I chose to implement one test with and
+one without memory operation to be able to measure the impact memory
+operations have in the model. For this reason the program for these
+tests are very similar. Both have three instructions forming a loop
+and one instruction as a \enquote{workhorse}. Their names also derive
+from this instruction as add and write\_mem. This program is set into
+a state. An example for this is found in \figref{fig:bench_example},
+where the add program is set up for 256 iterations. In this, x1 acts
+as a loop limiter, x2 as a loop counter and x3 as an accumulator. The
+instructions are set in the first bytes of the memory.
 
 \input{figures/5-Benchmarks/basetest.tex}
 \input{figures/5-Benchmarks/add_0256_state.tex}
