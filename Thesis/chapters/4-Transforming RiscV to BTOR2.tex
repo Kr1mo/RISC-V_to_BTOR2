@@ -14,8 +14,6 @@ machine model into a BTOR2 model. This can not be replicated by me
 though, as in his model, the full program is known at encoding whilst
 I want to hold the property of RISC-V programs to self-modify its own
 code. Therefore, my encoding can not follow his example.
-\todo{Einfache benchmarks in seinem btor2 modell schreiben und
-    vergleichen?}
 
 \section{The Concept}
 To successfully execute a RISC-V instruction, three fundamental steps
@@ -89,7 +87,7 @@ needed a feasible amount of memory space, I artificially chose a
 programs with possibly $>10000$ instructions I deemed this memory
 sufficient for most use cases. Despite this, the encoding is
 implemented in such a way that the address space can be altered with.
-\todo{Benchmark auswirkungen von memory size}
+\todo{Change code to make address space modifiable by an option}
 
 \input{figures/4-Transform/constants.tex}
 \input{figures/4-Transform/progressiveconsts.tex}

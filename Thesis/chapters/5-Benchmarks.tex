@@ -7,15 +7,67 @@ from four RISC-V instructions as shown in
 one without memory operation to be able to measure the impact memory
 operations have in the model. For this reason the program for these
 tests are very similar. Both have three instructions forming a loop
-and one instruction as a \enquote{workhorse}. Their names also derive
-from this instruction as add and write\_mem. This program is set into
-a state. An example for this is found in \figref{fig:bench_example},
-where the add program is set up for 256 iterations. In this, x1 acts
-as a loop limiter, x2 as a loop counter and x3 as an accumulator. The
-instructions are set in the first bytes of the memory.
+and one instruction as a \enquote{workhorse}. My naming for these
+also derive from this instruction as add and write\_mem. This program
+is set into a state. An example for this is found in
+\figref{fig:bench_example}, where the add program is set up for 256
+loops. In this, x1 acts as a loop limiter, x2 as a loop counter and
+x3 as an accumulator. The instructions are set in the first bytes of
+the memory. In difference to this, the memory operation test uses x2
+also as an address to store the first byte of a register and x3 as
+this register. Both tests are also implemented with rising loop
+counts up to 2048 to form a reference on how they behave with more
+iterations to process.
 
 \input{figures/5-Benchmarks/basetest.tex}
 \input{figures/5-Benchmarks/add_0256_state.tex}
-\input{figures/5-Benchmarks/times_plot.tex}
+
+Further on I tested the impact of initialized memory on the run time
+of the test. For this I added tests with the prefix fullmem, where I
+filled the memory addresses 0x18 to 0xfff with the pattern '0101'.
+The first four words of the memory are not filled for there lies the
+program of the test. The fifth could also be filled instead of being
+left zero-initialized, but I decided against it because the test is
+designed to terminate by jumping to this address and not finding a
+valid instruction there. Leaving it zero-initialized guarantees this.
+To further extend on this test, I also added some tests on double the
+initialized memory, so filled to the address 0x1fff.\todo{benchmark
+    them, add times}
+
+I also tested on the impact of the address space size. For this I
+generated models from add\_0256, add\_1024, write\_mem\_0256 and
+write\_mem\_1024 with extended address space. These tests have the
+prefix \enquote{extaddr\_\textcolor{Green}{x}}, where
+\textcolor{Green}{x} is the maximum length of an address in this
+model in bits.
+
+Finally, I also implemented the base add tests similar to the BTOR2
+model F.Schrögendorfer describes in his master thesis \cite[Chapter
+    8]{bmcOfLockless}. These tests have the prefix \enquote{nopc}, as the
+pc is abstracted to activation flags for each instruction. I show the
+generation of the model on the example of nopc\_add\_0256. First of,
+we need the sorts necessary for RISC-V:\\ \centering
+\begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily}l >{\slshape\color{UniBlue}}l >{\slshape\color{UniBlue}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+    1 & sort & bitvec & 1  &   &  & bool         \\
+    2 & sort & bitvec & 8  &   &  & memcell      \\
+    3 & sort & bitvec & 16 &   &  & addressspace \\
+    4 & sort & bitvec & 64 &   &  & register     \\
+    5 & sort & array  & 3  & 2 &  & Memory       \\
+\end{tabular}\\
+Next we need the relevant constants:\\
+\begin{figure}[h!]
+    \centering
+    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+        6  & zero   & 1 &                          &  &  & false                             \\
+        7  & one    & 1 &                          &  &  & true                              \\
+        8  & zero   & 2 &                          &  &  & ; for initializing empty memory   \\
+        9  & zero   & 4 &                          &  &  & ; for initializing empty register \\
+        10 & zero   & 3 &                          &  &  & pcinit                            \\
+        11 & consth & 3 & \textcolor{UniBlue}{4}   &  &  & pcinc                             \\
+        12 & consth & 3 & \textcolor{UniBlue}{10}  &  &  & instr1pcmod                       \\
+        13 & consth & 4 & \textcolor{UniBlue}{100} &  &  &                                   \\
+    \end{tabular}
+\end{figure}
 \section{Results}
 \input{figures/5-Benchmarks/timetables.tex}
+\input{figures/5-Benchmarks/times_plot.tex}
