@@ -1,38 +1,38 @@
 \begin{figure}
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-                xlabel={Iterations},
-                ylabel={Time [s]},
-                xmin=0206, xmax=2098,
-                ymin=0, ymax=120,
-                xtick={0256, 0512,1024,2048},
-                ytick={0,20,40,60,80,100,120},
-                legend pos=north west,
-                ymajorgrids=true,
-                grid style=dashed,
-            ]
+        \centering
+        \begin{tikzpicture}
+                \begin{axis}[
+                                xlabel={Iterations},
+                                ylabel={Time [s]},
+                                xmin=0206, xmax=2098,
+                                ymin=0, ymax=120,
+                                xtick={0256, 0512,1024,2048},
+                                ytick={0,20,40,60,80,100,120},
+                                legend pos=north west,
+                                ymajorgrids=true,
+                                grid style=dashed,
+                        ]
 
-            \addplot[ color=UniRed, mark=*, dashed] coordinates { (0256, 2.635)
-                    (0512, 6.195) (0768, 10.802) (1024, 16.306) (1280, 23.032) (1536,
-                    30.669) (1792, 39.463) (2048, 48.944) };
+                        \addplot[ color=UniRed, mark=*, dashed] coordinates { (0256, 2.635)
+                                        (0512, 6.195) (0768, 10.802) (1024, 16.306) (1280, 23.032) (1536,
+                                        30.669) (1792, 39.463) (2048, 48.944) };
 
-            \addplot[ color= UniBlue, mark=triangle*, dashed] coordinates {
-                    (0256,2.877) (0512,7.306) (0768,13.283) (1024,21.004) (1280,30.200)
-                    (1536,41.262) (1792,53.940) (2048,68.521) };
+                        \addplot[ color= UniBlue, mark=triangle*, dashed] coordinates {
+                                        (0256,2.877) (0512,7.306) (0768,13.283) (1024,21.004) (1280,30.200)
+                                        (1536,41.262) (1792,53.940) (2048,68.521) };
 
-            \addplot[ color= UniRed, mark=square*, dashed] coordinates {
-                    (0256,9.759) (0512,16.402) (0768,24.093) (1024,32.732) (1280,42.410)
-                    (1536,52.961) (1792,64.598) (2048,77.084) };
+                        \addplot[ color= UniRed, mark=square*, dashed] coordinates {
+                                        (0256,9.759) (0512,16.402) (0768,24.093) (1024,32.732) (1280,42.410)
+                                        (1536,52.961) (1792,64.598) (2048,77.084) };
 
-            \addplot[ color= UniBlue, mark=diamond*, dashed] coordinates { (0256,
-                    13.344) (0512, 24.209) (0768, 36.388) (1024, 50.376) (1280, 65.746)
-                    (1536, 83.036) (1792, 101.475) (2048, 122.189) }; \legend{add,
-                writemem, fullmem\_add, fullmem\_writemem}
+                        \addplot[ color= UniBlue, mark=diamond*, dashed] coordinates { (0256,
+                                        13.344) (0512, 24.209) (0768, 36.388) (1024, 50.376) (1280, 65.746)
+                                        (1536, 83.036) (1792, 101.475) (2048, 122.189) }; \legend{add,
+                                writemem, fullmem\_add, fullmem\_writemem}
 
-        \end{axis}
-    \end{tikzpicture}
+                \end{axis}
+        \end{tikzpicture}
 
-    \caption[Plotted iterations based benchmark
-        times]{\tabref{tab:time_iter} plotted}
+        \caption[Plotted iterations based benchmark
+                times]{\tabref{tab:time_iter} plotted}
 \end{figure}
