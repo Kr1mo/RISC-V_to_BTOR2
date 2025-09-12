@@ -3,17 +3,19 @@
 \todo{Explain naming conventions for the model nodes}
 
 This chapter addresses the main problem of the thesis: transforming a
-RISC-V state into the BTOR2 format for benchmarking purposes. My
-primary orientation for this endeavor is F. Schrögendorfer's master's
-thesis, \enquote{Bounded Model Checking in Lockless Programs}
-\cite{bmcOfLockless}, in which he describes, among other topics, an
-encoding concept for a minimal machine in a multiprocessor context
-\cite[Chapter 2]{bmcOfLockless}. With this, in \cite[Chapter
-    8]{bmcOfLockless} he describes a way to encode programs for his
-machine model into a BTOR2 model. This can not be replicated by me
-though, as in his model, the full program is known at encoding whilst
-I want to hold the property of RISC-V programs to self-modify its own
-code. Therefore, my encoding can not follow his example.
+RISC-V state into the BTOR2 format for benchmarking purposes. F.
+Schrögendorfer did similar in his master's thesis \enquote{Bounded
+    Model Checking in Lockless Programs} \cite{bmcOfLockless}, in which
+he describes, among other topics, an encoding concept for a minimal
+machine in a multiprocessor context \cite[Chapter 2]{bmcOfLockless}.
+For this, in \cite[Chapter 8]{bmcOfLockless} he describes a way to
+encode programs for his machine model into a BTOR2 model. This can
+not be replicated by me though, as in his model the full program is
+known at encoding whilst I want to hold the property of RISC-V that
+the program could self modify and change during execution. If the
+property was to be dropped, it would be possible to parse over the
+memory and analyse the complete behavior of a program within, but
+this is for others to explore.
 
 \section{The Concept}
 To successfully execute a RISC-V instruction, three fundamental steps

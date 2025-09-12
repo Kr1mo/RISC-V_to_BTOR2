@@ -343,8 +343,18 @@ To start I placed all iterations based benchmarks with btormc into
 \tabref{tab:time_iter} and the benchmarks of extended address space
 into \tabref{tab:time_extaddr}. From \tabref{tab:time_extaddr} one
 can assume that the extension of address space does not impact the
-runtime of the model checker in a meaningful way. In contrast, a
-pre-initialized memory has
+runtime of the model checker in a meaningful way. As seen in
+\tabref{tab:time_rel}, with rising loop counts, memory operations
+need increasingly more time in comparison to their respective
+non-memory operation benchmarks. Also with rising loop counts the
+impact of large amounts of memory initialised is reduced, which was
+to be expected.
 
-runtime \input{figures/5-Benchmarks/timetables.tex}
+The nopc benchmark is significantly faster than my model. This was to
+be expected, as Schrögendorfer models one RISC-V program specifically
+whereas I model the processor and feed it different programs by
+initialization.
+
+\input{figures/5-Benchmarks/timetables.tex}
+\input{figures/5-Benchmarks/relative_times.tex}
 \input{figures/5-Benchmarks/times_plot.tex}
