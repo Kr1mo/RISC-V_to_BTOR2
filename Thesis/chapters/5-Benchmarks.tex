@@ -1,59 +1,61 @@
 \chapter{Benchmarks}\label{chap:benchmarks}
-With a model implemented, I can test how good it runs. I run my
-benchmarks on an Intel Core i5-6200U with the btormc model checker
-published with the BTOR2 format \cite{btor2}. Each test was run five
-times and the resulting times averaged. I also tried to run the tests
-with the model checkers avr and pono \todo{cite} as they placed first
-and second in the hardware model checking competition of 2024, but I
-will talk about them at the results.
+With the model implemented, I was able to evaluate its performance.
+All benchmarks were executed on an Intel Core i5-6200U using the
+btormc model checker, which is distributed with the BTOR2 format
+\cite{btor2}. Each test was run five times, and the resulting times
+were averaged. I also attempted to run the tests with the model
+checkers AVR \cite{avrPaper} and Pono \cite{ponoPaper}. The
+challenges encountered with these tools are discussed in
+\secref{sec:results}.
 
 \section{Tests}
-I devised two base tests formed from four RISC-V instructions as
-shown in \figref{fig:base_test_risc}. I chose to implement one test
-with and one without memory operation to be able to measure the
-impact memory operations have in the model. For this reason the
-program for these tests are very similar. Both have three
-instructions forming a loop and one instruction as a
-\enquote{workhorse}. My naming for these also derive from this
-instruction as add and write\_mem. This program is set into a state.
-An example for this is found in \figref{fig:bench_example}, where the
-add program is set up for 256 loops. In this, x1 acts as a loop
-limiter, x2 as a loop counter and x3 as an accumulator. The
-instructions are set in the first bytes of the memory. In difference
-to this, the memory operation test uses x2 also as an address to
-store the first byte of a register and x3 as this register. Both
-tests are also implemented with rising loop counts up to 2048 to form
-a reference on how they behave with more iterations to process.
+I devised two basic tests, each composed of four RISC-V instructions
+as illustrated in \figref{fig:base_test_risc}. One test includes a
+memory operation, while the other does not, allowing for measurement
+of the impact of memory operations on the model's performance. The
+programs for these tests are intentionally similar: both feature
+three instructions forming a loop and one instruction serving as a
+\enquote{workhorse}. The test names, \texttt{add} and
+\texttt{write\_mem}, are derived from this key instruction. The
+program is embedded into a state, as exemplified in
+\figref{fig:bench_example}, where the \texttt{add} program is
+configured for 256 loops. In this setup, x1 acts as a loop limiter,
+x2 as a loop counter, and x3 as an accumulator. The instructions are
+placed in the initial bytes of memory. In contrast, the memory
+operation test uses x2 as an address to store the first byte of a
+register, with x3 serving as this register. Both tests were also
+implemented with increasing loop counts up to 2048 to provide a
+reference for processing more iterations.
 
 \input{figures/5-Benchmarks/basetest.tex}
 \input{figures/5-Benchmarks/add_0256_state.tex}
 
-Further on I tested the impact of initialized memory on the runtime
-of the test. For this I added tests with the prefix fullmem, where I
-filled the memory addresses 0x18 to 0xfff with the pattern '0101'.
-The first four words of the memory are not filled for there lies the
-program of the test. The fifth could also be filled instead of being
-left zero-initialized, but I decided against it because the test is
-designed to terminate by jumping to this address and not finding a
-valid instruction there. Leaving it zero-initialized guarantees this.
-To further extend on this test, I also added some tests on double the
-initialized memory, so filled to the address 0x1fff.\todo{benchmark
-        them, add times}
+Additionally, I evaluated the impact of initialized memory on runtime
+. For this, I introduced tests with the prefix \texttt{fullmem},
+where memory addresses 0x18 to 0xfff were filled with the bit pattern
+'0101'. The first four words of memory were filled with the test
+program. The fifth word could also be filled , but I opted to leave
+it zero-initialized to ensure the test terminates by jumping to this
+address and not finding a valid instruction. This guarantees
+termination. To further extend this evaluation, I added tests with
+double the initialized memory, filling up to address
+0x1fff.\todo{benchmark them, add times}
 
-I also tested on the impact of the address space size. For this I
-generated models from add\_0256, add\_1024, write\_mem\_0256 and
-write\_mem\_1024 with extended address space. These tests have the
-prefix \enquote{extaddr\_\textcolor{Green}{x}}, where
-\textcolor{Green}{x} is the maximum length of an address in this
-model in bits.
+I also investigated the impact of address space size by generating
+models from \texttt{add\_0256}, \texttt{add\_1024},
+\texttt{write\_mem\_0256}, and \texttt{write\_mem\_1024} with
+extended address space. These tests use the prefix
+\enquote{extaddr\_\textcolor{Green}{x}}, where \textcolor{Green}{x}
+denotes the maximum address length in bits.
 
-Finally, I also implemented the base add tests similar to the BTOR2
-model that F.Schrögendorfer describes in his master thesis
-\cite[Chapter 8]{bmcOfLockless}. These tests have the prefix
-\enquote{nopc}, as the pc is abstracted to activation flags for each
-instruction. I show the generation of the model on the example of
-nopc\_add\_0256. First of, we need the sorts necessary for RISC-V and
-the constants necessary for the model:
+Furthermore, I implemented the base \texttt{add} tests in a manner
+similar to the BTOR2 model described by F. Schrögendorfer in his
+master thesis \cite[Chapter 8]{bmcOfLockless}. These tests use the
+prefix \enquote{nopc}, as the program counter is abstracted to
+activation flags for each instruction. The model generation is
+demonstrated using \texttt{nopc\_add\_0256} as an example. First, the
+necessary sorts and constants for RISC-V are defined:
+
 \renewcommand{\arraystretch}{0.5}
 \begin{center}
         \begin{tabular}[h!]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\ttfamily\color{UniRed}}l >{\slshape} l}
@@ -117,11 +119,10 @@ With this now the registers and memory can be defined:
         \end{tabular}
 \end{center}
 
-Note that I skipped the node IDs of 14-98. As BTOR2 needs unique but
-not continouus node IDs, I took this liberty so each register node ID
-equals the register nuber plus 100. By this it becomes easier to
-write a model by hand.\\ Next the initial memory is placed in the
-model:
+Note that node IDs 14-98 are skipped. As BTOR2 requires unique but
+not continuous node IDs, I assigned each register node ID to equal
+the register number plus 100 for clarity when writing models
+manually.\\ Next, the initial memory is defined:
 \begin{center}
         \begin{tabular}[h!]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\ttfamily\color{UniBlue}}l}
                 144 & state  & 5 &                           \\
@@ -179,15 +180,14 @@ model:
         \end{tabular}
 \end{center}
 
-Due to constraints in BTOR2, the initial memory must be placed before
-the intended memory state node. Node 144 is again a state only for
-initializing the memory, as I previously did in the initialisation
-for my own model found in \secref{sec:initialization}.\\ Now the real
-memory state can be defined. With this I also define the flags for
-each instruction. I changed their name from stmt (Schrögendorfer) to
-instr for increased clarity. An exit code is not necessary as I do
-not need differentiation between terminations of the model, more so I
-am only interested \emph{when} the model terminates.
+Due to BTOR2 constraints, initial memory must be defined before the
+intended memory state node. Node 144 serves only for memory
+initialization, as previously described in
+\secref{sec:initialization}.\\ The actual memory state and
+instruction flags are then defined. I renamed the flags from
+\texttt{stmt} (Schrögendorfer) to \texttt{instr} for clarity. An exit
+code is unnecessary, as differentiation between model terminations is
+not required; only the termination time is of interest.
 \begin{center}
         \begin{tabular}[h!]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape}l }
                 199 & state & 5 & memory  \\
@@ -337,7 +337,7 @@ And with this, the model is can be run. The whole suite of add tests
 can be derived from this model by changing the constant value of node
 13 to the appropriate loop count.
 
-\section{Results}
+\section{Results} \label{sec:results}
 
 To start I placed all iterations based benchmarks with btormc into
 \tabref{tab:time_iter} and the benchmarks of extended address space
@@ -350,40 +350,36 @@ non-memory operation benchmarks. Also with rising loop counts the
 impact of large amounts of memory initialised is reduced, which was
 to be expected.
 
-The nopc benchmark is significantly faster than my model. This was to
-be expected, as Schrögendorfer models one RISC-V program specifically
-whereas I model the processor and feed it different programs by
-initialization. In this perspective, it is not surprising that a
-specialised model is faster than a generalised one. \todo{Add example
-        for finding an instruction?}
+The \texttt{nopc} benchmark is significantly faster than my model.
+This was to be expected, as Schrögendorfer models one RISC-V program
+specifically whereas I model the processor and feed it different
+programs by initialization. In this perspective, it is not surprising
+that a specialised model is faster than a generalised one. \todo{Add
+        example for finding an instruction?}
 
 \input{figures/5-Benchmarks/timetables.tex}
 \input{figures/5-Benchmarks/relative_times.tex}
 
-I also wanted to benchmark with the model checkers avr and pono, as
-they made first and second place in the hardware model checking
-competition 2024. but sadly avr did not terminate in over 15 minutes
-when tasked to check the add\_0256 benchmark. Pono found that this
-benchmark is satisfiable but also in a non-competitive time of almost
-exactly six minutes when using the option \texttt{--smt-solver cvc5}.
-With the option \texttt{--smt-solver bzla}, pono always took more
-time but worked, other solvers said that they can not handle arrays.
-From this I concluded that seemingly better model checkers are not
-the best option to run my model but btormc, which even is no longer
-maintained since August 2024. My best guess for newer model checker
-beeing worse at my model is that my model does not handle inputs at
-all but only handles with already known constants, whilst probing
-through the benchmarks for the model checking competition, they all
-seem to involve at least one input apart from a clock signal. So
-state of the art model checker are possibly better at handling those
-inputs but not at iterating to the next state as fast as possible.
+I also attempted to benchmark with the AVR and Pono model checkers,
+as they ranked first and second in the 2024 hardware model checking
+competition. Unfortunately, AVR did not terminate within 15 minutes
+when checking the \texttt{add\_0256} benchmark. Pono determined that
+this benchmark is satisfiable, but required nearly six minutes using
+the \texttt{--smt-solver cvc5} option. With \texttt{--smt-solver
+        bzla}, Pono was slower but functional; other solvers reported
+inability to handle arrays. These results suggest that model checkers
+considered superior in general are not necessarily optimal for my
+model, whereas btormc, despite being unmaintained since August 2024,
+performed best. I suspect that newer model checkers are optimized for
+handling inputs, as most competition benchmarks involve at least one
+input beyond a clock signal, while my model operates solely with
+known constants and its execution time is dependent on rapid state
+iteration.
 
-There is also another problem with avr and pono. In
-\secref{sec:corectness} I already wrote about transitioning from a
-witness back to a state, but for this, a \enquote{complete} witness
-as generated by the btormc option \texttt{--trace-gen-full}, which
-shows the values of all states in the last frame, is needed. avr and
-pono have no option to generate a complete witness and by this, after
-they have run it is not possible to generate a state from their
-output.
+Another issue with AVR and Pono is their inability to generate a
+\enquote{complete} witness, as produced by the btormc option
+\texttt{--trace-gen-full}, which provides the values of all states in
+the final frame. Without this feature, it is not possible to
+reconstruct a state from their output after execution.
+
 %\input{figures/5-Benchmarks/times_plot.tex}

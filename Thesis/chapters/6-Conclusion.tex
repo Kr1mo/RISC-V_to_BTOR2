@@ -1,9 +1,7 @@
 \chapter{Conclusion}
-I have explained RISC-V and BTOR2, described a way to hold a state of
-a 64bit RISC-V processor and a BTOR2 model of a subset of RV64I, and
-wrote tools to transition from state to a model and from a witness of
-this model back to a state. Furthermore, I wrote a fuzzer for the
-states to test the correct functioning of the model and some simple
-tests to benchmark the model. Finally I presented the results of the
-benchmarks and discussed them, finding that seemingly better model
-checkers are actually not better for this special case.
+I developed tools to transition from a state to a model and from a witness
+of this model back to a state. Additionally, I implemented a fuzzer for the
+states to verify the correct functioning of the model, as well as a set of
+basic tests to benchmark its performance. Finally, I presented and discussed
+the results of these benchmarks, concluding that model checkers which appear
+superior in general are not necessarily better suited for this specific case.

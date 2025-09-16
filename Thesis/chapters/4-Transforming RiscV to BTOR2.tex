@@ -2,20 +2,21 @@
 
 \todo{Explain naming conventions for the model nodes}
 
-This chapter addresses the main problem of the thesis: transforming a
-RISC-V state into the BTOR2 format for benchmarking purposes. F.
-Schrögendorfer did similar in his master's thesis \enquote{Bounded
-    Model Checking in Lockless Programs} \cite{bmcOfLockless}, in which
-he describes, among other topics, an encoding concept for a minimal
-machine in a multiprocessor context \cite[Chapter 2]{bmcOfLockless}.
-For this, in \cite[Chapter 8]{bmcOfLockless} he describes a way to
-encode programs for his machine model into a BTOR2 model. This can
-not be replicated by me though, as in his model the full program is
-known at encoding whilst I want to hold the property of RISC-V that
-the program could self modify and change during execution. If the
-property was to be dropped, it would be possible to parse over the
-memory and analyse the complete behavior of a program within, but
-this is for others to explore.
+This chapter addresses the central problem of this thesis:
+transforming a RISC-V state into the BTOR2 format for benchmarking
+purposes. F. Schrögendorfer conducted similar work in his master's
+thesis \enquote{Bounded Model Checking in Lockless Programs}
+\cite{bmcOfLockless}, where he describes, among other topics, an
+encoding concept for a minimal machine in a multiprocessor context
+\cite[Chapter 2]{bmcOfLockless}. In \cite[Chapter 8]{bmcOfLockless},
+he outlines a method to encode programs for his machine model into a
+BTOR2 model. This approach cannot be directly replicated here, as his
+model assumes the entire program is known at encoding time, whereas I
+aim to preserve the RISC-V property that allows for self-modifying
+programs during execution. If this property were to be disregarded,
+it would be possible to analyze the complete behavior of a program by
+parsing the memory, but this is beyond the scope of this work. Even
+so, I let myself inspire by his structuring of the model.
 
 \section{The Concept}
 To successfully execute a RISC-V instruction, three fundamental steps
@@ -25,19 +26,16 @@ must occur in sequence:
     \item Identify the instruction
     \item Execute the instruction
 \end{itemize}
-Due to the fixed instruction length of RISC-V, as mentioned in
-\secref{sec:riscvIsa}, fetching the current instruction is straightforward.
-Ultimately, we want a node that retrieves a $word$ from memory at the location
-specified by $pc$.
+Due to the fixed instruction length of RISC-V, as mentioned in \secref{sec:riscvIsa}, fetching the current instruction is straightforward. Ultimately, a node is required that retrieves a $word$ from memory at the location specified by $pc$.
 
 For basic identification, the $opcode$ must be extracted and checked.
 Depending on the opcode, further distinctions between instructions
 require extracting and checking $funct3$ and, if necessary, $funct7$.
-Ultimately, we want a node for each instruction, which holds a
-boolean value indicating whether this instruction was fetched.
+Ultimately, a node for each instruction is needed, holding a boolean
+value indicating whether this instruction was fetched.
 
-To execute the instruction, we need to extract the values of the
-immediate $imm$ and, if used, the registers $rs1$ and $rs2$. All
+To execute the instruction, the values of the immediate $imm$ and, if
+used, the registers $rs1$ and $rs2$ must be extracted. All
 instructions only modify $rd$, $pc$, or memory. Therefore, the
 next-state logic can be generalized for these three cases.
 
@@ -50,125 +48,128 @@ For the $pc$, except for jump commands, it always increments to point
 to the next instruction. The two unconditional jumps, \texttt{JAL}
 and \texttt{JALR}, must be handled separately. For branch
 instructions, after determining whether the relevant condition for
-the instruction holds, we can generalize, as all branch instructions
-execute the same operation from this point onward.
+the instruction holds, a general approach can be applied, as all
+branch instructions execute the same operation from this point
+onward.
 
 With $rd$, generalization across instructions is not feasible.
-However, we can generalize across all possible registers by adding a
-check in each register's update function to determine whether the
-register in question is $rd$.
+However, it is possible to generalize across all possible registers
+by adding a check in each register's update function to determine
+whether the register in question is $rd$.
 
 \section{Encoding}
-For better visualization in the BTOR2 code I will mark all sort-IDs
-in \textcolor{UniGrey}{gray}, all node-IDs in \textcolor{UniRed}{red}
-and all non-ID numbers \textcolor{UniBlue}{blue}. As described in the
-BTOR2 syntax \cite[Figure 1]{btor2}, each line can get an
-accompanying symbol. Sadly those cant be used as an alias to the line
-numbers, but for increased clarity, in the following figures I will
-use them as such aliases. With this I can also start each new figure
-with the relative line number \texttt{n}, and it makes it feasible to
-describe processes with algorithms. It is implied that \texttt{n} is
-sufficiently incremented after adding to the model so that IDs will
-not overlap. In the following, I will describe how I construct a
-BTOR2 model for a RISC-V state file.
+For improved visualization in the BTOR2 code, all sort-IDs are marked
+in \textcolor{UniGrey}{gray}, all node-IDs in
+\textcolor{UniRed}{red}, and all non-ID numbers in
+\textcolor{UniBlue}{blue}. As described in the BTOR2 syntax
+\cite[Figure 1]{btor2}, each line can have an accompanying symbol.
+Unfortunately, these cannot be used as aliases for the line numbers,
+but for clarity, in the following figures I use them as such aliases.
+This allows each new figure to start with the relative line number
+\texttt{n}, making it feasible to describe processes with algorithms.
+It is implied that \texttt{n} is sufficiently incremented after
+adding to the model so that IDs do not overlap. The following
+sections describe how a BTOR2 model is constructed from a RISC-V
+state file.
 
 \subsection{Constants}
-First off, I added the sorts and non-progressive constants needed
-into the BTOR2 model as seen in \figref{fig:constants}. This is
-extended by a set of progressive constants used for comparison e.g.
-against the register number. \algoref{alg:progressiveconsts}
-describes how they are added.
+First, I added the sorts and non-progressive constants needed in the
+BTOR2 model, as shown in \figref{fig:constants}. This is extended by
+a set of progressive constants used for comparison, e.g., against the
+register number. \algoref{alg:progressiveconsts} describes how these
+are added.
 
-Of note is the Representation of the memory as an array of
-addressable memory cells of each 1byte. Obviously, the set address
-space of 16bit is magnitudes away of the expected address space of
-64bit, but representing a 64bit addressable memory with its resulting
-$2^{64}B \approx 18 Exabyte$ is not implementable. Therefore, as I
-needed a feasible amount of memory space, I artificially chose a
-16bit address space as a soft minimum. With $~65kB$ and therefore
-programs with possibly $>10000$ instructions I deemed this memory
-sufficient for most use cases. Despite this, the encoding is
-implemented in such a way that the address space can be altered with.
-\todo{Change code to make address space modifiable by an option}
+Of note is the representation of memory as an array of addressable
+memory cells, each 1 byte. The chosen address space of 16 bits is
+significantly smaller than the expected 64-bit address space, but
+representing a 64-bit addressable memory with $2^{64}$ bytes
+($\approx$ 18 exabytes) is not feasible. Therefore, I selected a
+16-bit address space as a practical minimum, providing approximately
+65kB and supporting programs with potentially over 10,000
+instructions, which I consider sufficient for most use cases. The
+encoding is implemented so that the address space can be modified as
+needed. \todo{Change code to make address space modifiable by an
+    option?} \todo{Explain progressive constants}
 
 \input{figures/4-Transform/constants.tex}
 \input{figures/4-Transform/progressiveconsts.tex}
 
 \subsection{State Representation}
 The next logical step is defining a representation of a RISC-V state.
-This is straightforward as shown in \figref{fig:states}. I also
-introduced a flag for each register in my code. They track if the
-register was written to and makes it possible to shorten a state file
-transformed from a witness to only the relevant registers. As they
-have no impact on the operation of the BTOR2 model, I will not
-mention them again. \input{figures/4-Transform/staterep.tex}
+This is straightforward, as shown in \figref{fig:states}. I also
+introduced a flag for each register in my code to track whether the
+register was written to, enabling the transformation of a witness to
+a state file containing only the relevant registers. As these flags
+do not affect the operation of the BTOR2 model and are only included
+for an aesthetic choice, they are not included in my description and
+will not be discussed further.
+\input{figures/4-Transform/staterep.tex}
 
 \subsection{Initialization}\label{sec:initialization}
 To initialize a state in BTOR2 from a RISC-V state file, the values
 in the registers must be loaded as constants, and for each memory
-address mentioned in the state file, the value and address has to be
-loaded as constants. Due to the inability to represent a full 64bit
-address space, the shrinking of the address space from state file to
-BTOR2 model must be handled. I decided to just initialize the
-addresses up to the BTOR2 model address space maximum and cut all
-others in the state file as I deem this the most predictable
-behavior. Everything not mentioned in the state file will be zero
-initialized. At last these constants must be used to initialize the
-state. For the registers this is straight forward, for the memory we
-must first write all memory addresses into a placeholder array which
-then we can use to initialize the real memory. Due to constraints in
-BTOR2, these constants have to be defined \textbf{before} the states,
-but initialization with the values must happen after the states. This
-means that this initialization process \textbf{wraps around} the
-state representation. The generation of constants is shown in
-\algoref{alg:generateconstantsfromstate}, whereas the actual
+address mentioned in the state file, the value and address must be
+loaded as constants. Due to the inability to represent a full 64-bit
+address space, I must manage the reduction of the address space from
+the state file to the BTOR2 model. I chose to initialize only the
+addresses up to the BTOR2 model's address space maximum and omit all
+others from the state file, as this provides the most predictable
+behavior. All addresses not mentioned in the state file are
+zero-initialized. Finally, these constants are used to initialize the
+state. For the registers, this is straightforward; for memory, all
+memory addresses are first written into a placeholder array, which is
+then used to initialize the actual memory. Due to BTOR2 constraints,
+these constants must be defined \textbf{before} the states, but
+initialization with the values must occur after the states. Thus,
+this initialization process \textbf{wraps around} the state
+representation. The generation of constants is shown in
+\algoref{alg:generateconstantsfromstate}, while the actual
 initialization is shown in \algoref{alg:initstate}.
 \input{figures/4-Transform/loadstateconstants.tex}
 \input{figures/4-Transform/initstate.tex}
 
-\subsection{Fetching the current instruction}
-To fetch the current instruction, I read the 4 bytes of the
-instruction and concatenate them as seen in \figref{fig:fetching}
+\subsection{Fetching the Current Instruction}
+To fetch the current instruction, I read the four bytes of the
+instruction and concatenate them, as shown in \figref{fig:fetching}.
 \input{figures/4-Transform/fetching.tex}
 
-\subsection{Deconstruction of the instruction}
-Now having the instruction, we can deconstruct it to extract the
-$opcode$, $rd$, $rs1$, $rs2$, $funct3$, $funct7$ and $imm$. For
-everything apart from $imm$, this can be done by a shift and a
-masking. This is shown in \figref{fig:extractNOimm}.
+\subsection{Deconstruction of the Instruction}
+With the instruction available, it can be deconstructed to extract
+the $opcode$, $rd$, $rs1$, $rs2$, $funct3$, $funct7$, and $imm$. For
+everything except $imm$, this can be accomplished by shifting and
+masking, as shown in \figref{fig:extractNOimm}.
 
-The immediate on the other hand must be first constructed from its
-subfields, which can be referenced in \figref{fig:rv64i_formats}. In
-the BTOR2 model this looks like in \figref{fig:extractimmbytype}.
-\todo{Reference to same method in riscvsim} There are three things I
-want to point out:\\ First, some immediate subfields overlap exactly.
-I made use of this fact in lines (n + 1) with the overlap of
-$imm[11:5]$ of I- and S-type, and (n + 21) with J- and B-types
-$imm[10:5]$ overlap. Second, as described in \secref{sec:riscvIsa}
-the immediate is always sign-extended. To archive this we make
-arithmetic right shifts, which do sign extension for us and with this
-pull our highest immediate bit to its correct place. Third, at line
-(n + 8), for sign extension we must shift right by 19. As this
-matches the opcode for arithmetic instructions with immediate, I used
-this and did not create a new constant.
+The immediate, however, must first be constructed from its subfields,
+which are referenced in \figref{fig:rv64i_formats}. In the BTOR2
+model, this is shown in \figref{fig:extractimmbytype}.
+\todo{Reference to same method in riscvsim} Three points are
+noteworthy:\\ First, some immediate subfields overlap exactly. This
+is utilized in lines (n + 1) with the overlap of $imm[11:5]$ for I-
+and S-type, and (n + 21) with J- and B-types $imm[10:5]$ overlap.
+Second, as described in \secref{sec:riscvIsa}, the immediate is
+always sign-extended. This is achieved using arithmetic right shifts,
+which perform sign extension and correctly position the highest
+immediate bit. Third, at line (n + 8), sign extension requires a
+right shift by 19. As this matches the opcode for arithmetic
+instructions with immediate, I reused this constant.
 
-Now I have \textsl{iTypeImm}, \textsl{sTypeImm}, \textsl{bTypeImm},
-\textsl{uTypeImm} and \textsl{jTypeImm}. But it would be easier to
-just have one node \textsl{imm} where we can reference the immediate
-value regardless of the instruction. This is done in
-\figref{fig:findingImm}, where first I defined booleans which check
-all opcodes that are neither R-type nor I-type. Then I chained
-if-then-else nodes to catch instructions that are of J-type, U-Type,
-B-Type or S-type. If the instruction is none of them, I can safely
-default to I-type as R-type does not handle with an immediate value.
-At the end I extend $imm$ to the 64bit RV64I demands.
+Now, \textsl{iTypeImm}, \textsl{sTypeImm}, \textsl{bTypeImm},
+\textsl{uTypeImm}, and \textsl{jTypeImm} are available. However, it
+is preferable to have a single node \textsl{imm} referencing the
+immediate value regardless of instruction. This is accomplished in
+\figref{fig:findingImm}, where booleans are defined to check all
+opcodes that are neither R-type nor I-type. Then, if-then-else nodes
+are chained to select instructions of J-type, U-type, B-type, or
+S-type. If the instruction is none of these, I default to I-type, as
+R-type does not use an immediate value. Finally, $imm$ is extended to
+the 64-bit width required by RV64I.
 
-At this point I can also extract the values of the designated $rs1$
-and $rs2$ registers. I show this for $rs1$ in
-\figref{alg:extractrs1val}, it is the same for $rs2$ except that the
-names must be changed to $rs2$. Also, the comparison constants can be
-left out as they are already defined for $rs1$ and can be referenced
-from there.
+At this stage, the values of the designated $rs1$ and $rs2$ registers
+can also be extracted. This is shown for $rs1$ in
+\figref{alg:extractrs1val}; the process is identical for $rs2$, with
+only the names changed. The starting equality comparisons can be
+omitted for $rs2$, as they are already defined for $rs1$ and can be
+referenced.
 
 \input{figures/4-Transform/extractNOimm.tex}
 \input{figures/4-Transform/extractimmbytype.tex}
@@ -176,94 +177,91 @@ from there.
 \input{figures/4-Transform/extractrs1val.tex}
 
 \subsection{Instruction Detection}
-
-For the next-state logic, the only thing left that we need to know is
-the actual current command. So I defined a check
+For the next-state logic, it is essential to determine the current
+command. Therefore, I defined a check
 \textsl{is\textcolor{Green}{Instruction}} for each instruction. As
-this is quite repetitive, \algoref{alg:commanddetection} describes a
-generalized approach to reach these booleans. An example for each
-instruction subgroup in \algoref{alg:commanddetection} can be found
-in \figref{fig:detectionexample}. Of course the funct7 checks from
-the $needsf7$ subgroup can be reused if multiple instructions use the
-same funct7.
+this is repetitive, \algoref{alg:commanddetection} describes a
+generalized approach to obtain these booleans. An example for each
+instruction subgroup in \algoref{alg:commanddetection} is provided in
+\figref{fig:detectionexample}. The funct7 checks from the $needsf7$
+subgroup can be reused if multiple instructions share the same
+funct7.
 
 \input{figures/4-Transform/commanddetection.tex}
 \input{figures/4-Transform/detectionexample.tex}
 
 \subsection{Next-State Logic}
-The next state logic is basically the core of the model. Almost
-everything else works towards this point. The Goal is to create the
-changes each instruction would make and then only inserting the
-changes specific to the instruction in the state. Each state node in
-the model must have an accompanying next node to work as intended.
-But first the changed values are needed.
+The next-state logic is the core of the model. Almost everything else
+supports this point. The goal is to create the changes each
+instruction would make and then apply only the changes specific to
+the instruction in the state. Each state node in the model must have
+an accompanying next node to function correctly. First, the changed
+values are computed.
 
-\subsubsection{Creating all Values of Instruction execution}
-It would be too long and unnecessary to go through all instructions,
-as this is simply following the RV64I ISA, but I want to give an
-example for each group of instructions as they were divided in
-\tabref{tab:rv64i-instructions}. I show this for \texttt{AUIPC},
-\texttt{JALR}, \texttt{BEQ}, \texttt{LHU}, \texttt{SD},
-\texttt{ANDI}, \texttt{SLLIW}, \texttt{SLT} and \texttt{SUBW} in
-\figref{fig:valueexample}. In this examples one can see multiple
-overlaps which can be used, e.g. the addresses for load and store
-instructions or the 32bit versions of the word instructions. Also, I
-took \texttt{SD} to show that all other store instructions happen as
-interim results of preparing \texttt{SD}. It is similar with load
-instructions, but here we only get overlapping pre-results which each
-have to be sign extended to the expected 64bit on their own.
+\subsubsection{Creating All Values of Instruction Execution}
+It is unnecessary to detail all instructions, as this simply follows
+the RV64I ISA. Instead, I provide examples for each group of
+instructions as divided in \tabref{tab:rv64i-instructions}. Examples
+for \texttt{AUIPC}, \texttt{JALR}, \texttt{BEQ}, \texttt{LHU},
+\texttt{SD}, \texttt{ANDI}, \texttt{SLLIW}, \texttt{SLT}, and
+\texttt{SUBW} are shown in \figref{fig:valueexample}. These examples
+illustrate overlaps that can be utilized, such as addresses for load
+and store instructions or the 32-bit versions of word instructions.
+The \texttt{SD} example demonstrates that all other store
+instructions are interim results of preparing \texttt{SD}. Load
+instructions are similar, but each requires sign extension to 64
+bits.
 
-With this done we can sort each change to its instruction.
+With this, each change can be assigned to its instruction.
 
 \input{figures/4-Transform/valueexample.tex}
 
-\subsubsection{The next Memory}
-Defining the next memory array is simple. I just cascade through all
-store instructions with if-then-else nodes and by setting the final
-'else' as the current memory array, if no 'if' catches, the array is
-not changed. All this is shown in \figref{fig:nextmemory}.
+\subsubsection{The Next Memory}
+Defining the next memory array is straightforward. All store
+instructions are cascaded through if-then-else nodes, with the final
+'else' set as the current memory array; if no 'if' matches, the array
+remains unchanged. This is shown in \figref{fig:nextmemory}.
 
 \input{figures/4-Transform/nextmemory.tex}
 
-\subsubsection{The next pc}
-For the next pc it looks mostly the same as shown in
-\figref{fig:nextpc}. Only the behavior if no 'if' catches is
-different as pc must point to the next instruction to execute. This
-nextPc was already computed for the JAL and JALR instructions, so I
-reused it. The unconditional jumps also change the value in rd, but
-this is done in the next subsection.
+\subsubsection{The Next pc}
+For the next pc, the approach is similar, as shown in
+\figref{fig:nextpc}. The only difference is that if no 'if' matches,
+pc must point to the next instruction to execute. The nextPc value
+was already computed for the JAL and JALR instructions and is reused
+here. The unconditional jumps also modify the value in rd, which is
+handled in the next section.
 
 \input{figures/4-Transform/nextpc.tex}
 
-\subsubsection{The next rd}
-At last the x registers must be updated. The procedure is defined in
-\figref{alg:nextrd}. With exception to x0 this is the same for all
-these registers. Also, it is similar in its procedure as defining the
-next memory or pc but instead of a handful of instructions, I have to
-go over 39 of them as only branch and store instructions do not
-change rd. Because of this, I took the liberty to not exactly show
-the cascade for all relevant instructions in \algoref{alg:nextrd} but
-only indicate it.
+\subsubsection{The Next rd}
+At last, the remaining registers must be updated. The procedure is
+defined in \figref{alg:nextrd}. With the exception of x0, this is the
+same for all registers. The process is similar to defining the next
+memory or pc, but instead of a handful of instructions, all 39
+relevant instructions must be considered, as only branch and store
+instructions do not modify rd. For brevity, the cascade for all
+relevant instructions is not shown in full in \algoref{alg:nextrd},
+but only indicated.
 
 \input{figures/4-Transform/nextrd.tex}
 
 \subsection{Constraints}
-The only thing left is to define constraints to end the model
-checker. First is the intended end of reaching a set number of
-Iterations. It is shown in \figref{fig:badcounter}.
+The final step is to define constraints to terminate the model
+checker. The primary constraint is reaching a set number of
+iterations, as shown in \figref{fig:badcounter}.
 
-After this I defined some extra constraints to check for bad
-instructions. First is checked if the opcode is valid for my model.
-The second constraint catches if the instruction can not be detected
-even whilst the opcode is valid. This is shown in
-\figref{fig:unknownInstr}. The constraint in \figref{fig:badaddress}
-handles instruction-address-misaligned exceptions for jump
-instructions.
+Additional constraints are defined to check for invalid instructions.
+The first checks if the opcode is valid for the model. The second
+constraint detects if the instruction cannot be identified even when
+the opcode is valid, as shown in \figref{fig:unknownInstr}. The
+constraint in \figref{fig:badaddress} handles
+instruction-address-misaligned exceptions for jump instructions.
 
-Of course other constraints can be defined. Options would be to stop
-on a specific pc or if a register reaches a specified value.
+Other constraints can be defined, such as terminating on a specific
+pc value or when a register reaches a specified value.
 
-\todo{Maybe add examples on how to do?}\\ \todo{Maybe internal
+\todo{Maybe add examples on how to do this}\\ \todo{Maybe internal
     references in figures should be numbers\dots}
 
 \input{figures/4-Transform/badcounter.tex}
@@ -271,39 +269,38 @@ on a specific pc or if a register reaches a specified value.
 \input{figures/4-Transform/badaddress.tex}
 
 \section{Testing for Correctness}\label{sec:corectness}
-To test my model, I compared its results to my RISC-V simulators
-(\secref{sec:simulation}) results.
+To test my model, I compared its results to those of my RISC-V
+simulator (\secref{sec:simulation}).
 
-With a given state, both the simulation and the BTOR2 model are run.
-For both the iteration maximum is set to 1. The resulting BTOR2
-witness can not be directly compared to the resulting state of the
-simulation. So I also implemented a simple converter from witness to
-state \cite[src/restate\_witness.c]{repoRV2BTOR}. These two states
-now can be compared. I have written a shell script for this at
-\cite[sh\_utils/compare\_iterations.sh]{repoRV2BTOR}
+Given a state, both the simulation and the BTOR2 model are run with
+the iteration maximum set to 1. The resulting BTOR2 witness cannot be
+directly compared to the resulting state of the simulation.
+Therefore, I implemented a simple converter from witness to state
+\cite[src/restate\_witness.c]{repoRV2BTOR}. These two states can then
+be compared. A shell script for this purpose is provided at
+\cite[sh\_utils/compare\_iterations.sh]{repoRV2BTOR}.
 
 To generate RISC-V states, I implemented a fuzzer
-\cite[src/state\_fuzzer.c]{repoRV2BTOR} to generate randomized states
-with one valid instruction at the address of pc. The fuzzer first
-chooses an instruction to test, on this basis it fills all variable
-parts of the instruction, e.g. $rd$ or $imm$. Now all registers
-relevant to the instruction are filled with a random 64bit value.
-Also, a pc value is generated so that the instruction still fits in
-the limited address space of the BTOR2 model. At last if a jump
-instruction was chosen, a possible address misalignment is fixed and
-an address overflow prevented. The second part is for simplifying
-later comparison on the resulting states, as now a correct execution
-of the instruction always results in the exact same resulting state
-although the differences between simulation and the BTOR2 model.
+\cite[src/state\_fuzzer.c]{repoRV2BTOR} that generates randomized
+states with one valid instruction at the address of pc. The fuzzer
+first selects an instruction to test and fills all variable parts of
+the instruction, such as $rd$ or $imm$. All registers relevant to the
+instruction are then assigned random 64-bit values. A pc value is
+generated to ensure the instruction fits within the limited address
+space of the BTOR2 model. If a jump instruction is chosen, possible
+address misalignment is corrected and address overflow is prevented.
+This simplifies later comparison of the resulting states, as correct
+execution of the instruction always results in the same state,
+despite differences between the simulation and the BTOR2 model.
 
-With this it is possible to start a series of test. For this I
-implemented a shell script, too
-\cite[sh\_utils/test\_btor2\_model.sh]{repoRV2BTOR}. Also, as with
-big amounts of tests, it becomes harder to keep an overview over
-failed tests. To counter this I also have written a script to unite
-all failed tests into one file and also add some not so easy to
-access information like instruction name or immediate value
-\cite[sh\_utils/diff\_logger.sh]{repoRV2BTOR}.
+With this setup, a series of tests can be conducted. For this, I
+implemented a shell script
+\cite[sh\_utils/test\_btor2\_model.sh]{repoRV2BTOR}. As the number of
+tests increases, it becomes more challenging to track failed tests.
+To address this, I wrote a script to aggregate all failed tests into
+one file and add additional information such as instruction name or
+immediate value \cite[sh\_utils/diff\_logger.sh]{repoRV2BTOR}.
 
-I have run around 5,000,000 tests on this model without one failing,
-so I assume that my implementation is correct.
+I have executed approximately 5,000,000 tests on this model without a
+single failure, which leads me to conclude that my implementation is
+correct.

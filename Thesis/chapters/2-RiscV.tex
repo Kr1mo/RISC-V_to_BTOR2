@@ -5,18 +5,18 @@ thesis, I will discuss RISC-V and its operational principles.
 
 \section{Overview}
 
-RISC-V is an open-source instruction set architecture first published
-in May 2011 by A. Waterman et al. \cite{first_riscv}. As indicated by
-its name, it is based on the RISC design philosophy. \todo{Explain
-      RISC (compare wiki)} Since 2015, the development of RISC-V has been
-coordinated by the RISC-V International Association, a non-profit
-corporation based in Switzerland since 2020 \cite{riscvorg}. Its
-objectives include providing an \emph{open} ISA that is freely
-available to all, a \emph{real} ISA suitable for native hardware
-implementation, and an ISA divided into a \emph{small} base integer
-ISA usable independently, for example in educational contexts, with
-optional standard extensions to support general-purpose software
-development \cite[Chapter 1]{riscv-isa}.
+RISC-V is an open-source instruction set architecture (ISA) first
+published in May 2011 by A. Waterman et al. \cite{first_riscv}. As
+indicated by its name, it is based on the RISC design philosophy.
+\todo{Explain RISC (compare wiki)} Since 2015, the development of
+RISC-V has been coordinated by the RISC-V International Association,
+a non-profit corporation based in Switzerland since 2020
+\cite{riscvorg}. Its objectives include providing an \emph{open} ISA
+that is freely available to all, a \emph{real} ISA suitable for
+native hardware implementation, and an ISA divided into a
+\emph{small} base integer ISA usable independently, for example in
+educational contexts, with optional standard extensions to support
+general-purpose software development \cite[Chapter 1]{riscv-isa}.
 
 Currently, RISC-V comprises four base ISAs: RV32I, RV64I, RV32E, and
 RV64E, which can be extended with one or more of the 47 ratified
@@ -24,8 +24,7 @@ extension ISAs \cite[Preface]{riscv-isa}.
 
 \extend{Additional content may be required here}
 
-For the purposes of this work, I will focus on a subset of the RV64I
-ISA.
+For the purposes of this work, I focus on a subset of the RV64I ISA.
 
 \section{The RV64I ISA} \label{sec:riscvIsa}
 RV64I is not overly complex, but its structure is essential for
@@ -44,31 +43,31 @@ address of the current instruction \cite[Chapters 4.1,
 In RV64I, memory addresses are 64 bits in size. As the memory model
 is defined to be single-byte addressable, the address space of RV64I
 encompasses $2^{64}$ bytes \cite[Chapter 1.4]{riscv-isa}. The format
-of the memory is little endian, so the lower bits of number are
-placed on lower addresses.
+of the memory is little endian, so the lower bits of a number are
+placed at lower addresses.
 
 Like nearly all standard ISAs of RISC-V, RV64I employs a standard
 instruction encoding length of 32 bits, or one \emph{word}. Only the
 compressed extension named C introduces instructions with a length of
-16 bits \cite[Chapter 1.5]{riscv-isa}, but we will not encounter this
-special case. All RV64I instructions are encoded in one of the six
+16 bits \cite[Chapter 1.5]{riscv-isa}, but this special case is not
+considered here. All RV64I instructions are encoded in one of the six
 formats illustrated in \figref{fig:rv64i_formats}. These formats may
 consist of
 \begin{itemize}
-      \item The $opcode$:\\ The opcode is used to differ between groups of
+      \item The $opcode$:\\ The opcode is used to differentiate between groups of
             instructions. It also defines the format type of the instruction.
       \item $rd$:\\ This is the destination register.
-      \item $funct3$:\\This is used to differ between instructions with the same
-            $opcode$.
+      \item $funct3$:\\ This is used to differentiate between instructions with
+            the same $opcode$.
       \item $rs1$ \& $rs2$:\\ These are the source registers.
-      \item $funct7$\\:This is used for further distinctions between instructions
-            if there are more than 8 instructions in an opcode group and $funct3$
-            does not suffice.
-      \item $imm$:\\This is an immediate value. In square brackets after $imm$ is
-            designated a subfield of the immediate which is represented by these
-            bits. From these subfields, non-defined lower bits are filled with
-            zeros whereas the highest defined bit is sign extended to fill all
-            non-defined higher bits.
+      \item $funct7$:\\ This is used for further distinctions between
+            instructions if there are more than eight instructions in an opcode
+            group and $funct3$ does not suffice.
+      \item $imm$:\\ This is an immediate value. In square brackets after $imm$
+            is designated a subfield of the immediate which is represented by
+            these bits. From these subfields, non-defined lower bits are filled
+            with zeros whereas the highest defined bit is sign-extended to fill
+            all non-defined higher bits.
 \end{itemize}
 
 \input{figures/2-RiscV/rv64i_formats.tex}
@@ -79,117 +78,114 @@ The design of these formats results in the following features:
             general instruction, is always read first. Further specification of
             the instruction via $funct3$ and $funct7$ is consistently located at
             the same positions.
-      \item If utilized by the instruction, $rd$, $rs1$ and $rs2$ are also always
-            found in the same locations, simplifying decoding.
+      \item If utilized by the instruction, $rd$, $rs1$, and $rs2$ are also
+            always found in the same locations, simplifying decoding.
       \item The highest bit of $imm$ is always bit 31, making it straightforward
             to sign-extend the immediate value.
 \end{itemize}
 
 The instructions relevant to my work are listed in
-\tabref{tab:rv64i-instructions}
-\input{figures/2-RiscV/instructions-table.tex}
-
-I have divided the instructions in \tabref{tab:rv64i-instructions}
-into nine groups based on their operations.
+\tabref{tab:rv64i-instructions} I have divided the instructions in
+\tabref{tab:rv64i-instructions} into nine groups based on their
+operations.
 
 \texttt{LUI} and \texttt{AUIPC} move a high immediate into $rd$. In
-case of \texttt{AUIPC}, the $pc$ is added onto this.
-
+the case of \texttt{AUIPC}, the $pc$ is added to this value.
 \texttt{JAL} and \texttt{JALR} instructions are unconditional jumps,
-where on \texttt{JAL} $imm$ is added onto $pc$ and on \texttt{JALR}
-$imm$ is added onto $rs1$ and set as $pc$. Both link to the next
+where for \texttt{JAL} $imm$ is added to $pc$ and for \texttt{JALR}
+$imm$ is added to $rs1$ and set as $pc$. Both link to the next
 instruction (current $pc + 4$) in $rd$.
 
 $branch$ instructions are conditional jumps. $rs1$ is compared to
-$rs2$ and if the comparison holds, $imm$ is added onto $pc$. The
-comparison are $=$ for \texttt{BEQ}, $\neq$ for \texttt{BNE}, $<$ for
-\texttt{BLT} and $\ge$ for \texttt{BGE}. In these instructions, the
-values in $rs1$ and $rs2$ are handled as twos complement integers.
-The suffix \texttt{$^*$U} in an instruction generally designates an
-unsigned operation. In this case the values in $rs1$ and $rs2$ are
-handled as unsigned integers. Apart from this, they work as their
-counterpart without the suffix.
+$rs2$ and if the comparison holds, $imm$ is added to $pc$. The
+comparisons are $=$ for \texttt{BEQ}, $\neq$ for \texttt{BNE}, $<$
+for \texttt{BLT}, and $\ge$ for \texttt{BGE}. In these instructions,
+the values in $rs1$ and $rs2$ are handled as two's complement
+integers. The suffix \texttt{$^*$U} in an instruction generally
+designates an unsigned operation. In this case, the values in $rs1$
+and $rs2$ are handled as unsigned integers. Apart from this, they
+work as their counterpart without the suffix.
 
 $load$ instructions load values from memory at address $(rs1+imm)$
 into $rd$, either at \texttt{B}yte, \texttt{H}alfword, \texttt{W}ord,
-or \texttt{D}oubleword length. Again the standard is a sign-extended
-value and the suffix \texttt{$^*$U} designates the loading of a non
-sign extended value.
-
-Conversely, $store$ instructions write values from $rs2$ at the
-address $(rs1+imm)$ to memory. Here also the distinction between the
-different lengths is made and the lowest byte, halfword, word or the
-whole doubleword is stored at the address.
+or \texttt{D}oubleword length. By default, the value is
+sign-extended, and the suffix \texttt{$^*$U} designates the loading
+of a non-sign-extended value. Conversely, $store$ instructions write
+values from $rs2$ at the address $(rs1+imm)$ to memory. Here also the
+distinction between the different lengths is made, and the lowest
+byte, halfword, word, or the whole doubleword is stored at the
+address. \input{figures/2-RiscV/instructions-table.tex}
 
 All further instructions can be seen as generic operations,
 differentiated by their suffixes. To simplify the explanation
 process, all operations without any suffix and their behavior are
 listed in \tabref{tab:operations}. This is almost exactly the group
 with opcode $op$, except the \texttt{SLTU} instruction, which is not
-suffix free. But as all other instructions with the unsigned suffix
-it behaves as its signed counterpart except from handling both $rs1$
-and $rs2$ as unsigned integers.
+suffix-free. However, as with all other instructions with the
+unsigned suffix, it behaves as its signed counterpart except for
+handling both $rs1$ and $rs2$ as unsigned integers.
 
 \input{figures/2-RiscV/operations.tex}
 
-These operations can be extended by the \texttt{$^*$I} suffix which
-is designated by the opcode $op-imm$. This exchanges $rs2$ with $imm$
+These operations can be extended by the \texttt{$^*$I} suffix, which
+is designated by the opcode $op-imm$. This replaces $rs2$ with $imm$
 in the behavior. Again, \texttt{SLTI} can be extended to an unsigned
 version \texttt{SLTIU}, which behaves as expected. A \texttt{SUBI}
-instruction does not exist as it is redundant. Its behavior can be
-reached by using \texttt{ADDI} with a negative immediate.
+instruction does not exist as it is redundant; its behavior can be
+achieved by using \texttt{ADDI} with a negative immediate.
 
-Also, the operations \texttt{ADD}, \texttt{SUB}, \texttt{SLL},
-\texttt{SRL} and \texttt{SRA} can be extended with the \texttt{$^*$W}
-suffix. This forms the group with the opcode $op-32$. In contrast to
-the base instructions these new ones behave as if the registers are
-only 32bit. The result is placed in the low 32 bits of $rd$ and sign
-extended to full 64bit. Overflows are ignored.
+Additionally, the operations \texttt{ADD}, \texttt{SUB},
+\texttt{SLL}, \texttt{SRL}, and \texttt{SRA} can be extended with the
+\texttt{$^*$W} suffix. This forms the group with the opcode $op-32$.
+In contrast to the base instructions, these new ones behave as if the
+registers are only 32 bits. The result is placed in the low 32 bits
+of $rd$ and sign-extended to the full 64 bits. Overflows are ignored.
 
-The last group left is the combination of both suffixes
-\texttt{$^*$IW} with the opcode $op-imm-32$. The behavior differs
-from the base instructions, as expected, by a replacement of $rs2$
-with $imm$ and only operating on 32bit. Again, a \texttt{SUBIW}
-instruction is redundant as a negative immediate with \texttt{ADDIW}
-archives the same.
+The last group is the combination of both suffixes \texttt{$^*$IW}
+with the opcode $op-imm-32$. The behavior differs from the base
+instructions, as expected, by a replacement of $rs2$ with $imm$ and
+only operating on 32 bits. Again, a \texttt{SUBIW} instruction is
+redundant as a negative immediate with \texttt{ADDIW} achieves the
+same result.
 
-Compared to the full RV64I ISA, I left out \texttt{FENCE},
-\texttt{ECALL} and \texttt{EBREAK} instructions as without I/O
-interaction or an environment like an OS or a debugger, these are not
-needed.
+Compared to the full RV64I ISA, I have omitted the \texttt{FENCE},
+\texttt{ECALL}, and \texttt{EBREAK} instructions, as without I/O
+interaction or an environment such as an OS or a debugger, these are
+not required.
 
 \section{Simulation of RISC-V}\label{sec:simulation}
-In a previous project, I have written a simulation of this subset of
-RV64I in C \cite{repoSim}. As I will use it to later on test my BTOR2
-model, I explain the inner working of the program here.
+In a previous project \todo{Must be more precise}, I implemented a
+simulation of this subset of RV64I in C \cite{repoSim}. As I will use
+it to test my BTOR2 model, I explain the inner workings of the
+program here.
 
-First I implemented a structure to represent a simple RISC-V
-processor
+First, I implemented a structure to represent a simple RISC-V
+processor.
 
 \subsection{Representing the State of a RISC-V Processor}
-Of course the state needs a representation for all registers. $pc$ is
-defined as a 64bit integer, the other 32 registers are implemented as
-an array, as so each register can be referenced by its number. Also,
-I implemented an array of flags, one for each register, to be able to
-differ between initialized and non initialized registers. The memory
-is build from single memory cells holding each an address and its
-byte of content. These are cumulated in a hash table
-\enquote{memorytable}, hashing on the address. If adding a new cell
-causes a collision, it is appended to the cells already in the bucket
-forming a linked list. These structs are shown in
-\figref{fig:structs}.
+The state requires a representation for all registers. $pc$ is
+defined as a 64-bit integer, and the other 32 registers are
+implemented as an array, allowing each register to be referenced by
+its number. Additionally, I implemented an array of flags, one for
+each register, to differentiate between initialized and
+non-initialized registers. The memory is built from single memory
+cells, each holding an address and its byte of content. These are
+accumulated in a hash table called \enquote{memorytable}, hashing on
+the address. If adding a new cell causes a collision, it is appended
+to the cells already in the bucket, forming a linked list. These
+structures are shown in \figref{fig:structs}.
 
 \input{figures/2-RiscV/simstructs.tex}
 
-\subsection{Running an instruction}
+\subsection{Running an Instruction}
 After fetching the current instruction from the hash table, it must
 be decoded. The easiest way to do this is using a decision tree.
-First I mask out the opcode and match it over all implemented
+First, I mask out the opcode and match it over all implemented
 opcodes. From there, either this is an endpoint and the instruction
 is identified, or $funct3$ must be masked and matched. A final
 differentiation over $funct7$ might be needed, but after this every
-Leaf in the tree coincides with an instruction. So, at every leaf the
-state can be changed in regard to the corresponding instruction.
+leaf in the tree coincides with an instruction. At every leaf, the
+state can be changed according to the corresponding instruction.
 \todo{Graph of the decision tree?}
 
 \subsection{Saving the State of a RISC-V
@@ -202,11 +198,11 @@ uses this format as input and output. The minimal file consists only
 of the two designators \enquote{REGISTERS:} and \enquote{MEMORY:} and
 one empty line between them. Under \enquote{REGISTERS:}, all
 registers can be listed with their corresponding value. Of course, x0
-can not be different from 0. I included the option to reference it
+cannot be different from 0. I included the option to reference it
 nonetheless to have the complete state included. Under
 \enquote{MEMORY:}, after giving an address, the memory can be filled
-with 1-, 2-, 4- or 8-byte sized memory content. The given address is
-the starting address of the content, of course with every byte after
-the first, the next higher address is filled.
+with 1-, 2-, 4-, or 8-byte sized memory content. The given address is
+the starting address of the content, with every byte after the first
+filling the next higher address.
 
 \input{figures/2-RiscV/statefile.tex}

@@ -7,34 +7,31 @@ checking format published by A. Niemetz et al. \cite{btor2}.
 \todo{Write something about model checking...}
 
 \section{The BTOR2 Language}
-Generally in BTOR2, every line represents either a sort or a node,
-where normally the line number acts as an identifier. A sort behaves
-similar to a type as with it, either the length of a bitvector or the
-size of an array of bitvectors is defined. Nodes on the other hand
-represent a value of a defined sort and come as constants, operations
-or constraints. These values can later on be referenced by the node
-identifier, so the line number. The syntax of BTOR2 can be found at
-\cite[figure 1]{btor2} and corresponding operators in \cite[table
-    1]{btor2}
+In BTOR2, each line represents either a sort or a node, with the line
+number typically serving as an identifier. A sort functions similarly
+to a type, defining either the length of a bitvector or the size of
+an array of bitvectors. Nodes represent values of a defined sort and
+can be constants, operations, or constraints. These values can be
+referenced by their node identifier, i.e., the line number. The
+syntax of BTOR2 is detailed in \cite[Figure 1]{btor2}, and the
+available operators are listed in \cite[Table 1]{btor2}.
 
-Key features of BTOR2 include its ability to operate sequentially,
-which makes the implementation of a RISC-V structure highly
-convenient. The main feature is the \texttt{state} operator, which
-defines a node that is sequentially updated. With an \texttt{init}
-node, this state can be assigned an initial value, and with a
-\texttt{next} node, the sequentially next state can be defined.
-Finally, constraints can be used to specify endpoints for a model.
-These endpoints may indicate that something unintended has occurred
-or that the intended information has been found. In either case, the
-resulting model is provided as a witness.
+Key features of BTOR2 include its support for sequential operations,
+which facilitates the implementation of a RISC-V structure. The
+primary feature is the \texttt{state} operator, which defines a node
+that is updated sequentially. An \texttt{init} node assigns an
+initial value to this state, while a \texttt{next} node specifies its
+subsequent value. Constraints can be used to define endpoints for a
+model, indicating either the occurrence of an unintended event or the
+discovery of the intended information. In both cases, the resulting
+model produces a witness.
 
 \section{The BTOR2 Witness}\label{witness}
-After receiving a witness, it must be interpreted. On the second line
-of a witness, the constraint that was triggered is specified.
-Subsequently, for each sequential iteration, the witness first
-presents—marked with \texttt{\#}\textit{x}, where \textit{x} is the
-iteration number—a representation of all states in the current
-iteration. Second, marked with \texttt{@}\textit{x}, all inputs for
-the iteration are listed.
+Upon receiving a witness, it must be interpreted. The second line of
+a witness specifies the constraint that was triggered. For each
+sequential iteration, the witness first presents—marked with
+\texttt{\#}\textit{x}, where \textit{x} is the iteration number—a
+representation of all states in the current iteration. Second, marked
+with \texttt{@}\textit{x}, all inputs for the iteration are listed.
 
-\todo{Maybe a bit more, it's a bit of bare bones}
+\todo{Expand this section for greater detail}
