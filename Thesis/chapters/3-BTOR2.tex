@@ -1,10 +1,45 @@
 \chapter{BTOR2}\label{chap:btor2}
 
 The second foundation of my benchmarks is BTOR2, a word-level model
-checking format published by A. Niemetz et al. \cite{btor2}.
+checking format published by A. Niemetz et al. \cite{btor2}. Before
+explaining the format, an overview of bounded model checking is
+necessary.
 
-\section{Model Checking}
-\todo{Write something about model checking...} \todo{related work :)}
+\section{Bounded Model Checking}
+Bounded model checking (BMC) is a formal verification technique
+employed to detect errors in hardware or software systems by
+systematically exploring the state space of a finite-state model up
+to a specified bound, typically defined by the number of iterations
+or steps. As described by A. Biere in the \enquote{Handbook of
+    Satisfiability}, BMC is primarily utilized for falsification and
+testing, with a focus on identifying violations of temporal
+properties \cite{BiereBMC}. Nevertheless, BMC can also be extended to
+prove properties within the given bound.
+
+In practice, BMC translates the verification problem into a
+satisfiability problem, determining whether a property violation can
+occur within the specified bound. The model comprises a finite state
+machine and a set of properties to be verified. The model checker
+systematically explores all possible state transitions up to the
+bound and evaluates whether the property holds. If a violation is
+detected, the tool generates a \emph{witness}, which is a trace
+demonstrating how the property is violated. If no violation is found
+within the bound, the system is considered safe up to that bound,
+although this does not guarantee correctness for all possible
+executions.
+
+For word-level hardware model checking, the BTOR2 format has become a
+de facto standard for describing models and is currently used in the
+\enquote{Hardware Model Checking Competition} \cite{HWMCC}. Another
+format is AIGER \cite{AIGER}, from which BTOR2 is derived
+\cite{btor2}, and which is used in the bit-level track of the HWMCC
+\cite{HWMCC}. In software model checking, the \enquote{Competition on
+    Software Verification} utilizes the C and Java programming languages
+as input formats \cite{SVCOMP25}. Additionally, a translator from
+BTOR2 models to C programs has been presented to bridge the gap
+between hardware and software verification \cite{btor2c}. As this
+work focuses on BTOR2, the following section provides a detailed
+overview of the format.
 
 \section{The BTOR2 Language}
 In BTOR2, each line represents either a sort or a node, with the line
@@ -21,17 +56,88 @@ which facilitates the implementation of a RISC-V structure. The
 primary feature is the \texttt{state} operator, which defines a node
 that is updated sequentially. An \texttt{init} node assigns an
 initial value to this state, while a \texttt{next} node specifies its
-subsequent value. Constraints can be used to define endpoints for a
-model, indicating either the occurrence of an unintended event or the
-discovery of the intended information. In both cases, the resulting
-model produces a witness.
+subsequent value. \texttt{bad} nodes can be used to define endpoints
+for a model, indicating either the occurrence of an unintended event
+or, as in this work, the discovery of the intended information. In
+both cases, the resulting model produces a witness. Additionally, an
+\texttt{input} node allows an input to the model, with assignments to
+this node handled by the model checker. These inputs can be
+constrained by \texttt{constraint} nodes, which describe invariants
+for the inputs of the model. An example model with these sequential
+nodes is shown in \figref{fig:btor2example}.
+\begin{figure}
+    \begin{center}
+        \begin{tabular}[h!]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\ttfamily\color{UniRed}}l >{\slshape}l | >{\itshape}l}
+            \multicolumn{5}{c|}{BTOR2 model} & \multicolumn{1}{c}{Comments}                                                                                    \\\hline
+            1                                & sort                         & \color{Black}bitvec & \color{UniBlue} 1  &      & bit \enquote{type}             \\
+            2                                & sort                         & \color{Black}bitvec & \color{UniBlue} 8  &      & byte \enquote{type}            \\
+            3                                & constd                       & 2                   & \color{UniBlue} 99 &      & comparison constant            \\
+            4                                & zero                         & 2                   &                    &      &                                \\
+            5                                & input                        & 2                   &                    & i1   & input i1                       \\
+            6                                & input                        & 2                   &                    & i2   & input i2                       \\
+            7                                & eq                           & 1                   & 6 5                &      &                                \\
+            8                                & constraint                   & \color{UniRed}-6    &                    &      & i1 $\neq$ i2 must hold         \\
+            9                                & state                        & 2                   &                    & accu & sequential node accu           \\
+            10                               & init                         & 2                   & 9 4                &      & initialization accu            \\
+            11                               & add                          & 2                   & 6 5                &      & i1 + i2                        \\
+            12                               & next                         & 2                   & 9 11               &      & next accu is i1 + i2           \\
+            13                               & eq                           & 1                   & 3 9                &      & accu $=$ constant              \\
+            14                               & bad                          & \color{UniRed}13    &                    &      & property: accu $\neq$ constant \\
+
+        \end{tabular}
+        \caption[An example BTOR2 model]{An example BTOR2 model finding two numbers that are not equal and added together equal 99}\label{fig:btor2example}
+    \end{center}
+\end{figure}
+This model can now be checked by a model checker, which should produce a witness with an assignment of the two inputs $i1$ and $i2$ such that $s1 = i1 + i2 = constant$.
+Let us examine this witness in more detail.
 
 \section{The BTOR2 Witness}\label{witness}
-Upon receiving a witness, it must be interpreted. The second line of
-a witness specifies the constraint that was triggered. For each
-sequential iteration, the witness first presents—marked with
-\texttt{\#}\textit{x}, where \textit{x} is the iteration number—a
-representation of all states in the current iteration. Second, marked
-with \texttt{@}\textit{x}, all inputs for the iteration are listed.
 
-\todo{Expand this section for greater detail}
+Running the model in \figref{fig:bench_example} through BtorMC
+\cite{btor2} with the option \texttt{--trace-gen-full} produces the
+complete witness shown in \figref{fig:witnessexample}. The syntax of
+BTOR2 witnesses is described in \cite[Figure 2]{btor2}, but I will
+explain the example witness in \figref{fig:witnessexample} line by
+line for clarity.
+
+\begin{figure}
+    \begin{verbatim}
+sat
+b0
+#0
+0 00000000 accu#0
+@0
+0 11101000 i1@0
+1 01111011 i2@0
+#1
+0 01100011 accu0#1
+@1
+0 00000100 i1@1
+1 00000000 i2@1
+.
+\end{verbatim}
+    \caption[An example BTOR2 witness]{The complete witness of the model
+        in \figref{fig:btor2example}}\label{fig:witnessexample}
+\end{figure}
+
+The witness begins with \texttt{sat}, indicating that a property in
+the model is satisfiable. The second line specifies the constraint
+that was triggered. In this case, only one \texttt{bad} node exists
+in the model, and the witness shows that \texttt{b0}, meaning the
+first occurring \texttt{bad} node, was violated.
+
+Subsequent lines list the iterations of the counterexample for the
+property. For each sequential iteration, the witness first
+presents—marked with \texttt{\#}\textit{x}, where \textit{x} is the
+iteration number—a representation of all states in the current
+iteration with their respective values in binary. Second, marked with
+\texttt{@}\textit{x}, all inputs for the iteration are listed,
+similar to the states. Note that the nodes of the inputs and the
+state in \figref{fig:btor2example} include a symbol, which is used in
+the witness to name the states and inputs. Examining the witness, it
+is evident that the counterexample requires two iterations to reach
+the violated property. In the first iteration, the state
+\texttt{accu} is initialized with 0, and \texttt{i1} and \texttt{i2}
+are assigned values that add up to 99 (01100011b). In the next
+iteration, this sum is set as the new value for \texttt{accu}, which
+violates the property.

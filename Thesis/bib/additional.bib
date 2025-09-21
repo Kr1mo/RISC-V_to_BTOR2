@@ -55,3 +55,101 @@
   abstract  = {We present AVR, a push-button model checker for verifying state transition systems directly at the source-code level. AVR uses information embedded in the word-level syntax of the design representation to automatically perform scalable model checking by combining a novel syntax-guided abstraction-refinement technique with a word-level implementation of the IC3 algorithm. AVR provides independently-verifiable certificates that offer provable assurance and are easy to relate to the word-level system. Moreover, proof certificates can be further used in innovative ways to extract key design information and are useful in a growing number of applications.},
   isbn      = {978-3-030-45190-5}
 }
+
+@incollection{BiereBMC,
+  author    = {Armin Biere},
+  editor    = {Armin Biere and
+               Marijn Heule and
+               Hans van Maaren and
+               Toby Walsh},
+  title     = {Bounded Model Checking},
+  booktitle = {Handbook of Satisfiability},
+  edition   = {Second},
+  series    = {Frontiers in Artificial Intelligence and Applications},
+  volume    = {336},
+  pages     = {739--764},
+  publisher = {{IOS} Press},
+  year      = {2021},
+  url       = {https://doi.org/10.3233/FAIA201002},
+  doi       = {10.3233/FAIA201002}
+}
+
+@misc{HWMCC,
+  howpublished = {\url{https://hwmcc.github.io/2024/}},
+  title        = {{HWMCC 2024}},
+  version      = {}
+}
+
+@techreport{AIGER,
+  author      = {Armin Biere},
+  title       = {The {AIGER And-Inverter Graph (AIG)} Format Version 20071012},
+  number      = {07/1},
+  date        = {October 2007},
+  institution = {Institute for Formal Models and Verification,
+                 Johannes Kepler University},
+  address     = {Altenbergerstr. 69, 4040 Linz, Austria},
+  year        = {2007}
+}
+
+ 
+@inproceedings{DBLP:conf/cav/CavadaCDGMMMRT14,
+  author    = {Roberto Cavada and
+               Alessandro Cimatti and
+               Michele Dorigatti and
+               Alberto Griggio and
+               Alessandro Mariotti and
+               Andrea Micheli and
+               Sergio Mover and
+               Marco Roveri and
+               Stefano Tonetta},
+  title     = {The nuXmv Symbolic Model Checker},
+  booktitle = {CAV},
+  year      = {2014},
+  pages     = {334-342},
+  ee        = {http://dx.doi.org/10.1007/978-3-319-08867-9_22},
+  crossref  = {DBLP:conf/cav/2014},
+  bibsource = {DBLP, http://dblp.uni-trier.de}
+}
+@proceedings{DBLP:conf/cav/2014,
+  editor    = {Armin Biere and
+               Roderick Bloem},
+  title     = {Computer Aided Verification - 26th International Conference,
+               CAV 2014, Held as Part of the Vienna Summer of Logic, VSL
+               2014, Vienna, Austria, July 18-22, 2014. Proceedings},
+  booktitle = {CAV},
+  publisher = {Springer},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {8559},
+  year      = {2014},
+  isbn      = {978-3-319-08866-2},
+  ee        = {http://dx.doi.org/10.1007/978-3-319-08867-9},
+  bibsource = {DBLP, http://dblp.uni-trier.de}
+}
+
+
+        @inproceedings{SVCOMP25,
+  author    = {D.~Beyer and J.~Strejček},
+  title     = {Improvements in Software Verification and Witness Validation: {SV-COMP 2025}},
+  booktitle = {Proc.\ TACAS~(3)},
+  pages     = {151-186},
+  year      = {2025},
+  series    = {LNCS~15698},
+  publisher = {Springer},
+  doi       = {10.1007/978-3-031-90660-2_9}
+}
+
+@inproceedings{btor2c,
+  author    = {Beyer, Dirk
+               and Chien, Po-Chun
+               and Lee, Nian-Ze},
+  editor    = {Sankaranarayanan, Sriram
+               and Sharygina, Natasha},
+  title     = {Bridging Hardware and Software Analysis with Btor2C: A Word-Level-Circuit-to-C Translator},
+  booktitle = {Tools and Algorithms for the Construction and Analysis of Systems},
+  year      = {2023},
+  publisher = {Springer Nature Switzerland},
+  address   = {Cham},
+  pages     = {152--172},
+  abstract  = {Across the broad research field concerned with the analysis of computational systems, research endeavors are often categorized by the respective models under investigation. Algorithms and tools are usually developed for a specific model, hindering their applications to similar problems originating from other computational systems. A prominent example of such a situation is the area of formal verification and testing for hardware and software systems. The two research communities share common theoretical foundations and solving methods, including satisfiability, interpolation, and abstraction refinement. Nevertheless, it is often demanding for one community to benefit from the advancements of the other, as analyzers typically assume a particular input format. To bridge the gap between the hardware and software analysis, we propose Btor2C, a translator from word-level sequential circuits to C programs. We choose the Btor2 language as the input format for its simplicity and bit-precise semantics. It can be deemed as an intermediate representation tailored for analysis. Given a Btor2 circuit, Btor2C generates a behaviorally equivalent program in the language C, supported by many static program analyzers. We demonstrate the use cases of Btor2C by translating the benchmark set from the Hardware Model Checking Competitions into C programs and analyze them by tools from the Intl. Competitions on Software Verification and Testing. Our results show that software analyzers can complement hardware verifiers for enhanced quality assurance: For example, the software verifier VeriAbs with Btor2C as preprocessor found more bugs than the best hardware verifiers ABC and AVR in our experiment.},
+  isbn      = {978-3-031-30820-8}
+}
