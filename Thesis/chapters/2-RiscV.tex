@@ -8,21 +8,25 @@ thesis, I will discuss RISC-V and its operational principles.
 RISC-V is an open-source instruction set architecture (ISA) first
 published in May 2011 by A. Waterman et al. \cite{first_riscv}. As
 indicated by its name, it is based on the RISC design philosophy.
-\todo{Explain RISC (compare wiki)} Since 2015, the development of
-RISC-V has been coordinated by the RISC-V International Association,
-a non-profit corporation based in Switzerland since 2020
-\cite{riscvorg}. Its objectives include providing an \emph{open} ISA
-that is freely available to all, a \emph{real} ISA suitable for
-native hardware implementation, and an ISA divided into a
-\emph{small} base integer ISA usable independently, for example in
-educational contexts, with optional standard extensions to support
-general-purpose software development \cite[Chapter 1]{riscv-isa}.
+RISC stands for Reduced Instruction Set Computer and its concept is
+to only include a small set of elemental and easy to execute
+instructions. With this, the decoding and execution of instructions
+can be faster compared to CISC (Complex Instruction Set Computer)
+design philosophy.
+
+Since 2015, the development of RISC-V has been coordinated by the
+RISC-V International Association, a non-profit corporation based in
+Switzerland since 2020 \cite{riscvorg}. Its objectives include
+providing an \emph{open} ISA that is freely available to all, a
+\emph{real} ISA suitable for native hardware implementation, and an
+ISA divided into a \emph{small} base integer ISA usable
+independently, for example in educational contexts, with optional
+standard extensions to support general-purpose software development
+\cite[Chapter 1]{riscv-isa}.
 
 Currently, RISC-V comprises four base ISAs: RV32I, RV64I, RV32E, and
 RV64E, which can be extended with one or more of the 47 ratified
 extension ISAs \cite[Preface]{riscv-isa}.
-
-\extend{Additional content may be required here}
 
 For the purposes of this work, I focus on a subset of the RV64I ISA.
 
@@ -153,16 +157,33 @@ Compared to the full RV64I ISA, I have omitted the \texttt{FENCE},
 interaction or an environment such as an OS or a debugger, these are
 not required.
 
+For each of the instructions in \tabref{tab:operations}, I also
+included the format in which each instruction is encoded. Most should
+be not surprising as they fit the description of the instructions.
+Only \texttt{SLLI, SRLI, SRAI} with I$^*$ and \texttt{SLLIW, SRLIW,
+      SRAIW} with I$^{**}$ should need clarification. Both are essentialy
+the I format but with extra constraints. For I$^*$ the highest
+realistic shift amount for 64 bit registers is also 64. So the bits
+      [11,9:6] of $imm$ have to be 0. The bit [10] gets a special role as
+it is used to differentiate between the two types of right shift.
+With I$^{**}$, with the word suffix, the maximum shift amount is only
+32, so the bit [5] of $imm$ must also be 0.
+
 \section{Simulation of RISC-V}\label{sec:simulation}
-In a previous project \todo{Must be more precise}, I implemented a
-simulation of this subset of RV64I in C \cite{repoSim}. As I will use
-it to test my BTOR2 model, I explain the inner workings of the
-program here.
+To run RISC-V code, the obvious way would be to run it on a RISC-V
+processor. As this is not practical in my case because I do not have
+one, I have to simulate the execution of RISC-V. For this, I will use
+a RISC-V-simulator of this described subset of RV64I in C that I have
+written for my bachelors project \cite{repoSim}. It will be used to
+test the BTOR2 model I will present in \chapref{chap:riscv_to_btor2}.
+Alternatively qemu \cite{qemu} or QtRVSim \cite{qtrvsim} could be
+used, but QtRVSim has more detail than needed and qemu can not be fed
+with an inital state but only a full program. So I used my own, which
+takes the state of a RISC-V processor as an input as described in
+\secref{sub:statefile}.
 
-\todo{related work in simulation}
-
-First, I implemented a structure to represent a simple RISC-V
-processor.
+First, I explain the structure to represent a simple RISC-V processor
+I implemented.
 
 \subsection{Representing the State of a RISC-V Processor}
 The state requires a representation for all registers. $pc$ is

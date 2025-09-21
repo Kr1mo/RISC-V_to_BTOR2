@@ -149,7 +149,33 @@
   year      = {2023},
   publisher = {Springer Nature Switzerland},
   address   = {Cham},
-  pages     = {152--172},
+  pages     = {152-172},
   abstract  = {Across the broad research field concerned with the analysis of computational systems, research endeavors are often categorized by the respective models under investigation. Algorithms and tools are usually developed for a specific model, hindering their applications to similar problems originating from other computational systems. A prominent example of such a situation is the area of formal verification and testing for hardware and software systems. The two research communities share common theoretical foundations and solving methods, including satisfiability, interpolation, and abstraction refinement. Nevertheless, it is often demanding for one community to benefit from the advancements of the other, as analyzers typically assume a particular input format. To bridge the gap between the hardware and software analysis, we propose Btor2C, a translator from word-level sequential circuits to C programs. We choose the Btor2 language as the input format for its simplicity and bit-precise semantics. It can be deemed as an intermediate representation tailored for analysis. Given a Btor2 circuit, Btor2C generates a behaviorally equivalent program in the language C, supported by many static program analyzers. We demonstrate the use cases of Btor2C by translating the benchmark set from the Hardware Model Checking Competitions into C programs and analyze them by tools from the Intl. Competitions on Software Verification and Testing. Our results show that software analyzers can complement hardware verifiers for enhanced quality assurance: For example, the software verifier VeriAbs with Btor2C as preprocessor found more bugs than the best hardware verifiers ABC and AVR in our experiment.},
   isbn      = {978-3-031-30820-8}
+}
+
+@inproceedings{qtrvsim,
+  author    = {J.~Dupák and
+               P.~Píša and 
+               M.~Štepanovský and 
+               K.~Kočí},
+  booktitle = {embedded world Conference 2022},
+  publisher = {WEKA FACHMEDIEN GmbH},
+  title     = {QtRVSim - RISC-V Simulator for Computer Architectures Classes},
+  pages     = {775-778},
+  year      = {2022},
+  isbn      = {ISBN 978-3-645-50194-1}
+}
+
+@inproceedings{qemu,
+  author    = {Bellard, Fabrice},
+  title     = {QEMU, a fast and portable dynamic translator},
+  year      = {2005},
+  publisher = {USENIX Association},
+  address   = {USA},
+  booktitle = {Proceedings of the Annual Conference on USENIX Annual Technical Conference},
+  pages     = {41},
+  numpages  = {1},
+  location  = {Anaheim, CA},
+  series    = {ATEC '05}
 }
