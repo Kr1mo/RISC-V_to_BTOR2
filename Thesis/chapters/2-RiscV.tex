@@ -200,16 +200,24 @@ structures are shown in \figref{fig:structs}.
 
 \input{figures/2-RiscV/simstructs.tex}
 
-\subsection{Running an Instruction}
+\subsection{Running an Instruction}\label{sec:runInstr}
 After fetching the current instruction from the hash table, it must
-be decoded. The easiest way to do this is using a decision tree.
-First, I mask out the opcode and match it over all implemented
-opcodes. From there, either this is an endpoint and the instruction
-is identified, or $funct3$ must be masked and matched. A final
-differentiation over $funct7$ might be needed, but after this every
-leaf in the tree coincides with an instruction. At every leaf, the
-state can be changed according to the corresponding instruction.
-\todo{Graph of the decision tree?}
+be decoded. The easiest way to find the current instruction is a
+decision tree. First, I mask out the opcode and match it over all
+implemented opcodes. From there, either this is an endpoint and the
+instruction is identified, or $funct3$ must be masked and matched. A
+final differentiation over $funct7$ might be needed, but after this
+every leaf in the tree coincides with an instruction. Also, with
+knowing the opcode of the current instruction, I know the instruction
+format (\figref{fig:rv64i_formats}). This means that I can now also
+extract relevant register numbers and, if it exists, the immediate.
+The best way to get these values is to apply a mask and shift this
+result to its correct place. For the immediate, as it possibly is
+divided into multiple fields, it might be needed to add multiple
+partial immediates together. At this point all information in the
+instruction is decoded and the current state can be modified
+according to the operation corresponding to the leaf reached after
+going through the tree. \todo{Graph of the decision tree?}
 
 \subsection{Saving the State of a RISC-V
       Processor}\label{sub:statefile}

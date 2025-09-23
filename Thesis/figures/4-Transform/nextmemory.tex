@@ -3,11 +3,11 @@
     \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
         \hline
         \hline
-        (n + 0) & ite  & Mem & isSB   & memorySB & memory  & newMem3 \\
-        (n + 1) & ite  & Mem & isSH   & memorySH & newMem3 & newMem2 \\
-        (n + 2) & ite  & Mem & isSW   & memorySW & newMem2 & newMem1 \\
-        (n + 3) & ite  & Mem & isSD   & memorySD & newMem1 & newMem  \\
-        (n + 4) & next & Mem & memory & newMem                       \\
+        (n + 0) & ite  & Mem & isSB   & memorySB                 & memory                   & \\
+        (n + 1) & ite  & Mem & isSH   & memorySH                 & \upshape\ttfamily(n + 0) & \\
+        (n + 2) & ite  & Mem & isSW   & memorySW                 & \upshape\ttfamily(n + 1) & \\
+        (n + 3) & ite  & Mem & isSD   & memorySD                 & \upshape\ttfamily(n + 2) & \\
+        (n + 4) & next & Mem & memory & \upshape\ttfamily(n + 3)                              \\
         \hline
         \hline
     \end{tabular}

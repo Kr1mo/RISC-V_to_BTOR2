@@ -1,18 +1,18 @@
 \begin{figure}
+    \centering
     \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
         \hline
         \hline
-        \multicolumn{7}{l}{\rmfamily(\slshape isJALR \upshape already exists)}         \\
+        \multicolumn{7}{l}{\rmfamily(\slshape isJALR \upshape already exists)}                   \\
         \hline
-        n\ \    & and    & Bool & isLoad                  & is5Funct3  &  & isLHU      \\
+        n\ \    & and    & Bool & isLoad                  & is5Funct3                &  & isLHU  \\
         \hline
-        (n + 0) & consth & W    & \textcolor{UniBlue}{20} &            &  & SUBWf7     \\
-        (n + 1) & eq     & Bool & funct7                  & SUBWf7     &  & fitsF7SUBW \\
-        (n + 2) & and    & Bool & is0Funct3               & fitsF7SUBW &  & fitsF3SUBW \\
-        (n + 3) & and    & Bool & isLoad                  & fitsF3SUBW &  & isSUBW     \\
+        (n + 0) & consth & W    & \textcolor{UniBlue}{20} &                          &  &        \\
+        (n + 1) & eq     & Bool & funct7                  & \upshape\ttfamily(n + 0) &  &        \\
+        (n + 2) & and    & Bool & is0Funct3               & \upshape\ttfamily(n + 1) &  &        \\
+        (n + 3) & and    & Bool & isLoad                  & \upshape\ttfamily(n + 2) &  & isSUBW \\
         \hline
         \hline
     \end{tabular}
-    \\\todo{Use subfigs}
     \caption[Examples for instruction detection]{Instruction detection of \texttt{JALR}, \texttt{LHU} and \texttt{SUBW} as described in \algoref{alg:commanddetection}}\label{fig:detectionexample}
 \end{figure}

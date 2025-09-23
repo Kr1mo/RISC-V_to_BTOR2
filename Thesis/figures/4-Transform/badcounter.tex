@@ -3,16 +3,16 @@
     \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
         \hline
         \hline
-        (n + 0) & one    & D    &                                &               &  & counterInc    \\
-        (n + 1) & constd & D    & \textcolor{Green}{nIterations} &               &  & maxIterations \\
-        (n + 2) & state  & D    &                                &               &  & counter       \\
-        (n + 3) & init   & D    & counter                        & emptyReg                         \\
-        (n + 4) & add    & D    & counter                        & counterInc    &  & newCounter    \\
-        (n + 5) & next   & D    & counter                        & newCounter                       \\
-        (n + 6) & eq     & Bool & counter                        & maxIterations &  & isMaxIter     \\
-        (n + 7) & bad    &      & isMaxIter                                                         \\
+        (n + 0) & one    & D    &                                &                          &  &         \\
+        (n + 1) & constd & D    & \textcolor{Green}{nIterations} &                          &  &         \\
+        (n + 2) & state  & D    &                                &                          &  & counter \\
+        (n + 3) & init   & D    & \upshape\ttfamily(n + 2)       & emptyReg                              \\
+        (n + 4) & add    & D    & \upshape\ttfamily(n + 2)       & \upshape\ttfamily(n + 0) &  &         \\
+        (n + 5) & next   & D    & \upshape\ttfamily(n + 2)       & \upshape\ttfamily(n + 4)              \\
+        (n + 6) & eq     & Bool & \upshape\ttfamily(n + 2)       & \upshape\ttfamily(n + 1) &  &         \\
+        (n + 7) & bad    &      & \upshape\ttfamily(n + 6)                                               \\
         \hline
         \hline
     \end{tabular}
-    \caption[Iterations counter constraint]{Constraining the model by iteration count}\label{fig:badcounter}
+    \caption[Iterations counter property]{Terminating the model by iteration count}\label{fig:badcounter}
 \end{figure}

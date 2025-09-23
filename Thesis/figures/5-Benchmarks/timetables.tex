@@ -17,14 +17,22 @@
 
 \begin{table}
     \centering
-    \begin{tabular}{r|rrrrr}
-        bits of address space & 16     & 17     & 18     & 19     & 20     \\\hline
-        add\_0256             & 2.635  & 2.632  & 2.626  & 2.626  & 2.624  \\
-        add\_1024             & 16.306 & 16.464 & 16.511 & 16.452 & 16.460 \\
-
-        writemem\_0256        & 2.877  & 2.88   & 2.890  & 2.889  & 2.890  \\
-        writemem\_1024        & 21.004 & 21.131 & 21.215 & 21.181 & 21.163 \\
-
+    %    \begin{tabular}{r|rrrrr}
+    %        bits of address space & 16     & 17     & 18     & 19     & 20     \\\hline
+    %        add\_0256             & 2.635  & 2.632  & 2.626  & 2.626  & 2.624  \\
+    %        add\_1024             & 16.306 & 16.464 & 16.511 & 16.452 & 16.460 \\
+    %
+    %        writemem\_0256        & 2.877  & 2.88   & 2.890  & 2.889  & 2.890  \\
+    %        writemem\_1024        & 21.004 & 21.131 & 21.215 & 21.181 & 21.163 \\
+    %
+    %    \end{tabular}
+    \begin{tabular}{l|l|l|l|l}
+        pc width & add\_0256 & add\_1024 & writemem\_0256 & writemem\_1024 \\ \hline
+        16       & 2.635     & 16.306    & 2.877          & 21.004         \\
+        17       & 2.632     & 16.464    & 2.88           & 21.131         \\
+        18       & 2.626     & 16.511    & 2.890          & 21.215         \\
+        19       & 2.626     & 16.452    & 2.889          & 21.181         \\
+        20       & 2.624     & 16.460    & 2.890          & 21.163         \\
     \end{tabular}
     \caption{Times of extended address space benchmarks}\label{tab:time_extaddr}
 \end{table}

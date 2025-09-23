@@ -30,16 +30,14 @@ reference for processing more iterations.
 \input{figures/5-Benchmarks/basetest.tex}
 \input{figures/5-Benchmarks/add_0256_state.tex}
 
-Additionally, I evaluated the impact of initialized memory on runtime
-. For this, I introduced tests with the prefix \texttt{fullmem},
-where memory addresses 0x18 to 0xfff were filled with the bit pattern
-'0101'. The first four words of memory were filled with the test
-program. The fifth word could also be filled , but I opted to leave
-it zero-initialized to ensure the test terminates by jumping to this
-address and not finding a valid instruction. This guarantees
-termination. To further extend this evaluation, I added tests with
-double the initialized memory, filling up to address
-0x1fff.\todo{benchmark them, add times}
+Additionally, I evaluated the impact of initialized memory on
+runtime. For this, I introduced tests with the prefix
+\texttt{fullmem}, where memory addresses 0x18 to 0xfff were filled
+with the bit pattern '0101'. The first four words of memory were
+filled with the test program. The fifth word could also be filled,
+but I opted to leave it zero-initialized to ensure the test
+terminates by jumping to this address and not finding a valid
+instruction. This guarantees termination.
 
 I also investigated the impact of address space size by generating
 models from \texttt{add\_0256}, \texttt{add\_1024},
@@ -314,7 +312,8 @@ big block:
         \end{tabular}
 \end{center}
 
-Now only the instruction flags are left to handle:
+Now only the instruction flags and with them the only property are
+left to handle:
 \begin{center}
         \begin{tabular}[h!]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\ttfamily\color{UniRed}}l | >{\itshape}l}
                 381 & init & 1                 & 200 7    & instr0 executes initally               \\
@@ -342,8 +341,10 @@ can be derived from this model by changing the constant value of node
 
 To start I placed all iterations based benchmarks with btormc into
 \tabref{tab:time_iter} and the benchmarks of extended address space
-into \tabref{tab:time_extaddr}. From \tabref{tab:time_extaddr} one
-can assume that the extension of address space does not impact the
+into \tabref{tab:time_extaddr}. Also to get an overview of the times,
+I plotted the times of \tabref{tab:time_iter} in
+\figref{fig:benchIterPlot}. From \tabref{tab:time_extaddr} one can
+assume that the extension of address space does not impact the
 runtime of the model checker in a meaningful way. As seen in
 \tabref{tab:time_rel}, with rising loop counts, memory operations
 need increasingly more time in comparison to their respective
@@ -355,10 +356,10 @@ The \texttt{nopc} benchmark is significantly faster than my model.
 This was to be expected, as Schrögendorfer models one RISC-V program
 specifically whereas I model the processor and feed it different
 programs by initialization. In this perspective, it is not surprising
-that a specialised model is faster than a generalised one. \todo{Add
-        example for finding an instruction?}
+that a specialised model is faster than a generalised one.
 
 \input{figures/5-Benchmarks/timetables.tex}
+\input{figures/5-Benchmarks/times_plot.tex}
 \input{figures/5-Benchmarks/relative_times.tex}
 
 I also attempted to benchmark with the AVR and Pono model checkers,

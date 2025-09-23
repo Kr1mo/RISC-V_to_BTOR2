@@ -1,20 +1,19 @@
 \begin{figure}
     \centering
-    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\ttfamily\color{UniRed}}l >{\slshape} l}
         \hline
         \hline
         \ttfamily
-        (n + 0) & read   & B  & memory     & pc      & instrB1 \\
-        (n + 1) & add    & AS & addressInc & pc      & pc+1    \\
-        (n + 2) & read   & B  & memory     & pc+1    & instrB2 \\
-        (n + 3) & add    & AS & addressInc & pc+1    & pc+2    \\
-        (n + 4) & read   & B  & memory     & pc+2    & instrB3 \\
-        (n + 5) & add    & AS & addressInc & pc+2    & pc+3    \\
-        (n + 6) & read   & B  & memory     & pc+3    & instrB4 \\
-        \\
-        (n + 7) & concat & H  & instrB2    & instrB1 & instrH1 \\
-        (n + 8) & concat & H  & instrB4    & instrB3 & instrH2 \\
-        (n + 9) & concat & W  & instrH2    & instrH1 & instr   \\
+        (n + 0) & add    & AS & addressInc               & \rmfamily\slshape pc &       \\
+        (n + 1) & add    & AS & addressInc               & (n + 0)              &       \\
+        (n + 2) & add    & AS & addressInc               & (n + 1)              &       \\\\
+        (n + 3) & read   & B  & memory                   & \rmfamily\slshape pc &       \\
+        (n + 4) & read   & B  & memory                   & (n + 0)              &       \\
+        (n + 5) & read   & B  & memory                   & (n + 1)              &       \\
+        (n + 6) & read   & B  & memory                   & (n + 2)              &       \\\\
+        (n + 7) & concat & H  & \upshape\ttfamily(n + 4) & (n + 3)              &       \\
+        (n + 8) & concat & H  & \upshape\ttfamily(n + 6) & (n + 5)              &       \\
+        (n + 9) & concat & W  & \upshape\ttfamily(n + 8) & (n + 7)              & instr \\
         \hline
         \hline
     \end{tabular}

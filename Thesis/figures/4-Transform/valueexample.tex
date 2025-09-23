@@ -9,118 +9,55 @@
             \hline
             \hline
         \end{tabular}
+        \label{auipc}
     }
-
-    \caption[Examples for instruction execution]{Instruction execution for chosen instructions}\label{fig:valueexample}
-\end{figure}
-\begin{figure}%
-    \ContinuedFloat
-    \centering
 
     \subfloat[JALR]{
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
             \hline
             \hline
-            (n + 0) & add   & AS & pc                         & pcInc                   &  & nextPc      \\
-            (n + 1) & add   & D  & imm                        & rs1val                  &  & pcJALR64pre \\
-            (n + 2) & and   & D  & \textcolor{Black}{-}1Const & pcJALR64pre             &  & pcJALR64    \\
-            (n + 3) & slice & AS & pcJALR64                   & \textcolor{UniBlue}{15} &  & pcJALR      \\
-            (n + 4) & uext  & D  & nextPc                     & \textcolor{UniBlue}{48} &  & rdJALR      \\
+            (n + 0) & add   & AS & pc                                          & pcInc                    &  & nextPc \\
+            (n + 1) & add   & D  & imm                                         & rs1val                   &  &        \\
+            (n + 2) & and   & D  & \textcolor{Black}{\upshape\ttfamily-}1Const & \upshape\ttfamily(n + 1) &  &        \\
+            (n + 3) & slice & AS & \upshape\ttfamily(n + 2)                    & \textcolor{UniBlue}{15}  &  & pcJALR \\
+            (n + 4) & uext  & D  & nextPc                                      & \textcolor{UniBlue}{48}  &  & rdJALR \\
             \hline
             \hline
-            \multicolumn{7}{l}{\todo{pc overflow erwähnen}}
         \end{tabular}
+        \label{jalr}
     }
-
-    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
-\end{figure}
-\begin{figure}%
-    \ContinuedFloat
-    \centering
 
     \subfloat[BEQ]{
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
             \hline
             \hline
-            (n + 0) & add   & AS   & pc        & pcInc                   &                        & nextPc    \\
-            (n + 1) & slice & AS   & imm       & \textcolor{UniBlue}{15} & \textcolor{UniBlue}{0} & ImmAS     \\
-            (n + 2) & add   & AS   & pc        & ImmAS                   &                        & pcBranch  \\
-            (n + 3) & eq    & Bool & rs1val    & rs2val                  &                        & isBEQcond \\
-            (n + 4) & ite   & AS   & isBEQcond & pcBranch                & nextPc                 & pcBEQ     \\
+            (n + 0) & add   & AS   & pc                       & pcInc                   &                        & nextPc   \\
+            (n + 1) & slice & AS   & imm                      & \textcolor{UniBlue}{15} & \textcolor{UniBlue}{0} & ImmAS    \\
+            (n + 2) & add   & AS   & pc                       & ImmAS                   &                        & pcBranch \\
+            (n + 3) & eq    & Bool & rs1val                   & rs2val                  &                        &          \\
+            (n + 4) & ite   & AS   & \upshape\ttfamily(n + 3) & pcBranch                & nextPc                 & pcBEQ    \\
             \hline
             \hline
         \end{tabular}
+        \label{beq}
     }
-
-    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
-\end{figure}
-\begin{figure}%
-    \ContinuedFloat
-    \centering
 
     \subfloat[LHU]{
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
             \hline
             \hline
-            (n + 0) & add    & D  & rs1val     & imm                     &                        & 1stAddrPre \\
-            (n + 1) & slice  & AS & 1stAddrPre & \textcolor{UniBlue}{15} & \textcolor{UniBlue}{0} & 1stAddr    \\
-            (n + 2) & add    & AS & 1stAddr    & addressInc              &                        & 2ndAddr    \\
-            (n + 3) & read   & B  & memory     & 1stAddr                 &                        & loadB1     \\
-            (n + 4) & read   & B  & memory     & 2ndAddr                 &                        & loadB2     \\
-            (n + 5) & concat & H  & loadB2     & loadB1                  &                        & loadB2B1   \\
-            (n + 6) & uext   & D  & loadB2B1   & \textcolor{UniBlue}{48} & \textcolor{UniBlue}{0} & rdLHU      \\
+            (n + 0) & add    & D  & rs1val                   & imm                      &                        &       \\
+            (n + 1) & slice  & AS & \upshape\ttfamily(n + 0) & \textcolor{UniBlue}{15}  & \textcolor{UniBlue}{0} &       \\
+            (n + 2) & add    & AS & \upshape\ttfamily(n + 1) & addressInc               &                        &       \\
+            (n + 3) & read   & B  & memory                   & \upshape\ttfamily(n + 1) &                        &       \\
+            (n + 4) & read   & B  & memory                   & \upshape\ttfamily(n + 2) &                        &       \\
+            (n + 5) & concat & H  & \upshape\ttfamily(n + 3) & \upshape\ttfamily(n + 4) &                        &       \\
+            (n + 6) & uext   & D  & \upshape\ttfamily(n + 5) & \textcolor{UniBlue}{48}  & \textcolor{UniBlue}{0} & rdLHU \\
             \hline
             \hline
         \end{tabular}
+        \label{lhu}
     }
-
-    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
-\end{figure}
-\begin{figure}%
-    \ContinuedFloat
-    \centering
-
-    \subfloat[SD]{
-        \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
-            \hline
-            \hline
-            (n + 0)  & add   & D   & rs1val     & imm                     &                         & 1stAddrPre \\
-            (n + 1)  & slice & AS  & 1stAddrPre & \textcolor{UniBlue}{15} & \textcolor{UniBlue}{0}  & 1stAddr    \\
-            (n + 2)  & add   & AS  & 1stAddr    & addressInc              &                         & 2ndAddr    \\
-            (n + 3)  & add   & AS  & 2ndAddr    & addressInc              &                         & 3rdAddr    \\
-            (n + 4)  & add   & AS  & 3rdAddr    & addressInc              &                         & 4thAddr    \\
-            (n + 5)  & add   & AS  & 4thAddr    & addressInc              &                         & 5thAddr    \\
-            (n + 6)  & add   & AS  & 5thAddr    & addressInc              &                         & 6thAddr    \\
-            (n + 7)  & add   & AS  & 6thAddr    & addressInc              &                         & 7thAddr    \\
-            (n + 8)  & add   & AS  & 7thAddr    & addressInc              &                         & 8thAddr    \\
-            \\
-            (n + 9)  & slice & B   & rs2val     & \textcolor{UniBlue}{7}  & \textcolor{UniBlue}{0}  & storeB1    \\
-            (n + 10) & slice & B   & rs2val     & \textcolor{UniBlue}{15} & \textcolor{UniBlue}{8}  & storeB2    \\
-            (n + 11) & slice & B   & rs2val     & \textcolor{UniBlue}{23} & \textcolor{UniBlue}{16} & storeB3    \\
-            (n + 12) & slice & B   & rs2val     & \textcolor{UniBlue}{31} & \textcolor{UniBlue}{24} & storeB4    \\
-            (n + 13) & slice & B   & rs2val     & \textcolor{UniBlue}{39} & \textcolor{UniBlue}{32} & storeB5    \\
-            (n + 14) & slice & B   & rs2val     & \textcolor{UniBlue}{47} & \textcolor{UniBlue}{40} & storeB6    \\
-            (n + 15) & slice & B   & rs2val     & \textcolor{UniBlue}{55} & \textcolor{UniBlue}{48} & storeB7    \\
-            (n + 16) & slice & B   & rs2val     & \textcolor{UniBlue}{63} & \textcolor{UniBlue}{56} & storeB8    \\
-            \\
-            (n + 17) & write & Mem & memory     & 1stAddr                 & storeB1                 & memorySB   \\
-            (n + 18) & write & Mem & memorySB   & 2ndAddr                 & storeB2                 & memorySH   \\
-            (n + 19) & write & Mem & memorySH   & 3rdAddr                 & storeB3                 & memoryB3   \\
-            (n + 20) & write & Mem & memoryB3   & 4thAddr                 & storeB4                 & memorySW   \\
-            (n + 21) & write & Mem & memorySW   & 5thAddr                 & storeB5                 & memoryB5   \\
-            (n + 22) & write & Mem & memoryB5   & 6thAddr                 & storeB6                 & memoryB6   \\
-            (n + 23) & write & Mem & memoryB6   & 7thAddr                 & storeB7                 & memoryB7   \\
-            (n + 24) & write & Mem & memoryB7   & 8thAddr                 & storeB8                 & memorySD   \\
-            \hline
-            \hline
-        \end{tabular}
-    }
-
-    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
-\end{figure}
-\begin{figure}%
-    \ContinuedFloat
-    \centering
 
     \subfloat[ANDI]{
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
@@ -130,62 +67,93 @@
             \hline
             \hline
         \end{tabular}
+        \label{andi}
     }
-
-    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
-\end{figure}
-\begin{figure}%
-    \ContinuedFloat
-    \centering
-
-    \subfloat[SLLIW]{
-        \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
-            \hline
-            \hline
-            (n + 0) & and   & W & imm32    & 5Bitmask                &                        & shamtIW    \\
-            (n + 1) & slice & W & rs1val   & \textcolor{UniBlue}{31} & \textcolor{UniBlue}{0} & rs1val32   \\
-            (n + 2) & sll   & W & rs1val32 & shamtIW                 &                        & rdSLLIWpre \\
-            (n + 3) & sext  & D & rs1val32 & 32                      &                        & rdSLLIW    \\
-            \hline
-            \hline
-        \end{tabular}
-    }
-
-    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
-\end{figure}
-\begin{figure}%
-    \ContinuedFloat
-    \centering
 
     \subfloat[SLT]{
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
             \hline
             \hline
-            (n + 0) & slt  & Bool & rs1val   & rs2val                  &  & rdSLTpre \\
-            (n + 1) & uext & D    & rdSLTpre & \textcolor{UniBlue}{63} &  & rdSLT    \\
+            (n + 0) & slt  & Bool & rs1val                   & rs2val                  &  &       \\
+            (n + 1) & uext & D    & \upshape\ttfamily(n + 0) & \textcolor{UniBlue}{63} &  & rdSLT \\
             \hline
             \hline
         \end{tabular}
+        \label{slt}
     }
 
-    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
+    \caption[Examples for instruction execution]{Instruction execution
+        for chosen instructions}\label{fig:valueexample}
 \end{figure}
 \begin{figure}%
     \ContinuedFloat
     \centering
 
+    \subfloat[SD]{
+        \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+            \hline
+            \hline
+            (n + 0)  & add   & D   & rs1val                    & imm                      &                           &          \\
+            (n + 1)  & slice & AS  & \upshape\ttfamily(n + 0)  & \textcolor{UniBlue}{15}  & \textcolor{UniBlue}{0}    &          \\
+            (n + 2)  & add   & AS  & \upshape\ttfamily(n + 1)  & addressInc               &                           &          \\
+            (n + 3)  & add   & AS  & \upshape\ttfamily(n + 2)  & addressInc               &                           &          \\
+            (n + 4)  & add   & AS  & \upshape\ttfamily(n + 3)  & addressInc               &                           &          \\
+            (n + 5)  & add   & AS  & \upshape\ttfamily(n + 4)  & addressInc               &                           &          \\
+            (n + 6)  & add   & AS  & \upshape\ttfamily(n + 5)  & addressInc               &                           &          \\
+            (n + 7)  & add   & AS  & \upshape\ttfamily(n + 6)  & addressInc               &                           &          \\
+            (n + 8)  & add   & AS  & \upshape\ttfamily(n + 7)  & addressInc               &                           &          \\
+            \\
+            (n + 9)  & slice & B   & rs2val                    & \textcolor{UniBlue}{7}   & \textcolor{UniBlue}{0}    &          \\
+            (n + 10) & slice & B   & rs2val                    & \textcolor{UniBlue}{15}  & \textcolor{UniBlue}{8}    &          \\
+            (n + 11) & slice & B   & rs2val                    & \textcolor{UniBlue}{23}  & \textcolor{UniBlue}{16}   &          \\
+            (n + 12) & slice & B   & rs2val                    & \textcolor{UniBlue}{31}  & \textcolor{UniBlue}{24}   &          \\
+            (n + 13) & slice & B   & rs2val                    & \textcolor{UniBlue}{39}  & \textcolor{UniBlue}{32}   &          \\
+            (n + 14) & slice & B   & rs2val                    & \textcolor{UniBlue}{47}  & \textcolor{UniBlue}{40}   &          \\
+            (n + 15) & slice & B   & rs2val                    & \textcolor{UniBlue}{55}  & \textcolor{UniBlue}{48}   &          \\
+            (n + 16) & slice & B   & rs2val                    & \textcolor{UniBlue}{63}  & \textcolor{UniBlue}{56}   &          \\
+            \\
+            (n + 17) & write & Mem & memory                    & \upshape\ttfamily(n + 1) & \upshape\ttfamily(n + 9)  & memorySB \\
+            (n + 18) & write & Mem & memorySB                  & \upshape\ttfamily(n + 2) & \upshape\ttfamily(n + 10) & memorySH \\
+            (n + 19) & write & Mem & memorySH                  & \upshape\ttfamily(n + 3) & \upshape\ttfamily(n + 11) &          \\
+            (n + 20) & write & Mem & \upshape\ttfamily(n + 19) & \upshape\ttfamily(n + 4) & \upshape\ttfamily(n + 12) & memorySW \\
+            (n + 21) & write & Mem & memorySW                  & \upshape\ttfamily(n + 5) & \upshape\ttfamily(n + 13) &          \\
+            (n + 22) & write & Mem & \upshape\ttfamily(n + 21) & \upshape\ttfamily(n + 6) & \upshape\ttfamily(n + 14) &          \\
+            (n + 23) & write & Mem & \upshape\ttfamily(n + 22) & \upshape\ttfamily(n + 7) & \upshape\ttfamily(n + 15) &          \\
+            (n + 24) & write & Mem & \upshape\ttfamily(n + 23) & \upshape\ttfamily(n + 8) & \upshape\ttfamily(n + 16) & memorySD \\
+            \hline
+            \hline
+        \end{tabular}
+        \label{sd}
+    }
+
+    \subfloat[SLLIW]{
+        \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+            \hline
+            \hline
+            (n + 0) & and   & W & imm32                    & 5Bitmask                 &                        &         \\
+            (n + 1) & slice & W & rs1val                   & \textcolor{UniBlue}{31}  & \textcolor{UniBlue}{0} &         \\
+            (n + 2) & sll   & W & \upshape\ttfamily(n + 1) & \upshape\ttfamily(n + 0) &                        &         \\
+            (n + 3) & sext  & D & \upshape\ttfamily(n + 2) & 32                       &                        & rdSLLIW \\
+            \hline
+            \hline
+        \end{tabular}
+        \label{slliw}
+    }
+
     \subfloat[SUBW]{
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
             \hline
             \hline
-            (n + 0) & slice & W & rs1val    & \textcolor{UniBlue}{31} & \textcolor{UniBlue}{0} & rs1val32  \\
-            (n + 1) & slice & W & rs2val    & \textcolor{UniBlue}{31} & \textcolor{UniBlue}{0} & rs2val32  \\
-            (n + 2) & sub   & W & rs1val32  & rs2val32                &                        & rdSUBWpre \\
-            (n + 3) & sext  & D & rdSUBWpre & \textcolor{UniBlue}{32} &                        & rdSUBW    \\
+            (n + 0) & slice & W & rs1val                   & \textcolor{UniBlue}{31}  & \textcolor{UniBlue}{0} &        \\
+            (n + 1) & slice & W & rs2val                   & \textcolor{UniBlue}{31}  & \textcolor{UniBlue}{0} &        \\
+            (n + 2) & sub   & W & \upshape\ttfamily(n + 0) & \upshape\ttfamily(n + 1) &                        &        \\
+            (n + 3) & sext  & D & \upshape\ttfamily(n + 2) & \textcolor{UniBlue}{32}  &                        & rdSUBW \\
             \hline
             \hline
         \end{tabular}
+        \label{subw}
     }
 
-    \caption[]{Instruction execution for chosen instructions}\label{fig:valueexample}
+    \caption[]{Continuation of Instruction execution for chosen
+        instructions}
 \end{figure}

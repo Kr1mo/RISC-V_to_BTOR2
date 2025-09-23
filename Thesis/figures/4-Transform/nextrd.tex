@@ -8,18 +8,18 @@
         \hline
     \end{tabular}\\
 
-    \For{\textcolor{Green}{i} from 1 to 31}{
-        add to model:
+    \For{\textcolor{Green}{i} from 1 to 31}{ add to model:
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
             \hline
             \hline
-            (n + 0)  & ite  & D    & isLUI                     & rdLUI                      & x\textcolor{Green}{i}      & newX\textcolor{Green}{i}-49 \\
-            \vdots   & ite  & D    & \vdots                    & \vdots                     & \vdots                     & \vdots                      \\
-            (n + 47) & ite  & D    & isSRAW                    & rdSRAW                     & newX\textcolor{Green}{i}-2 & newX\textcolor{Green}{i}-1  \\
+            (n + 0)  & ite  & D    & isLUI                     & rdLUI                     & x\textcolor{Green}{i}     & \\
+            (n + 1)  & ite  & D    & isAUIPC                   & rdAUIPC                   & \upshape\ttfamily(n + 0)  & \\
+            \vdots   & ite  & D    & \vdots                    & \vdots                    & \vdots                    & \\
+            (n + 47) & ite  & D    & isSRAW                    & rdSRAW                    & \upshape\ttfamily(n + 46) & \\
             \\
-            (n + 48) & eq   & Bool & rd                        & \textcolor{Green}{i}Const  &                            & isRdX\textcolor{Green}{i}   \\
-            (n + 49) & ite  & D    & isRdX\textcolor{Green}{i} & newX\textcolor{Green}{i}-1 & x\textcolor{Green}{i}      & newX\textcolor{Green}{i}    \\
-            (n + 50) & next & D    & x\textcolor{Green}{i}     & newX\textcolor{Green}{i}                                                              \\
+            (n + 48) & eq   & Bool & rd                        & \textcolor{Green}{i}Const &                           & \\
+            (n + 49) & ite  & D    & \upshape\ttfamily(n + 48) & \upshape\ttfamily(n + 47) & x\textcolor{Green}{i}     & \\
+            (n + 50) & next & D    & x\textcolor{Green}{i}     & \upshape\ttfamily(n + 49)                               \\
             \hline
             \hline
         \end{tabular}\\

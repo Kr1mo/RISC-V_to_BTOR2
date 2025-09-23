@@ -3,19 +3,19 @@
     \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
         \hline
         \hline
-        (n + 0)  & eq   & Bool & opcode  & store                   &          & isSType \\
-        (n + 1)  & eq   & Bool & opcode  & branch                  &          & isBType \\
-        (n + 2)  & eq   & Bool & opcode  & auipc                   &          & uType1  \\
-        (n + 3)  & eq   & Bool & opcode  & lui                     &          & uType2  \\
-        (n + 4)  & or   & Bool & uType1  & uType2                  &          & isUType \\
-        (n + 5)  & eq   & Bool & opcode  & jal                     &          & isJType \\
+        (n + 0)  & eq   & Bool & opcode                   & store                    &          & isSType \\
+        (n + 1)  & eq   & Bool & opcode                   & branch                   &          & isBType \\
+        (n + 2)  & eq   & Bool & opcode                   & auipc                    &          &         \\
+        (n + 3)  & eq   & Bool & opcode                   & lui                      &          &         \\
+        (n + 4)  & or   & Bool & \upshape\ttfamily(n + 2) & \upshape\ttfamily(n + 3) &          & isUType \\
+        (n + 5)  & eq   & Bool & opcode                   & jal                      &          & isJType \\
         \\
-        (n + 6)  & ite  & W    & isSType & sTypeImm                & iTypeImm & checkS  \\
-        (n + 7)  & ite  & W    & isBType & bTypeImm                & checkS   & checkB  \\
-        (n + 8)  & ite  & W    & isUType & uTypeImm                & checkB   & checkU  \\
-        (n + 9)  & ite  & W    & isJType & jTypeImm                & checkU   & imm32   \\
+        (n + 6)  & ite  & W    & isSType                  & sTypeImm                 & iTypeImm & checkS  \\
+        (n + 7)  & ite  & W    & isBType                  & bTypeImm                 & checkS   & checkB  \\
+        (n + 8)  & ite  & W    & isUType                  & uTypeImm                 & checkB   & checkU  \\
+        (n + 9)  & ite  & W    & isJType                  & jTypeImm                 & checkU   & imm32   \\
         \\
-        (n + 10) & sext & D    & imm32   & \textcolor{UniBlue}{32} &          & imm     \\
+        (n + 10) & sext & D    & imm32                    & \textcolor{UniBlue}{32}  &          & imm     \\
         \hline
         \hline
     \end{tabular}

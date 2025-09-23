@@ -1,7 +1,5 @@
 \chapter{Transforming RISC-V to BTOR2}\label{chap:riscv_to_btor2}
 
-\todo{Explain naming conventions for the model nodes}
-
 This chapter addresses the central problem of this thesis:
 transforming a RISC-V state into the BTOR2 format for benchmarking
 purposes. F. Schrögendorfer conducted similar work in his master's
@@ -66,18 +64,28 @@ in \textcolor{UniGrey}{gray}, all node-IDs in
 Unfortunately, these cannot be used as aliases for the line numbers,
 but for clarity, in the following figures I use them as such aliases.
 This allows each new figure to start with the relative line number
-\texttt{n}, making it feasible to describe processes with algorithms.
-It is implied that \texttt{n} is sufficiently incremented after
-adding to the model so that IDs do not overlap. The following
-sections describe how a BTOR2 model is constructed from a RISC-V
-state file.
+\texttt{n}, making it feasible to describe repetitive addition to the
+model with algorithms. From these, another color,
+\textcolor{Green}{green}, is included. This corresponds to an
+algorithm variable. In contrast to the other colors, green parts of
+symbols must be replaced with the variables value. As a small
+example, if \textcolor{Green}{i} = 2 and \texttt{n} =
+7,\\\texttt{\color{UniRed}n \color{Black}constd \color{UniGrey}W
+    \color{Green}i} \textsl{\color{Green}i\color{Black}Const}\\ shall
+result in \\ \texttt{\color{UniRed}7 \color{Black}constd
+    \color{UniGrey}5 \color{Green}2}
+\textsl{\color{Green}2\color{Black}Const}\\ being added to the
+model.\\ It is implied that \texttt{n} is sufficiently incremented
+after adding new nodes to the model so that IDs do not overlap. With
+this, the following sections describe how a BTOR2 model is
+constructed from a RISC-V state file.
 
 \subsection{Constants}
-First, I added the sorts and non-progressive constants needed in the
-BTOR2 model, as shown in \figref{fig:constants}. This is extended by
-a set of progressive constants used for comparison, e.g., against the
-register number. \algoref{alg:progressiveconsts} describes how these
-are added.
+First in the model are the sorts needed. These are comparable to
+types and are used to define the bit width of a node. After them
+follow a first set of constants I called \enquote{non-progressive},
+which includes bitmasks, shift distances and also the values of all
+implemented opcodes. This is shown in \figref{fig:constants}.
 
 Of note is the representation of memory as an array of addressable
 memory cells, each 1 byte. The chosen address space of 16 bits is
@@ -88,8 +96,15 @@ representing a 64-bit addressable memory with $2^{64}$ bytes
 65kB and supporting programs with potentially over 10,000
 instructions, which I consider sufficient for most use cases. The
 encoding is implemented so that the address space can be modified as
-needed. \todo{Change code to make address space modifiable by an
-    option?} \todo{Explain progressive constants}
+needed.
+
+Following this first set of constants are the \enquote{progressive}
+constants. To be able to e.g. compute which registers are encoded in
+the instruction or which registers to change, I need a constant for
+each register number. This is excellent as a minimal example for an
+algorithm, which is shown in \algoref{alg:progressiveconsts}.
+
+\todo{Change code to make address space modifiable by an option?}
 
 \input{figures/4-Transform/constants.tex}
 \input{figures/4-Transform/progressiveconsts.tex}
@@ -123,8 +138,10 @@ these constants must be defined \textbf{before} the states, but
 initialization with the values must occur after the states. Thus,
 this initialization process \textbf{wraps around} the state
 representation. The generation of constants is shown in
-\algoref{alg:generateconstantsfromstate}, while the actual
-initialization is shown in \algoref{alg:initstate}.
+\algoref{alg:generateconstantsfromstate} and comes \textbf{before}
+\figref{fig:states}, while the actual initialization is shown in
+\algoref{alg:initstate} and comes \textbf{after} \figref{fig:states}.
+
 \input{figures/4-Transform/loadstateconstants.tex}
 \input{figures/4-Transform/initstate.tex}
 
@@ -141,17 +158,18 @@ masking, as shown in \figref{fig:extractNOimm}.
 
 The immediate, however, must first be constructed from its subfields,
 which are referenced in \figref{fig:rv64i_formats}. In the BTOR2
-model, this is shown in \figref{fig:extractimmbytype}.
-\todo{Reference to same method in riscvsim} Three points are
-noteworthy:\\ First, some immediate subfields overlap exactly. This
-is utilized in lines (n + 1) with the overlap of $imm[11:5]$ for I-
-and S-type, and (n + 21) with J- and B-types $imm[10:5]$ overlap.
-Second, as described in \secref{sec:riscvIsa}, the immediate is
-always sign-extended. This is achieved using arithmetic right shifts,
-which perform sign extension and correctly position the highest
-immediate bit. Third, at line (n + 8), sign extension requires a
-right shift by 19. As this matches the opcode for arithmetic
-instructions with immediate, I reused this constant.
+model, this is shown in \figref{fig:extractimmbytype}. This is the
+same method I used to get the immediate in the RISC-V simulation
+\secref{sec:runInstr} Three points are noteworthy:\\ First, some
+immediate subfields overlap exactly. This is utilized in lines (n +
+1) with the overlap of $imm[11:5]$ for I- and S-type, and (n + 21)
+with J- and B-types $imm[10:5]$ overlap. Second, as described in
+\secref{sec:riscvIsa}, the immediate is always sign-extended. This is
+achieved using arithmetic right shifts, which perform sign extension
+and correctly position the highest immediate bit. Third, at line (n +
+8), sign extension requires a right shift by 19. As this matches the
+opcode for arithmetic instructions with immediate, I reused this
+constant.
 
 Now, \textsl{iTypeImm}, \textsl{sTypeImm}, \textsl{bTypeImm},
 \textsl{uTypeImm}, and \textsl{jTypeImm} are available. However, it
@@ -198,21 +216,33 @@ the instruction in the state. Each state node in the model must have
 an accompanying next node to function correctly. First, the changed
 values are computed.
 
-\subsubsection{Creating All Values of Instruction Execution}
+\subsubsection{Computing new Values for each Instruction}
 It is unnecessary to detail all instructions, as this simply follows
 the RV64I ISA. Instead, I provide examples for each group of
-instructions as divided in \tabref{tab:rv64i-instructions}. Examples
-for \texttt{AUIPC}, \texttt{JALR}, \texttt{BEQ}, \texttt{LHU},
-\texttt{SD}, \texttt{ANDI}, \texttt{SLLIW}, \texttt{SLT}, and
-\texttt{SUBW} are shown in \figref{fig:valueexample}. These examples
-illustrate overlaps that can be utilized, such as addresses for load
-and store instructions or the 32-bit versions of word instructions.
-The \texttt{SD} example demonstrates that all other store
-instructions are interim results of preparing \texttt{SD}. Load
-instructions are similar, but each requires sign extension to 64
-bits.
+instructions as divided in \tabref{tab:rv64i-instructions}. These
+examples are found in \figref{fig:valueexample}, specifically for
+\begin{itemize}
+    \item \texttt{AUIPC} in \figref{auipc},
+    \item \texttt{JALR} in \figref{jalr},
+    \item \texttt{BEQ} in \figref{beq},
+    \item \texttt{LHU} in \figref{lhu},
+    \item \texttt{SD} in \figref{sd},
+    \item \texttt{ANDI} in \figref{andi},
+    \item \texttt{SLLIW} in \figref{slliw},
+    \item \texttt{SLT} in \figref{slt}, and
+    \item \texttt{SUBW} in \figref{subw}.
+\end{itemize}
 
-With this, each change can be assigned to its instruction.
+These examples contain some overlaps that can be utilized, such as
+for load and store instructions or the cut-to-32bit values needed for
+word instructions. The \texttt{SD} example demonstrates that all
+other store instructions are interim results of preparing
+\texttt{SD}. Load instructions are similar, but each requires sign
+extension to 64 bits. Also, between \texttt{SLLIW} and \texttt{SUBW},
+only one node \textsl{rs1val32} suffices. In the generated model,
+this is taken into account but here I avoided it, so the examples are
+independent from each other. With this, we have everything necessary
+to define the next state.
 
 \input{figures/4-Transform/valueexample.tex}
 
@@ -246,27 +276,27 @@ but only indicated.
 
 \input{figures/4-Transform/nextrd.tex}
 
-\subsection{Constraints}
-The final step is to define constraints to terminate the model
+\subsection{Properties}
+The final step is to define properties to terminate the model
 checker. The primary constraint is reaching a set number of
 iterations, as shown in \figref{fig:badcounter}.
 
-Additional constraints are defined to check for invalid instructions.
+Additional properties are defined to check for invalid instructions.
 The first checks if the opcode is valid for the model. The second
 constraint detects if the instruction cannot be identified even when
 the opcode is valid, as shown in \figref{fig:unknownInstr}. The
 constraint in \figref{fig:badaddress} handles
 instruction-address-misaligned exceptions for jump instructions.
 
-Other constraints can be defined, such as terminating on a specific
-pc value or when a register reaches a specified value.
-
-\todo{Maybe add examples on how to do this}\\ \todo{Maybe internal
-    references in figures should be numbers\dots}
+Other properties can be defined, such as terminating on a specific pc
+value or when a register reaches a specified value. An example for
+this can be the addition of \figref{fig:badvalue} to the model. The
+easiest way to exclude the iteration counter when adding this
 
 \input{figures/4-Transform/badcounter.tex}
 \input{figures/4-Transform/badinstructions.tex}
 \input{figures/4-Transform/badaddress.tex}
+\input{figures/4-Transform/badvalue.tex}
 
 \section{Testing for Correctness}\label{sec:corectness}
 To test my model, I compared its results to those of my RISC-V

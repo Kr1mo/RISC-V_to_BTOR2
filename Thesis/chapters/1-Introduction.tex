@@ -1,2 +1,29 @@
 \chapter{Introduction}\label{chap:intro}
-\todo{Write this ?!}
+
+RISC-V, an open-source instruction set architecture, has gained
+significant attention due to its flexibility and extensibility and
+was even mentioned by the European Union for broader adoption
+\cite{eu}. Ensuring the correctness of RISC-V implementations is
+therefore of great importance, particularly in safety-critical
+applications.
+
+Model checking has emerged as a powerful method for formally
+verifying hardware and software systems. Among the available model
+checking formats, BTOR2 has become a widely adopted standard for
+word-level hardware verification. As RISC-V is a processor
+architecture, it is a fitting choice. This thesis investigates the
+feasibility and effectiveness of applying model checking to RISC-V
+using the BTOR2 format.
+
+The primary objective of this work is to develop tools that translate
+RISC-V processor states into BTOR2 models, enabling systematic
+verification, and to evaluate the performance of the model. This is
+extended by a set of tools to check if the model functions correctly.
+By implementing a suite of test cases and analyzing the results
+across different model checkers, this thesis aims to provide insights
+into the suitability of BTOR2-based model checking for RISC-V and to
+identify potential limitations and advantages of this approach.
+
+The following chapters present the theoretical foundations, the
+methodology for transforming RISC-V states to BTOR2, the benchmarking
+process, and a discussion of the results.

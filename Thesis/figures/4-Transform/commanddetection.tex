@@ -27,37 +27,37 @@
             \hline
         \end{tabular}\\
     }
-    $onlyOp \leftarrow$ [LUI, AUIPC, JAL, JALR]\\
-    $needsf7 \leftarrow$ [SRL, SRA, SRLI, SRAI, SRLW, SRAW, SRLWI, SRAWI, ADD, SUB, ADDW, SUBW]\\
-    $rest \leftarrow$[ all other instructions ]\\
+    $\textcolor{Green}{onlyOp} \leftarrow$ [LUI, AUIPC, JAL, JALR]\\
+    $\textcolor{Green}{needsf7} \leftarrow$ [SRL, SRA, SRLI, SRAI, SRLW, SRAW, SRLWI, SRAWI, ADD, SUB, ADDW, SUBW]\\
+    $\textcolor{Green}{rest} \leftarrow$[ all other instructions ]\\
     \BlankLine
-    \For{ all instructions \textcolor{Green}{I} in $onlyOp$}{
+    \For{ all instructions \textcolor{Green}{I} in \color{Green}$onlyOp$}{
         $is\textcolor{Green}{I}$ is already defined
     }
-    \For{all instructions  \textcolor{Green}{I} in $rest$ }{
-        $opname \leftarrow$ opcode name of \textcolor{Green}{I}\\
-        $f3val \leftarrow$ expected funct3 of \textcolor{Green}{I} as digit\\
+    \For{all instructions  \textcolor{Green}{I} in \color{Green}$rest$}{
+        $\textcolor{Green}{opname} \leftarrow$ opcode name of \textcolor{Green}{I}\\
+        $\textcolor{Green}{f3val} \leftarrow$ expected funct3 of \textcolor{Green}{I} as digit\\
         add to model:\\
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
             \hline
             \hline
-            n & and & Bool & is\textcolor{Black}{opname} & is\textcolor{Black}{f3val}Funct3 &  & is\textcolor{Green}{I} \\
+            n & and & Bool & is\textcolor{Green}{opname} & is\textcolor{Green}{f3val}Funct3 &  & is\textcolor{Green}{I} \\
             \hline
             \hline
         \end{tabular}\\
     }
-    \For{all instructions  \textcolor{Green}{I} in $needsf7$ }{
-        $opname \leftarrow$ opcode name of \textcolor{Green}{I}\\
-        $f3val \leftarrow$ expected funct3 of \textcolor{Green}{I} as digit\\
-        $f7hex \leftarrow$ expected funct7 of \textcolor{Green}{I} as hexadecimal number\\
+    \For{all instructions  \textcolor{Green}{I} in \color{Green}$needsf7$}{
+        $\textcolor{Green}{opname} \leftarrow$ opcode name of \textcolor{Green}{I}\\
+        $\textcolor{Green}{f3val} \leftarrow$ expected funct3 of \textcolor{Green}{I} as digit\\
+        $\textcolor{Green}{f7hex} \leftarrow$ expected funct7 of \textcolor{Green}{I} as hexadecimal number\\
         add to model:\\
         \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
             \hline
             \hline
-            (n + 0) & consth & W    & \textcolor{UniBlue}{f7hex}       &                            &  & \textcolor{Green}{I}f7     \\
-            (n + 1) & eq     & Bool & funct7                           & \textcolor{Green}{I}f7     &  & fitsF7\textcolor{Green}{I} \\
-            (n + 2) & and    & Bool & is\textcolor{Black}{f3val}Funct3 & fitsF7\textcolor{Green}{I} &  & fitsF3\textcolor{Green}{I} \\
-            (n + 3) & and    & Bool & is\textcolor{Black}{opname}      & fitsF3\textcolor{Green}{I} &  & is\textcolor{Green}{I}     \\
+            (n + 0) & consth & W    & \textcolor{Green}{f7hex}         &                          &  &                        \\
+            (n + 1) & eq     & Bool & funct7                           & \upshape\ttfamily(n + 0) &  &                        \\
+            (n + 2) & and    & Bool & is\textcolor{Green}{f3val}Funct3 & \upshape\ttfamily(n + 1) &  &                        \\
+            (n + 3) & and    & Bool & is\textcolor{Green}{opname}      & \upshape\ttfamily(n + 2) &  & is\textcolor{Green}{I} \\
             \hline
             \hline
         \end{tabular}\\

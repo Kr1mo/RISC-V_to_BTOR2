@@ -46,10 +46,10 @@ In BTOR2, each line represents either a sort or a node, with the line
 number typically serving as an identifier. A sort functions similarly
 to a type, defining either the length of a bitvector or the size of
 an array of bitvectors. Nodes represent values of a defined sort and
-can be constants, operations, or constraints. These values can be
-referenced by their node identifier, i.e., the line number. The
-syntax of BTOR2 is detailed in \cite[Figure 1]{btor2}, and the
-available operators are listed in \cite[Table 1]{btor2}.
+can be constants, operations, constraints, or properties. These
+values can be referenced by their node identifier, i.e., the line
+number. The syntax of BTOR2 is detailed in \cite[Figure 1]{btor2},
+and the available operators are listed in \cite[Table 1]{btor2}.
 
 Key features of BTOR2 include its support for sequential operations,
 which facilitates the implementation of a RISC-V structure. The
@@ -121,10 +121,10 @@ b0
 \end{figure}
 
 The witness begins with \texttt{sat}, indicating that a property in
-the model is satisfiable. The second line specifies the constraint
-that was triggered. In this case, only one \texttt{bad} node exists
-in the model, and the witness shows that \texttt{b0}, meaning the
-first occurring \texttt{bad} node, was violated.
+the model is satisfiable. The second line specifies the property that
+was violated. In this case, only one \texttt{bad} node exists in the
+model, and the witness shows that \texttt{b0}, meaning the first
+occurring \texttt{bad} node, was violated.
 
 Subsequent lines list the iterations of the counterexample for the
 property. For each sequential iteration, the witness first

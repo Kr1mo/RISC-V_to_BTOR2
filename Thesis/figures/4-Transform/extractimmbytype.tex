@@ -3,36 +3,36 @@
     \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
         \hline
         \hline
-        (n + 0)  & sra & W & instr       & shiftToRs2                    & iTypeImm    \\
+        (n + 0)  & sra & W & instr                     & shiftToRs2                                     & iTypeImm \\
         \\
-        (n + 1)  & and & W & iTypeImm    & \textcolor{Black}{-}5Bitmask  & s[11:5]     \\
-        (n + 2)  & add & W & s[11:5]     & rd                            & sTypeImm    \\
+        (n + 1)  & and & W & iTypeImm                  & \textcolor{Black}{\upshape\ttfamily-}5Bitmask  & s[11:5]  \\
+        (n + 2)  & add & W & s[11:5]                   & rd                                             & sTypeImm \\
         \\
-        (n + 3)  & and & W & rd          & \textcolor{Black}{-}bitPicker & b[4:0]      \\
-        (n + 4)  & and & W & funct7      & 6Bitmask                      & b[10:5]Pre  \\
-        (n + 5)  & sll & W & b{10:5}Pre  & shiftBy5                      & b[10:5]     \\
-        (n + 6)  & and & W & bitPicker   & rd                            & b[11]Pre    \\
-        (n + 7)  & sll & W & b[11]Pre    & shiftBy11                     & b[11]       \\
-        (n + 8)  & sra & W & instr       & mathI                         & b[31:12]Pre \\
-        (n + 9)  & and & W & b[31:12]Pre & 12Bitmask                     & b[31:12]    \\
-        (n + 10) & add & W & b[10:5]     & b[4:0]                        & b[10:0]     \\
-        (n + 11) & add & W & b[11]       & b[10:0]                       & b[11:0]     \\
-        (n + 12) & add & W & b[31:12]    & b[11:0]                       & bTypeImm    \\
+        (n + 3)  & and & W & rd                        & \textcolor{Black}{\upshape\ttfamily-}bitPicker & b[4:0]   \\
+        (n + 4)  & and & W & funct7                    & 6Bitmask                                       &          \\
+        (n + 5)  & sll & W & \upshape\ttfamily(n + 4)  & shiftBy5                                       & b[10:5]  \\
+        (n + 6)  & and & W & bitPicker                 & rd                                             &          \\
+        (n + 7)  & sll & W & \upshape\ttfamily(n + 6)  & shiftBy11                                      & b[11]    \\
+        (n + 8)  & sra & W & instr                     & mathI                                          &          \\
+        (n + 9)  & and & W & \upshape\ttfamily(n + 8)  & 12Bitmask                                      & b[31:12] \\
+        (n + 10) & add & W & b[10:5]                   & b[4:0]                                         &          \\
+        (n + 11) & add & W & b[11]                     & \upshape\ttfamily(n + 10)                      &          \\
+        (n + 12) & add & W & b[31:12]                  & \upshape\ttfamily(n + 11)                      & bTypeImm \\
         \\
-        (n + 13) & and & W & instr       & \textcolor{Black}{-}12Bitmask & uTypeImm    \\
+        (n + 13) & and & W & instr                     & \textcolor{Black}{\upshape\ttfamily-}12Bitmask & uTypeImm \\
         \\
-        (n + 14) & and & W & rs2         & \textcolor{Black}{-}bitPicker & j[4:0]      \\
-        (n + 15) & and & W & rs2         & bitPicker                     & j[11]Pre    \\
-        (n + 16) & sll & W & j[11]Pre    & shiftBy11                     & j[11]       \\
-        (n + 17) & sll & W & funct3      & shiftToFunct3                 & j[14:12]    \\
-        (n + 18) & sll & W & rs1         & shiftToRs1                    & j[19:15]    \\
-        (n + 19) & sra & W & instr       & shiftBy11                     & j[31:20]Pre \\
-        (n + 20) & and & W & j[31:20]Pre & \textcolor{Black}{-}20Bitmask & j[31:20]    \\
-        (n + 21) & add & W & b[10:5]     & j[4:0]                        & j[10:0]     \\
-        (n + 22) & add & W & j[11]       & j[10:0]                       & j[11:0]     \\
-        (n + 23) & add & W & j[14:12]    & j[11:0]                       & j[14:0]     \\
-        (n + 24) & add & W & j[19:15]    & j[14:0]                       & j[19:0]     \\
-        (n + 25) & add & W & j[31:20]    & j[19:0]                       & jTypeImm    \\
+        (n + 14) & and & W & rs2                       & \textcolor{Black}{\upshape\ttfamily-}bitPicker & j[4:0]   \\
+        (n + 15) & and & W & rs2                       & bitPicker                                      &          \\
+        (n + 16) & sll & W & \upshape\ttfamily(n + 15) & shiftBy11                                      & j[11]    \\
+        (n + 17) & sll & W & funct3                    & shiftToFunct3                                  & j[14:12] \\
+        (n + 18) & sll & W & rs1                       & shiftToRs1                                     & j[19:15] \\
+        (n + 19) & sra & W & instr                     & shiftBy11                                      &          \\
+        (n + 20) & and & W & \upshape\ttfamily(n + 19) & \textcolor{Black}{\upshape\ttfamily-}20Bitmask & j[31:20] \\
+        (n + 21) & add & W & b[10:5]                   & j[4:0]                                         &          \\
+        (n + 22) & add & W & j[11]                     & \upshape\ttfamily(n + 21)                      &          \\
+        (n + 23) & add & W & j[14:12]                  & \upshape\ttfamily(n + 22)                      &          \\
+        (n + 24) & add & W & j[19:15]                  & \upshape\ttfamily(n + 23)                      &          \\
+        (n + 25) & add & W & j[31:20]                  & \upshape\ttfamily(n + 24)                      & jTypeImm \\
         \hline
         \hline
     \end{tabular}

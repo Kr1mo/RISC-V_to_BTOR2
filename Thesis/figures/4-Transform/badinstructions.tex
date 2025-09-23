@@ -3,26 +3,26 @@
     \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
         \hline
         \hline
-        (n + 0)  & or  & Bool & isLoad                            & isOpImm        &  & isOpcodeValid9 \\
-        (n + 1)  & or  & Bool & isAUIPC                           & isOpcodeValid9 &  & isOpcodeValid8 \\
-        (n + 2)  & or  & Bool & isOpImm32                         & isOpcodeValid8 &  & isOpcodeValid7 \\
-        (n + 3)  & or  & Bool & isStore                           & isOpcodeValid7 &  & isOpcodeValid6 \\
-        (n + 4)  & or  & Bool & isOp                              & isOpcodeValid6 &  & isOpcodeValid5 \\
-        (n + 5)  & or  & Bool & isLUI                             & isOpcodeValid5 &  & isOpcodeValid4 \\
-        (n + 6)  & or  & Bool & isOp32                            & isOpcodeValid4 &  & isOpcodeValid3 \\
-        (n + 7)  & or  & Bool & isBranch                          & isOpcodeValid3 &  & isOpcodeValid2 \\
-        (n + 8)  & or  & Bool & isJALR                            & isOpcodeValid2 &  & isOpcodeValid1 \\
-        (n + 9)  & or  & Bool & isJAL                             & isOpcodeValid1 &  & isOpcodeValid  \\
-        (n + 10) & bad &      & \textcolor{Black}{-}isOpcodeValid                                      \\
+        (n + 0)  & or  & Bool & isLoad                                       & isOpImm                   &  & \\
+        (n + 1)  & or  & Bool & isAUIPC                                      & \upshape\ttfamily(n + 0)  &  & \\
+        (n + 2)  & or  & Bool & isOpImm32                                    & \upshape\ttfamily(n + 1)  &  & \\
+        (n + 3)  & or  & Bool & isStore                                      & \upshape\ttfamily(n + 2)  &  & \\
+        (n + 4)  & or  & Bool & isOp                                         & \upshape\ttfamily(n + 3)  &  & \\
+        (n + 5)  & or  & Bool & isLUI                                        & \upshape\ttfamily(n + 4)  &  & \\
+        (n + 6)  & or  & Bool & isOp32                                       & \upshape\ttfamily(n + 5)  &  & \\
+        (n + 7)  & or  & Bool & isBranch                                     & \upshape\ttfamily(n + 6)  &  & \\
+        (n + 8)  & or  & Bool & isJALR                                       & \upshape\ttfamily(n + 7)  &  & \\
+        (n + 9)  & or  & Bool & isJAL                                        & \upshape\ttfamily(n + 8)  &  & \\
+        (n + 10) & bad &      & \upshape\ttfamily\textcolor{Black}{-}(n + 9)                                  \\
         \\
-        (n + 11) & or  & Bool & isLUI                             & isAUIPC        &  & isInstrValid47 \\
-        (n + 12) & or  & Bool & isJAL                             & isInstrValid47 &  & isInstrValid46 \\
-        \vdots   & or  & Bool & \vdots                            & \vdots         &  & \vdots         \\
-        (n + 58) & or  & Bool & isSRAW                            & isInstrValid1  &  & isInstrValid   \\
-        (n + 59) & and & Bool & \textcolor{Black}{-}isInstrValid  & isOpcodeValid  &  & unknownInstr   \\
-        (n + 60) & bad &      & unknownInstr                                                           \\
+        (n + 11) & or  & Bool & isLUI                                        & isAUIPC                   &  & \\
+        (n + 12) & or  & Bool & isJAL                                        & \upshape\ttfamily(n + 11) &  & \\
+        \vdots   & or  & Bool & \vdots                                       & \vdots                    &  & \\
+        (n + 58) & or  & Bool & isSRAW                                       & \upshape\ttfamily(n + 57) &  & \\
+        (n + 59) & and & Bool & \upshape\ttfamily\textcolor{Black}{-}(n + 9) & \upshape\ttfamily(n + 58) &  & \\
+        (n + 60) & bad &      & \upshape\ttfamily(n + 59)                                                     \\
         \hline
         \hline
     \end{tabular}
-    \caption[Unknown Instruction constraints]{Constraining the model on unknown instructions}\label{fig:unknownInstr}
+    \caption[Unknown Instruction properties]{Terminating the model on unknown instructions}\label{fig:unknownInstr}
 \end{figure}

@@ -1,0 +1,13 @@
+\begin{figure}
+    \centering
+    \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
+        \hline
+        \hline
+        (n + 0) & constd & D    & \textcolor{Green}{forbiddenValue}  &  &  & badVal\textcolor{Green}{RegNum}    \\
+        (n + 1) & eq     & Bool & x\textcolor{Green}{RegNum}         &  &  & isX\textcolor{Green}{RegNum}BadVal \\
+        (n + 2) & bad    &      & isX\textcolor{Green}{RegNum}BadVal                                            \\
+        \hline
+        \hline
+    \end{tabular}
+    \caption[Register value property]{Terminating the model on a specific register value}\label{fig:badvalue}
+\end{figure}

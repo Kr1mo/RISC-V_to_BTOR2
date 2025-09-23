@@ -3,16 +3,16 @@
     \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
         \hline
         \hline
-        (n + 0) & and & W & instr     & 7Bitmask      & opcode    \\
-        (n + 1) & srl & W & instr     & shiftToRd     & rdPre     \\
-        (n + 2) & and & W & rdPre     & 5Bitmask      & rd        \\
-        (n + 3) & srl & W & instr     & shiftToRs1    & rs1Pre    \\
-        (n + 4) & and & W & rs1Pre    & 5Bitmask      & rs1       \\
-        (n + 5) & srl & W & instr     & shiftToRs2    & rs2Pre    \\
-        (n + 6) & and & W & rs2Pre    & 5Bitmask      & rs2       \\
-        (n + 7) & srl & W & instr     & shiftToFunct3 & funct3Pre \\
-        (n + 8) & and & W & funct3Pre & shiftRd       & funct3    \\
-        (n + 9) & srl & W & instr     & shiftToFunct7 & funct7    \\
+        (n + 0) & and & W & instr                    & 7Bitmask      & opcode \\
+        (n + 1) & srl & W & instr                    & shiftToRd     &        \\
+        (n + 2) & and & W & \upshape\ttfamily(n + 1) & 5Bitmask      & rd     \\
+        (n + 3) & srl & W & instr                    & shiftToRs1    &        \\
+        (n + 4) & and & W & \upshape\ttfamily(n + 3) & 5Bitmask      & rs1    \\
+        (n + 5) & srl & W & instr                    & shiftToRs2    &        \\
+        (n + 6) & and & W & \upshape\ttfamily(n + 5) & 5Bitmask      & rs2    \\
+        (n + 7) & srl & W & instr                    & shiftToFunct3 &        \\
+        (n + 8) & and & W & \upshape\ttfamily(n + 7) & shiftRd       & funct3 \\
+        (n + 9) & srl & W & instr                    & shiftToFunct7 & funct7 \\
         \hline
         \hline
     \end{tabular}

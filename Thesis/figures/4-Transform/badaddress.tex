@@ -3,27 +3,27 @@
     \begin{tabular}[h]{>{\ttfamily\color{UniRed}}r >{\ttfamily}l >{\ttfamily\color{UniGrey}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape\color{UniRed}}l >{\slshape} l}
         \hline
         \hline
-        (n + 0)  & zero   & AS   &           &             &  & pcZero      \\
-        (n + 1)  & constd & AS   & 3         &             &  & pcBitmask   \\
-        (n + 2)  & and    & AS   & pcBitmask & pcJAL       &  & lowbitsJAL  \\
-        (n + 3)  & and    & AS   & pcBitmask & pcJALR      &  & lowbitsJALR \\
-        (n + 4)  & and    & AS   & pcBitmask & pcBEQ       &  & lowbitsBEQ  \\
-        \vdots   & and    & AS   & pcBitmask & \vdots      &  & \vdots      \\
-        (n + 9)  & and    & AS   & pcBitmask & pcBGEU      &  & lowbitsBGEU \\
+        (n + 0)  & zero   & AS   &                           &                           &  & \\
+        (n + 1)  & constd & AS   & \color{UniBlue}3          &                           &  & \\
+        (n + 2)  & and    & AS   & \upshape\ttfamily(n + 1)  & pcJAL                     &  & \\
+        (n + 3)  & and    & AS   & \upshape\ttfamily(n + 1)  & pcJALR                    &  & \\
+        (n + 4)  & and    & AS   & \upshape\ttfamily(n + 1)  & pcBEQ                     &  & \\
+        \vdots   & and    & AS   & \upshape\ttfamily(n + 1)  & \vdots                    &  & \\
+        (n + 9)  & and    & AS   & \upshape\ttfamily(n + 1)  & pcBGEU                    &  & \\
         \\
-        (n + 10) & neq    & Bool & pcZero    & lowbitsJAL  &  & pcMsaJAL    \\
-        (n + 11) & neq    & Bool & pcZero    & lowbitsJALR &  & pcMsaJALR   \\
-        (n + 12) & neq    & Bool & pcZero    & lowbitsBEQ  &  & pcMsaBEQ    \\
-        \vdots   & neq    & Bool & pcZero    & \vdots      &  & \vdots      \\
-        (n + 17) & neq    & Bool & pcZero    & lowbitsBGEU &  & pcMsaBGEU   \\
+        (n + 10) & neq    & Bool & \upshape\ttfamily(n + 0)  & \upshape\ttfamily(n + 2)  &  & \\
+        (n + 11) & neq    & Bool & \upshape\ttfamily(n + 0)  & \upshape\ttfamily(n + 3)  &  & \\
+        (n + 12) & neq    & Bool & \upshape\ttfamily(n + 0)  & \upshape\ttfamily(n + 4)  &  & \\
+        \vdots   & neq    & Bool & \upshape\ttfamily(n + 0)  & \vdots                    &  & \\
+        (n + 17) & neq    & Bool & \upshape\ttfamily(n + 0)  & \upshape\ttfamily(n + 9)  &  & \\
         \\
-        (n + 18) & or     & Bool & pcMsaJAL  & pcMsaJALR   &  & pcMsa6      \\
-        (n + 19) & or     & Bool & pcMsaBEQ  & pcBEQ       &  & pcMsa5      \\
-        \vdots   & or     & Bool & \vdots    & \vdots      &  & \vdots      \\
-        (n + 24) & or     & Bool & pcMsaBGEU & pcMsa1      &  & pcMsa       \\
-        (n + 25) & bad    &      & pcMsa                                    \\
+        (n + 18) & or     & Bool & \upshape\ttfamily(n + 18) & \upshape\ttfamily(n + 17) &  & \\
+        (n + 19) & or     & Bool & \upshape\ttfamily(n + 19) & \upshape\ttfamily(n + 18) &  & \\
+        \vdots   & or     & Bool & \vdots                    & \vdots                    &  & \\
+        (n + 24) & or     & Bool & \upshape\ttfamily(n + 23) & \upshape\ttfamily(n + 22) &  & \\
+        (n + 25) & bad    &      & \upshape\ttfamily(n + 24)                                  \\
         \hline
         \hline
     \end{tabular}
-    \caption[Instruction address misaligned constraint]{Constraining the model on misaligned addresses}\label{fig:badaddress}
+    \caption[Instruction-address-misaligned property]{Terminating the model on misaligned addresses}\label{fig:badaddress}
 \end{figure}
