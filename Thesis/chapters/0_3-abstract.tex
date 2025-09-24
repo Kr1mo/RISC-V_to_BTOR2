@@ -1,3 +1,17 @@
 \chapter*{Abstract}
 
-\todo{write abstract}
+As RISC-V continues to grow in attention \cite{eu}, I explore the
+feasibility of using bounded model checking to run
+RISC-V\cite{riscv-isa}. For this, I implemented a tool to transform a
+RISC-V processor state into the model checking format
+BTOR2\cite{btor2}. To test the correctness of the model I compared
+the execution of one instruction of random-generated processor states
+between the model and a RISC-V-simulator \cite{repoSim}. I further
+implemented tests to benchmark the runtime of model checkers in
+relation to the number of executed RISC-V instructions and the
+available address space. Furthermore, I tested for runtime
+differences between executing memory and non-memory instructions and
+between zero-initializatised and already filled memory. I tried to
+use the currently best BTOR2 model checkers \cite{HWMCC} and came to
+the result that the better the model checker, the worse it performed
+with my model.
