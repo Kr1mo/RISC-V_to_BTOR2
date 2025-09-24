@@ -1,22 +1,26 @@
 \begin{figure}
+    \centering
     \begin{tabular}{l c >{\ttfamily}l}
-        $\langle 64bitHex   \rangle$ & $::=$ & \rmfamily up to 16 digits of [0-9a-fA-F]                                          \\
-        $\langle 32bitHex   \rangle$ & $::=$ & \rmfamily up to 8 digits of [0-9a-fA-F]                                           \\
-        $\langle 16bitHex   \rangle$ & $::=$ & \rmfamily up to 4 digits of [0-9a-fA-F]                                           \\
-        $\langle 8bitHex    \rangle$ & $::=$ & \rmfamily up to 2 digits of [0-9a-fA-F]                                           \\
-        $\langle memContent \rangle$ & $::=$ & $\langle 8bitHex\rangle$                                                          \\
-                                     &       & | $\langle 16bitHex\rangle$                                                       \\
-                                     &       & | $\langle 32bitHex\rangle$                                                       \\
-                                     &       & | $\langle 64bitHex\rangle$                                                       \\
-        $\langle cell       \rangle$ & $::=$ & $\langle 64bitHex\rangle$:$\langle memContent\rangle$                             \\
-                                     &       & | $\langle cell\rangle\langle cell\rangle$                                        \\
-        $\langle regNum     \rangle$ & $::=$ & 0 |\dots | 31                                                                     \\
-        $\langle reg        \rangle$ & $::=$ & PC:$\langle 64bitHex\rangle$\textbackslash n                                      \\
-                                     &       & | x$\langle regNum\rangle$:$\langle64bitHex\rangle$\textbackslash n               \\
-                                     &       & | $\langle reg\rangle\langle reg\rangle$                                          \\
-        $\langle memory     \rangle$ & $::=$ & MEMORY:\textbackslash n$\langle cell\rangle$                                      \\
-        $\langle registers  \rangle$ & $::=$ & REGISTERS:\textbackslash n$\langle reg\rangle$                                    \\
-        $\langle state      \rangle$ & $::=$ & $\langle registers\rangle$\textbackslash n$\langle memory\rangle$\textbackslash n \\
+        $\langle 64bitHex   \rangle$ & $::=$ & \rmfamily 16 digits of [0-9a-fA-F]                                                                 \\
+        $\langle 32bitHex   \rangle$ & $::=$ & \rmfamily 8 digits of [0-9a-fA-F]                                                                  \\
+        $\langle 16bitHex   \rangle$ & $::=$ & \rmfamily 4 digits of [0-9a-fA-F]                                                                  \\
+        $\langle 8bitHex    \rangle$ & $::=$ & \rmfamily 2 digits of [0-9a-fA-F]                                                                  \\
+        $\langle address \rangle$    & $::=$ & \rmfamily up to 16 digits of [0-9a-fA-F]                                                           \\
+        $\langle comment    \rangle$ & $::=$ & \rmfamily printable characters without $\backslash$\texttt{n} or \texttt{:},                       \\
+                                     &       & \rmfamily up to a total line length of 80                                                          \\
+        $\langle memContent \rangle$ & $::=$ & $\langle 8bitHex\rangle$                                                                           \\
+                                     &       & | $\langle 16bitHex\rangle$                                                                        \\
+                                     &       & | $\langle 32bitHex\rangle$                                                                        \\
+                                     &       & | $\langle 64bitHex\rangle$                                                                        \\
+        $\langle cell       \rangle$ & $::=$ & $\langle address \rangle$:$\langle memContent\rangle$ $[\#\langle comment\rangle]$\textbackslash n \\
+                                     &       & | $\langle cell\rangle\langle cell\rangle$                                                         \\
+        $\langle regNum     \rangle$ & $::=$ & 0 |\dots | 31                                                                                      \\
+        $\langle reg        \rangle$ & $::=$ & PC:$\langle 64bitHex\rangle$ $[\#\langle comment\rangle]$\textbackslash n                          \\
+                                     &       & | x$\langle regNum\rangle$:$\langle64bitHex\rangle$ $[\#\langle comment\rangle]$\textbackslash n   \\
+                                     &       & | $\langle reg\rangle\langle reg\rangle$                                                           \\
+        $\langle memory     \rangle$ & $::=$ & MEMORY:\textbackslash n$\langle cell\rangle$                                                       \\
+        $\langle registers  \rangle$ & $::=$ & REGISTERS:\textbackslash n$\langle reg\rangle$                                                     \\
+        $\langle state      \rangle$ & $::=$ & $\langle registers\rangle$\textbackslash n$\langle memory\rangle$\textbackslash n                  \\
 
     \end{tabular}
     \caption[Construction of .state files]{Construction of .state files}

@@ -1,0 +1,144 @@
+
+\begin{figure}
+    \centering
+    \begin{forest}
+        for descendants={grow=east, anchor=west, child anchor=west, s sep=0},
+        grow=east, anchor=west, s sep=0,
+        [opcode:
+        [\ttfamily 3, draw
+        [$load$, tier=opcode
+        [funct3:, tier=f3
+        [\ttfamily 0, draw
+            [\ttfamily LB, tier=instr]
+        ]
+        [\ttfamily 1, draw
+            [\ttfamily LH, tier=instr]
+        ]
+        [\ttfamily 2, draw
+            [\ttfamily LW, tier=instr]
+        ]
+        [\ttfamily 3, draw
+            [\ttfamily LD, tier=instr]
+        ]
+        [\ttfamily 4, draw
+            [\ttfamily LBU, tier=instr]
+        ]
+        [\ttfamily 5, draw
+            [\ttfamily LHU, tier=instr]
+        ]
+        [\ttfamily 6, draw
+            [\ttfamily LWU, tier=instr]
+        ]
+        ]]
+        ]
+        [\ttfamily 19, draw
+        [$opImm$, tier=opcode
+        [funct3:, tier=f3
+        [\ttfamily 0, draw
+            [\ttfamily ADDI, tier=instr]
+        ]
+        [\ttfamily 1, draw
+            [\ttfamily SLLI, tier=instr]
+        ]
+        [\ttfamily 2, draw
+            [\ttfamily SLTI, tier=instr]
+        ]
+        [\ttfamily 3, draw
+            [\ttfamily SLTIU, tier=instr]
+        ]
+        [\ttfamily 4, draw
+            [\ttfamily XORI, tier=instr]
+        ]
+        [\ttfamily 5, draw
+        [funct7 (only bit 30):, tier=f7
+        [\ttfamily 0, draw [\ttfamily SRLI]]
+        [\ttfamily 1, draw [\ttfamily SRAI]]]
+        ]
+        [\ttfamily 6, draw
+            [\ttfamily ORI, tier=instr]
+        ]
+        [\ttfamily 7, draw
+            [\ttfamily ANDI, tier=instr]]
+        ]]
+        ]
+        [\ttfamily 23, draw
+        [$auipc$, tier=opcode
+        [\ttfamily AUIPC, tier=instr2]
+        ]
+        ]
+        [\ttfamily 27, draw
+        [$opImm32$, tier=opcode
+        [funct3:, tier=f3
+        [\ttfamily 0, draw
+            [\ttfamily ADDIW, tier=instr]
+        ]
+        [\ttfamily 1, draw
+            [\ttfamily SLLIW, tier=instr]
+        ]
+        [\ttfamily 5, draw
+        [funct7 (only bit 30):, tier=f7
+        [\ttfamily 0, draw [\ttfamily SRLIW]]
+        [\ttfamily 1, draw [\ttfamily SRAIW]]]
+        ]
+        ]]]
+        [\ttfamily 35, draw
+        [$store$, tier=opcode
+        [funct3:, tier=f3
+        [\ttfamily 0, draw
+            [\ttfamily SB, tier=instr]
+        ]
+        [\ttfamily 1, draw
+            [\ttfamily SH, tier=instr]
+        ]
+        [\ttfamily 2, draw
+            [\ttfamily SW, tier=instr]
+        ]
+        [\ttfamily 3, draw
+            [\ttfamily SD, tier=instr]
+        ]]]
+        ]
+        [\ttfamily 51, draw
+        [$op$, tier=opcode
+        [funct3:, tier=f3
+        [\ttfamily 0, draw
+        [funct7 (only bit 30):, tier=f7
+        [\ttfamily 0, draw [\ttfamily ADD]]
+        [\ttfamily 1, draw [\ttfamily SUB]]
+        ]
+        ]
+        [\ttfamily 1, draw
+            [\ttfamily SLL, tier=instr]
+        ]
+        [\ttfamily 2, draw
+            [\ttfamily SLT, tier=instr]
+        ]
+        [\ttfamily 3, draw
+            [\ttfamily SLTU, tier=instr]
+        ]
+        [\ttfamily 4, draw
+            [\ttfamily XOR, tier=instr]
+        ]
+        [\ttfamily 5, draw
+        [funct7 (only bit 30):, tier=f7 [\ttfamily 0, draw [\ttfamily SRL]] [\ttfamily 1,
+        draw [\ttfamily SRA]]] ] [\ttfamily 6, draw [\ttfamily OR,
+                tier=instr] ] [\ttfamily 7, draw [\ttfamily AND, tier=instr]]]] ]
+        [\ttfamily 55, draw [$lui$, tier=opcode [\ttfamily LUI, tier=instr2] ]
+        ] [\ttfamily 59, draw [$op32$, tier=opcode [funct3:, tier=f3
+        [\ttfamily 0, draw [funct7 (only bit 30):, tier=f7
+        [\ttfamily 0, draw [\ttfamily ADDW]]
+        [\ttfamily 1, draw [\ttfamily SUBW]]
+        ] ] [\ttfamily 1, draw
+            [\ttfamily SLLW, tier=instr] ] [\ttfamily 5, draw [funct7 (only bit 30):,
+        tier=f7
+        [\ttfamily 0, draw [\ttfamily SRLW]]
+        [\ttfamily 1, draw [\ttfamily SRAW]]] ]]] ] [\ttfamily 99, draw [$branch$, tier=opcode [funct3:,
+        tier=f3 [\ttfamily 0, draw [\ttfamily BEQ, tier=instr] ] [\ttfamily
+        1, draw [\ttfamily BNE, tier=instr] ] [\ttfamily 4, draw [\ttfamily
+                BLT, tier=instr] ] [\ttfamily 5, draw [\ttfamily BGE, tier=instr] ]
+        [\ttfamily 6, draw [\ttfamily BLTU, tier=instr] ] [\ttfamily 7, draw
+            [\ttfamily BGEU, tier=instr]] ]] ] [\ttfamily 103, draw [$jalr$,
+        tier=opcode [\ttfamily JALR, tier=instr2] ] ] [\ttfamily 111, draw
+        [$jal$, tier=opcode [\ttfamily JAL, tier=instr2] ] ] ]
+    \end{forest}
+    \caption[Decision tree to find operation]{Decision tree to find the correct operation based on the current instruction}\label{fig:tree}
+\end{figure}

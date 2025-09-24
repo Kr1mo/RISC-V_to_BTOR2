@@ -202,22 +202,25 @@ structures are shown in \figref{fig:structs}.
 
 \subsection{Running an Instruction}\label{sec:runInstr}
 After fetching the current instruction from the hash table, it must
-be decoded. The easiest way to find the current instruction is a
-decision tree. First, I mask out the opcode and match it over all
-implemented opcodes. From there, either this is an endpoint and the
-instruction is identified, or $funct3$ must be masked and matched. A
-final differentiation over $funct7$ might be needed, but after this
-every leaf in the tree coincides with an instruction. Also, with
-knowing the opcode of the current instruction, I know the instruction
-format (\figref{fig:rv64i_formats}). This means that I can now also
-extract relevant register numbers and, if it exists, the immediate.
-The best way to get these values is to apply a mask and shift this
-result to its correct place. For the immediate, as it possibly is
-divided into multiple fields, it might be needed to add multiple
-partial immediates together. At this point all information in the
-instruction is decoded and the current state can be modified
-according to the operation corresponding to the leaf reached after
-going through the tree. \todo{Graph of the decision tree?}
+be decoded. The easiest way to decode the operation corresponding to
+the current instruction is a decision tree like in \figref{fig:tree}.
+First, I mask out the opcode and match it over all implemented
+opcodes. From there, either this is an endpoint and the instruction
+is identified, or $funct3$ must be masked and matched. A final
+differentiation over $funct7$ might be needed, but after this every
+leaf in the tree coincides with an instruction. Also, with knowing
+the opcode of the current instruction, I know the instruction format
+(\figref{fig:rv64i_formats}). This means that I can now also extract
+relevant register numbers and, if it exists, the immediate. The best
+way to get these values is to apply a mask and shift this result to
+its correct place. For the immediate, as it possibly is divided into
+multiple fields, it might be needed to add multiple partial
+immediates together. At this point all information in the instruction
+is decoded and the current state can be modified according to the
+operation corresponding to the leaf reached after going through the
+tree.
+
+\input{figures/2-RiscV/tree.tex}
 
 \subsection{Saving the State of a RISC-V
       Processor}\label{sub:statefile}
@@ -233,7 +236,10 @@ cannot be different from 0. I included the option to reference it
 nonetheless to have the complete state included. Under
 \enquote{MEMORY:}, after giving an address, the memory can be filled
 with 1-, 2-, 4-, or 8-byte sized memory content. The given address is
-the starting address of the content, with every byte after the first
-filling the next higher address.
+the starting address of the content. As RISC-V is little-endian, the
+rightmost byte is placed at the starting address. From there the next
+byte on the left is placed at the next higher address. Additionally,
+comments can be added after a \#. The total length of the line should
+not extend over 80 characters.
 
 \input{figures/2-RiscV/statefile.tex}

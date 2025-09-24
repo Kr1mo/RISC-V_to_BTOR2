@@ -8,11 +8,14 @@
 
 #define BTOR_MEMORY_SIZE 16 // Should be raised to 16 or 32 in future
 
+int memsize = BTOR_MEMORY_SIZE;
+unsigned int pow_memsize = 1 << BTOR_MEMORY_SIZE; // 2^BTOR_MEMORY_SIZE
+
 int btor_constants(FILE *f) { // This sadly grew as-needed
   fprintf(f, "; Basics\n");
   fprintf(f, "1 sort bitvec 1 Bool\n"); // booleans
   fprintf(f, "2 sort bitvec %d AS\n",
-          BTOR_MEMORY_SIZE);         // memory representation
+          memsize);                  // memory representation
   fprintf(f, "3 sort bitvec 8 B\n"); // memory cell
   fprintf(f, "4 sort bitvec 16 H\n");
   fprintf(f, "5 sort bitvec 32 W\n");   // command
@@ -71,8 +74,7 @@ int btor_register_consts(FILE *f, int next_line, state *s) {
       next_line++;
     }
   }
-  fprintf(f, "%d constd 2 %ld\n", next_line,
-          s->pc % (int)pow(2, BTOR_MEMORY_SIZE));
+  fprintf(f, "%d constd 2 %ld\n", next_line, s->pc % pow_memsize);
   return next_line + 1;
 }
 
@@ -118,7 +120,7 @@ int btor_memory(
   uint64_t *addresses = get_initialised_adresses(s->memory);
 
   for (size_t i = 1; i <= addresses[0]; i++) { // TODO also initialise 0s??
-    if (addresses[i] >= (int)pow(2, BTOR_MEMORY_SIZE)) {
+    if (addresses[i] >= pow_memsize) {
       break; // Only take the first pow(2, BTOR_MEMORY_SIZE) addresses into
              // account
     }
@@ -145,7 +147,7 @@ int btor_memory(
     } else {
       fprintf(f, "%d consth 3 %x\n", next_line, get_byte(s, addresses[i]));
       fprintf(f, "%d constd 2 %ld\n", next_line + 1,
-              addresses[i] % (int)pow(2, BTOR_MEMORY_SIZE));
+              addresses[i] % pow_memsize);
       fprintf(f, "%d write 7 %d %d %d\n", next_line + 2, memory_initializer,
               next_line + 1, next_line);
       memory_initializer = next_line + 2;
@@ -590,7 +592,7 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   fprintf(f, ";\n; Calculating values for commands\n");
   fprintf(f, ";\n; Flow Control\n");
   fprintf(f, "%d uext 6 %d %d pc_val_64bit\n", next_line, register_loc + 32,
-          64 - BTOR_MEMORY_SIZE);
+          64 - memsize);
   fprintf(f, "%d sext 6 %d 32 immediate_64bit\n", next_line + 1, immediate_loc);
   fprintf(f, "%d add 6 %d %d auipc_rd\n", next_line + 2, next_line,
           next_line + 1);
@@ -604,7 +606,7 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   next_line += 3;
 
   fprintf(f, "%d slice 2 %d %d 0 jal_pc\n", next_line, pc_immediate_added,
-          BTOR_MEMORY_SIZE - 1);
+          memsize - 1);
   int jal_pc = next_line;
   next_line++;
 
@@ -616,8 +618,7 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   fprintf(f, "%d add 6 %d %d\n", next_line, rs1_val_loc, immediate_64bit);
   fprintf(f, "%d and 6 %d -%d\n", next_line + 1, next_line,
           comparison_constants_loc + 1);
-  fprintf(f, "%d slice 2 %d %d 0\n", next_line + 2, next_line + 1,
-          BTOR_MEMORY_SIZE - 1);
+  fprintf(f, "%d slice 2 %d %d 0\n", next_line + 2, next_line + 1, memsize - 1);
   next_line += 3;
   int jalr_pc = next_line - 1;
   int jalr_rd = jal_rd; // JALR rd is the same as JAL rd
@@ -625,7 +626,7 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   int branch_pc_true = jal_pc; // as immediate is command sensitive, this also
                                // works for b-type encoding
 
-  fprintf(f, "%d slice 2 %d %d 0\n", next_line, jal_rd, BTOR_MEMORY_SIZE - 1);
+  fprintf(f, "%d slice 2 %d %d 0\n", next_line, jal_rd, memsize - 1);
   int branch_pc_false = next_line;
   next_line++;
 
@@ -664,8 +665,7 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   }
   int rs1_added_shortened = next_line;
   for (size_t i = 0; i < 8; i++) {
-    fprintf(f, "%d slice 2 %ld %d 0\n", next_line, rs1_added + i,
-            BTOR_MEMORY_SIZE - 1);
+    fprintf(f, "%d slice 2 %ld %d 0\n", next_line, rs1_added + i, memsize - 1);
     next_line++;
   }
 
@@ -738,7 +738,7 @@ int btor_updates(FILE *f, int next_line, int register_loc, int memory_loc,
   fprintf(f, "%d add 6 %d %d mem_adress_uncut\n", next_line, rs1_val_loc,
           immediate_64bit); // Add rs1 value to immediate
   fprintf(f, "%d slice 2 %d %d 0 mem_address\n", next_line + 1, next_line,
-          BTOR_MEMORY_SIZE - 1); // Cut to BTOR memory size
+          memsize - 1); // Cut to BTOR memory size
   int mem_address_cut = next_line + 1;
   next_line += 2;
   for (size_t i = 0; i < 8; i++) {
@@ -1258,7 +1258,7 @@ int main(int argc, char *argv[]) {
 
   int opt;
 
-  while ((opt = getopt(argc, argv, "o:n:p")) != -1) {
+  while ((opt = getopt(argc, argv, "a:o:n:p")) != -1) {
     switch (opt) {
     case 'o':                                       // output file
       target = realloc(target, strlen(optarg) + 1); // +1 for null terminator
@@ -1270,6 +1270,16 @@ int main(int argc, char *argv[]) {
       break;
     case 'n': // iterations
       iterations = atoi(optarg);
+      break;
+    case 'a': // (not implemented)
+      unsigned int a = atoi(optarg);
+      if (a > 0) {
+        memsize = a;
+        pow_memsize = 1 << (memsize);
+      } else {
+        fprintf(stderr, "Address space must be a positive integer.\n");
+        return 1;
+      }
       break;
     case 'p': // print
       to_stdout = true;
