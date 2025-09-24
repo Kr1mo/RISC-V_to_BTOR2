@@ -1,17 +1,20 @@
 \chapter*{Abstract}
 
-As RISC-V continues to grow in attention \cite{eu}, I explore the
-feasibility of using bounded model checking to run
-RISC-V\cite{riscv-isa}. For this, I implemented a tool to transform a
-RISC-V processor state into the model checking format
-BTOR2\cite{btor2}. To test the correctness of the model I compared
-the execution of one instruction of random-generated processor states
-between the model and a RISC-V-simulator \cite{repoSim}. I further
-implemented tests to benchmark the runtime of model checkers in
-relation to the number of executed RISC-V instructions and the
-available address space. Furthermore, I tested for runtime
-differences between executing memory and non-memory instructions and
-between zero-initializatised and already filled memory. I tried to
-use the currently best BTOR2 model checkers \cite{HWMCC} and came to
-the result that the better the model checker, the worse it performed
-with my model.
+RISC-V is an open-source instruction set architecture that is
+increasingly adopted in both research and industry due to its
+flexibility and extensibility \cite{riscv-isa, eu}. Formal
+verification, particularly bounded model checking, is essential for
+ensuring the correctness of such architectures in safety-critical
+contexts \cite{BiereBMC}. BTOR2 has become a standard format for
+word-level hardware model checking \cite{btor2, HWMCC}.
+
+This thesis presents tools for translating RISC-V processor states
+into BTOR2 models and reconstructing states from model checker
+witnesses. The correctness of the models is validated by comparing
+single-instruction execution against a reference RISC-V simulator
+\cite{repoSim}. Benchmarking is performed to evaluate the performance
+of various BTOR2 model checkers, including btormc, AVR, and Pono
+\cite{avrPaper, ponoPaper}, with respect to instruction count,
+address space, and memory initialization. The results show that model
+checkers which perform best in general competitions do not
+necessarily excel for my iteration-heavy RISC-V models..
