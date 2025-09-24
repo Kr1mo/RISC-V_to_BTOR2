@@ -12,9 +12,9 @@ This thesis presents tools for translating RISC-V processor states
 into BTOR2 models and reconstructing states from model checker
 witnesses. The correctness of the models is validated by comparing
 single-instruction execution against a reference RISC-V simulator
-\cite{repoSim}. Benchmarking is performed to evaluate the performance
-of various BTOR2 model checkers, including btormc, AVR, and Pono
-\cite{avrPaper, ponoPaper}, with respect to instruction count,
+\cite{repoSim}. Benchmarking is performed to evaluate the feasibility
+of this approach using the model checkers btormc, AVR, and Pono
+\cite{btor2, avrPaper, ponoPaper}, with respect to instruction count,
 address space, and memory initialization. The results show that model
 checkers which perform best in general competitions do not
 necessarily excel for my iteration-heavy RISC-V models..
