@@ -27,7 +27,7 @@ must occur in sequence:
 Due to the fixed instruction length of RISC-V, as mentioned in \secref{sec:riscvIsa}, fetching the current instruction is straightforward. Ultimately, a node is required that retrieves a $word$ from memory at the location specified by $pc$.
 
 For basic identification, the $opcode$ must be extracted and checked.
-Depending on the opcode, further distinctions between instructions
+Depending on the $opcode$, further distinctions between instructions
 require extracting and checking $funct3$ and, if necessary, $funct7$.
 Ultimately, a node for each instruction is needed, holding a boolean
 value indicating whether this instruction was fetched.
@@ -143,7 +143,7 @@ representation. The generation of constants is shown in
 \input{figures/4-Transform/loadstateconstants.tex}
 \input{figures/4-Transform/initstate.tex}
 
-\subsection{Fetching the Current Instruction}
+\subsection{Fetching the current Instruction}
 To fetch the current instruction, I read the four bytes of the
 instruction and concatenate them, as shown in \figref{fig:fetching}.
 \input{figures/4-Transform/fetching.tex}
@@ -166,7 +166,7 @@ with J- and B-types $imm[10:5]$ overlap. Second, as described in
 achieved using arithmetic right shifts, which perform sign extension
 and correctly position the highest immediate bit. Third, at line (n +
 8), sign extension requires a right shift by 19. As this matches the
-opcode for arithmetic instructions with immediate, I reused this
+$opcode$ for arithmetic instructions with immediate, I reused this
 constant.
 
 Now, \textsl{iTypeImm}, \textsl{sTypeImm}, \textsl{bTypeImm},
@@ -192,16 +192,18 @@ referenced.
 \input{figures/4-Transform/choosecorrectimm.tex}
 \input{figures/4-Transform/extractrs1val.tex}
 
-\subsection{Instruction Detection}
-For the next-state logic, it is essential to determine the current
-command. Therefore, I defined a check
+\subsection{Instruction Detection Logic}
+For the next-state logic, it is essential to decode the current
+instruction. Therefore, I defined a check
 \textsl{is\textcolor{Green}{Instruction}} for each instruction. As
 this is repetitive, \algoref{alg:commanddetection} describes a
 generalized approach to obtain these booleans. An example for each
 instruction subgroup in \algoref{alg:commanddetection} is provided in
-\figref{fig:detectionexample}. The funct7 checks from the $needsf7$
+\figref{fig:detectionexample}. The$funct7$ checks from the $needsf7$
 subgroup can be reused if multiple instructions share the same
-funct7.
+$funct7$. When compared to the decision tree from \figref{fig:tree},
+I generate a node for each leaf to check if the path to this leaf
+fits to the current instruction.
 
 \input{figures/4-Transform/commanddetection.tex}
 \input{figures/4-Transform/detectionexample.tex}
@@ -244,7 +246,7 @@ to define the next state.
 
 \input{figures/4-Transform/valueexample.tex}
 
-\subsubsection{The Next Memory}
+\subsubsection{The next memory}
 Defining the next memory array is straightforward. All store
 instructions are cascaded through if-then-else nodes, with the final
 'else' set as the current memory array; if no 'if' matches, the array
@@ -252,23 +254,23 @@ remains unchanged. This is shown in \figref{fig:nextmemory}.
 
 \input{figures/4-Transform/nextmemory.tex}
 
-\subsubsection{The Next pc}
-For the next pc, the approach is similar, as shown in
+\subsubsection{The next $pc$}
+For the next $pc$, the approach is similar, as shown in
 \figref{fig:nextpc}. The only difference is that if no 'if' matches,
-pc must point to the next instruction to execute. The nextPc value
-was already computed for the JAL and JALR instructions and is reused
-here. The unconditional jumps also modify the value in rd, which is
-handled in the next section.
+$pc$ must point to the next instruction to execute. The $nextPc$
+value was already computed for the JAL and JALR instructions and is
+reused here. The unconditional jumps also modify the value in $rd$,
+which is handled in the next section.
 
 \input{figures/4-Transform/nextpc.tex}
 
-\subsubsection{The Next rd}
+\subsubsection{The next $rd$}
 At last, the remaining registers must be updated. The procedure is
 defined in \figref{alg:nextrd}. With the exception of x0, this is the
 same for all registers. The process is similar to defining the next
-memory or pc, but instead of a handful of instructions, all 39
+memory or $pc$, but instead of a handful of instructions, all 39
 relevant instructions must be considered, as only branch and store
-instructions do not modify rd. For brevity, the cascade for all
+instructions do not modify $rd$. For brevity, the cascade for all
 relevant instructions is not shown in full in \algoref{alg:nextrd},
 but only indicated.
 
@@ -280,9 +282,9 @@ checker. The primary constraint is reaching a set number of
 iterations, as shown in \figref{fig:badcounter}.
 
 Additional properties are defined to check for invalid instructions.
-The first checks if the opcode is valid for the model. The second
+The first checks if the $opcode$ is valid for the model. The second
 constraint detects if the instruction cannot be identified even when
-the opcode is valid, as shown in \figref{fig:unknownInstr}. The
+the $opcode$ is valid, as shown in \figref{fig:unknownInstr}. The
 constraint in \figref{fig:badaddress} handles
 instruction-address-misaligned exceptions for jump instructions.
 
@@ -310,10 +312,10 @@ be compared. A shell script for this purpose is provided at
 
 To generate RISC-V states, I implemented a fuzzer
 \cite[src/state\_fuzzer.c]{repoRV2BTOR} that generates randomized
-states with one valid instruction at the address of pc. The fuzzer
+states with one valid instruction at the address of $pc$. The fuzzer
 first selects an instruction to test and fills all variable parts of
 the instruction, such as $rd$ or $imm$. All registers relevant to the
-instruction are then assigned random 64-bit values. A pc value is
+instruction are then assigned random 64-bit values. A $pc$ value is
 generated to ensure the instruction fits within the limited address
 space of the BTOR2 model. If a jump instruction is chosen, possible
 address misalignment is corrected and address overflow is prevented.
